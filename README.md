@@ -1,5 +1,5 @@
-# NASA PDS Infrastructure Repo
-This repo is for the NASA PDS Team to deploy infrastructure resources using Terraform to NGAP Cloud.
+# NASA PDS MCP Infrastructure Repo
+This repo is for the NASA PDS Team to deploy infrastructure resources using Terraform to MCP Cloud.
 
 # My Project
 
