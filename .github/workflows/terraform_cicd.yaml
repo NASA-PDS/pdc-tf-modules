@@ -1,6 +1,8 @@
 name: 'Terraform-Workflow'
 
-on: [push, workflow_dispatch]
+on:
+  # push:
+  workflow_dispatch:
 
 permissions:
   id-token: write  # required to use OIDC authentication

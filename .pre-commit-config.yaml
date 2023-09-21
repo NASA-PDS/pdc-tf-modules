@@ -2,17 +2,14 @@ repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
     hooks:
-    -   id: trailing-whitespace
-        exclude: REQUIREMENTS\.md$
-    -   id: end-of-file-fixer
-        exclude: REQUIREMENTS\.md$
-    -   id: check-executables-have-shebangs
-    -   id: check-merge-conflict
-    -   id: debug-statements
-    -   id: check-yaml
-        files: .*\.(yaml|yml)$
-    -   id: check-json
-    -   id: pretty-format-json
+    - id: trailing-whitespace
+    - id: end-of-file-fixer
+    - id: check-executables-have-shebangs
+    - id: check-merge-conflict
+    - id: debug-statements
+    - id: check-yaml
+    - id: check-json
+    - id: pretty-format-json
 
 -   repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.81.0
