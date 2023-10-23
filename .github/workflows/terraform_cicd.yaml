@@ -1,8 +1,17 @@
 name: 'Terraform-Workflow'
 
 on:
-  # push:
   workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'info'
+        type: choice
+        options:
+          - info
+          - warning
+          - debug
 
 permissions:
   id-token: write  # required to use OIDC authentication
