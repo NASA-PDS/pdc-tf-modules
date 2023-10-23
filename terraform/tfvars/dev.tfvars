@@ -2,7 +2,7 @@ aws_region = "us-west-2"
 # vpc_id     = "vpc-02f8cc4962d6f8dc6"
 security_groups = [
   {
-    name           = "PDS Registry Security Group"
+    name           = "Test SG"
     description    = "Enable SSH/HTTP/HTTPS access on ports 22/80/443"
     vpc_id         = "vpc-02f8cc4962d6f8dc6"
     sg_name_tag    = "PDS Registry TCP SG"
