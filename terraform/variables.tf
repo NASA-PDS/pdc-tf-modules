@@ -1,11 +1,33 @@
-variable "ami" {
-  type        = string
-  description = "example ami id"
-  default     = "ami-830c94e3"
+variable "security_groups" {
+  description = "List of security grousp"
+  type        = list(any)
 }
 
-variable "instance_type" {
+# variable "vpc_id" {
+#   description = "VPC ID for the security group"
+#   type        = string
+# }
+
+variable "aws_region" {
+  description = "AWS Region"
   type        = string
-  description = "example instance type"
-  default     = "t2.micro"
+}
+
+# variable "node_name_abbr" {
+#   description = "Tag value for Alfa. Abbreviated node name."
+#   type        = string
+# }
+
+# variable "venue" {
+#   description = "Tag value for Beta"
+#   type        = string
+# }
+
+# variable "component" {
+#   description = "Tag value for Beta"
+#   type        = string
+# }
+
+locals {
+  aws_account_id = data.aws_caller_identity.current.account_id
 }

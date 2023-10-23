@@ -1,23 +1,12 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.16"
-    }
-  }
 
-  required_version = ">= 1.2.0"
-}
+module "custom_security_groups" {
+  source = "./modules/security-groups"
 
-provider "aws" {
-  region = "us-east-1"
-}
-
-resource "aws_instance" "app_server" {
-  ami           = var.ami
-  instance_type = var.instance_type
-
-  tags = {
-    Name = "ExampleAppServerInstance"
-  }
+  # vpc_id          = var.vpc_id
+  security_groups = var.security_groups
+  # required_tags = {
+  #   Alfa    = var.node_name_abbr
+  #   Bravo   = var.venue
+  #   Charlie = var.component
+  # }
 }
