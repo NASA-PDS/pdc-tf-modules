@@ -65,9 +65,7 @@ jobs:
 
     - name: Terraform Plan
       id: plan
-      with:
-        agrs: '-var-file=dev.tfvars'
-      run: terraform plan -no-color
+      run: terraform plan -var-file=./tfvars/dev.tfvars
       continue-on-error:  true
 
     - name: Terraform Plan Status
@@ -76,7 +74,5 @@ jobs:
       run: exit 1
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' # both conditions have to be met
-      with:
-        agrs: '-var-file=dev.tfvars'
-      run: terraform apply -auto-approve
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -var-file=./tfvars/dev.tfvars -auto-approve
