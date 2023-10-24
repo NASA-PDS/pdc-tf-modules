@@ -28,7 +28,7 @@ jobs:
       run:
         shell: bash
         working-directory: ./terraform
-    environment: NGAP DEV # default NGAP env, can be changed as needed
+    # environment: NGAP DEV # default NGAP env, can be changed as needed
     env:
       TF_LOG: INFO
 
@@ -65,6 +65,8 @@ jobs:
 
     - name: Terraform Plan
       id: plan
+      with:
+        agrs: '-var-file=dev.tfvars'
       run: terraform plan -no-color
       continue-on-error:  true
 
@@ -74,5 +76,7 @@ jobs:
       run: exit 1
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/main' && github.event_name == 'push' # both conditions have to be met
+      if: github.ref == 'refs/heads/main' # both conditions have to be met
+      with:
+        agrs: '-var-file=dev.tfvars'
       run: terraform apply -auto-approve
