@@ -1,0 +1,44 @@
+data "aws_ami" "amzn-linux-2023" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["GCC Amazon Linux 2 ECS-Optimized *"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["REDACTED_ACCOUNT_UNKNOWN"]
+}
+
+data "aws_iam_instance_profile" "mcp-dev-instance-profile" {
+  name = "MCP-SSM-CloudWatch"
+}
+
+resource "aws_instance" "mcp_ec2_instance" {
+  count                  = length(var.ec2_instance_configs)
+  ami                    = data.aws_ami.amzn-linux-2023.id
+  iam_instance_profile   = data.aws_iam_instance_profile.mcp-dev-instance-profile.name
+  instance_type          = var.ec2_instance_configs[count.index].instance_type
+  key_name               = var.ec2_instance_configs[count.index].key_pair_name
+  availability_zone      = var.ec2_instance_configs[count.index].az
+  subnet_id              = var.ec2_instance_configs[count.index].subnet_id
+  vpc_security_group_ids = var.ec2_instance_configs[count.index].security_groups
+
+  root_block_device {
+    encrypted             = true
+    delete_on_termination = false
+  }
+
+  tags = merge(var.required_tags, {
+    Name = var.ec2_instance_configs[count.index].instance_name
+  })
+}
