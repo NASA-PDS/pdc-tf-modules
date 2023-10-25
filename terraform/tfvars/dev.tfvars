@@ -1,13 +1,23 @@
-aws_region = "us-west-2"
+aws_region     = "us-west-2"
+vpc_id         = "vpc-02f8cc4962d6f8dc6"
+node_name_abbr = "en"
+venue          = "prod"
+component      = "pds-registry"
+ec2_instance_configs = [
+  {
+    instance_name   = "test-mcp-1"
+    instance_type   = "t2.micro"
+    az              = "us-west-2b"
+    key_pair_name   = "sjoshi-mcp"
+    subnet_id       = "subnet-06f9e015c018c9b38"
+    security_groups = ["sg-0eff14527c8519106"]
+  }
+]
 security_groups = [
   {
-    name           = "PDS Registry Security Group"
-    description    = "Enable SSH/HTTP/HTTPS access on ports 22/80/443"
-    vpc_id         = "vpc-02f8cc4962d6f8dc6"
-    sg_name_tag    = "PDS Registry TCP SG"
-    node_name_abbr = "en"
-    venue          = "prod"
-    component      = "registry"
+    name        = "PDS Registry Security Group"
+    description = "Enable SSH/HTTP/HTTPS access on ports 22/80/443"
+    sg_name_tag = "PDS Registry TCP SG"
     ingress_rules = [
       {
         description = "Allow SSH"
@@ -16,40 +26,6 @@ security_groups = [
         protocol    = "tcp"
         cidr_blocks = ["10.1.0.0/16"]
       },
-      {
-        description = "Allow HTTP"
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = ["10.1.0.0/16"]
-      },
-      {
-        description = "Allow HTTPS"
-        from_port   = 443
-        to_port     = 443
-        protocol    = "tcp"
-        cidr_blocks = ["10.1.0.0/16"]
-      }
-    ]
-    egress_rules = [
-      {
-        description = "Allow All Outbound Traffic"
-        from_port   = 0
-        to_port     = 0
-        protocol    = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-      }
-    ]
-  },
-  {
-    name           = "Test SG"
-    description    = "Enable SSH/HTTP/HTTPS access on ports 22/80/443"
-    vpc_id         = "vpc-02f8cc4962d6f8dc6"
-    sg_name_tag    = "Test SG"
-    node_name_abbr = "en"
-    venue          = "prod"
-    component      = "registry"
-    ingress_rules = [
       {
         description = "Allow HTTP"
         from_port   = 80
