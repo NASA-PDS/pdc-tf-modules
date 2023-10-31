@@ -8,6 +8,7 @@ ec2_instance_configs = [
     instance_name   = "pdscloud-dev1"
     instance_type   = "m4.2xlarge"
     az              = "us-west-2a"
+    key_pair_name   = ""
     subnet_id       = "subnet-REDACTED"
     security_groups = ["sg-REDACTED"]
   },
@@ -15,6 +16,7 @@ ec2_instance_configs = [
     instance_name   = "pdscloud-engineering-dev"
     instance_type   = "t3.large"
     az              = "us-west-2a"
+    key_pair_name   = ""
     subnet_id       = "subnet-REDACTED"
     security_groups = ["sg-REDACTED"]
   }
