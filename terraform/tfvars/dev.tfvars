@@ -5,10 +5,16 @@ venue          = "prod"
 component      = "pds-registry"
 ec2_instance_configs = [
   {
-    instance_name   = "test-mcp-1"
-    instance_type   = "t2.micro"
-    az              = "us-west-2b"
-    key_pair_name   = "sjoshi-mcp"
+    instance_name   = "pdscloud-dev1"
+    instance_type   = "m4.2xlarge"
+    az              = "us-west-2a"
+    subnet_id       = "subnet-REDACTED"
+    security_groups = ["sg-REDACTED"]
+  },
+  {
+    instance_name   = "pdscloud-engineering-dev"
+    instance_type   = "t3.large"
+    az              = "us-west-2a"
     subnet_id       = "subnet-REDACTED"
     security_groups = ["sg-REDACTED"]
   }
