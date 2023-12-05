@@ -3,7 +3,7 @@ data "aws_ami" "amzn-linux-2023" {
 
   filter {
     name   = "name"
-    values = ["GCC Amazon Linux 2 ECS-Optimized *"]
+    values = ["MCP Amazon Linux 2 *"]
   }
 
   filter {

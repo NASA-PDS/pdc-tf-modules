@@ -5,15 +5,23 @@ venue          = "prod"
 component      = "pds-registry"
 ec2_instance_configs = [
   {
-    instance_name   = "pdscloud-dev1"
-    instance_type   = "m4.2xlarge"
+    instance_name   = "pdsmcp-dev1"
+    instance_type   = "t2.medium"
     az              = "us-west-2a"
     key_pair_name   = ""
     subnet_id       = "subnet-REDACTED"
     security_groups = ["sg-REDACTED"]
   },
   {
-    instance_name   = "pdscloud-engineering-dev"
+    instance_name   = "pdsmcp-dev2"
+    instance_type   = "t2.medium"
+    az              = "us-west-2a"
+    key_pair_name   = ""
+    subnet_id       = "subnet-REDACTED"
+    security_groups = ["sg-REDACTED"]
+  },
+  {
+    instance_name   = "pdsmcp-engineering-dev"
     instance_type   = "t3.large"
     az              = "us-west-2a"
     key_pair_name   = ""
