@@ -1,7 +1,7 @@
 aws_region     = "us-west-2"
 vpc_id         = "vpc-02f8cc4962d6f8dc6"
 node_name_abbr = "en"
-venue          = "prod"
+venue          = "delta"
 component      = "pds-registry"
 ec2_instance_configs = [
   {
@@ -68,3 +68,6 @@ security_groups = [
     ]
   }
 ]
+iam_role_preffix    = "pds-mcp-dev"
+permission_boundary = "arn:aws:iam::REDACTED_ACCOUNT_DEV:policy/mcp-tenantOperator-APIG"
+policy_file_path    = "./iam/policies/dev_policies.yml"

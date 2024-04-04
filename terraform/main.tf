@@ -20,3 +20,15 @@ module "custom_security_groups" {
     Charlie = var.component
   }
 }
+
+module "dev_iam_roles" {
+  source              = "./iam"
+  iam_role_preffix    = var.iam_role_preffix
+  permission_boundary = var.permission_boundary
+  policy_file_path    = var.policy_file_path
+  tags = {
+    Alfa    = "en"
+    Beta    = "delta"
+    Charlie = "pds-registry"
+  }
+}
