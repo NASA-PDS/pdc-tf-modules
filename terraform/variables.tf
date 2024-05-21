@@ -50,7 +50,7 @@ variable "permission_boundary" {
   default     = ""
 }
 
-variable "tags" {
+variable "required_tags" {
   type        = map(string)
   description = "Node, Venue and Component values for PDS application"
   default     = {}

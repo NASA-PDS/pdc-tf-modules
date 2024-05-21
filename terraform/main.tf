@@ -21,14 +21,15 @@ module "custom_security_groups" {
   }
 }
 
-module "dev_iam_roles" {
-  source              = "./iam"
+module "iam_roles" {
+  source              = "./modules/iam"
   iam_role_preffix    = var.iam_role_preffix
   permission_boundary = var.permission_boundary
   policy_file_path    = var.policy_file_path
-  tags = {
-    Alfa    = "en"
-    Beta    = "delta"
-    Charlie = "pds-registry"
+  required_tags = {
+    Alfa    = var.node_name_abbr
+    Beta    = var.venue
+    Charlie = var.component
   }
 }
+

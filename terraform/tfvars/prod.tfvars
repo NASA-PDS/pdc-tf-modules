@@ -1,0 +1,6 @@
+node_name_abbr      = "en"
+venue               = "prod"
+component           = "pds-registry"
+iam_role_preffix    = "pds-mcp-prod"
+permission_boundary = "arn:aws:iam::REDACTED_ACCOUNT_PROD:policy/mcp-tenantOperator-APIG"
+policy_file_path    = "./iam-module/roles/prod_roles.yaml"
