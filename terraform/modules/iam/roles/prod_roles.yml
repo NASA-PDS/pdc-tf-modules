@@ -30,11 +30,37 @@ iam_roles:
               Effect: "Allow"
               Action:
                 - "aoss:APIAccessAll"
-                - "aoss:DashboardAccessAll"
+                - "aoss:DashboardsAccessAll"
               Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
     managed_policy_arns:
       - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
       - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+
+  - iam_role_name: "eng-aoss-role"
+    iam_role_description: "PDS ENG role for OpenSearch Serverless Access"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Federated: "cognito-identity.amazonaws.com"
+          Action: "sts:AssumeRoleWithWebIdentity"
+          Condition:
+            StringEquals:
+              - "cognito-identity.amazonaws.com:aud": "us-west-2:9a3cff4d-a28c-4763-a5e3-844ddfab0764"
+            ForAnyValue:StringLine:
+              - "cognito-identity.amazonaws.com:amr": "authenticated"
+    custom_policies:
+      - iam_policy_name: "opensearch-serverless-access-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "OpenSearchAccess"
+              Effect: "Allow"
+              Action:
+                - "aoss:APIAccessAll"
+                - "aoss:DashboardsAccessAll"
+              Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
 
   - iam_role_name: "registry-api-ecs-task-role"
     iam_role_description: "PDS Registry-API ECS Task Role"
@@ -102,7 +128,7 @@ iam_roles:
               Effect: "Allow"
               Action:
                 - "aoss:APIAccessAll"
-                - "aoss:DashboardAccessAll"
+                - "aoss:DashboardsAccessAll"
               Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
     managed_policy_arns:
       - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -132,7 +158,7 @@ iam_roles:
               Effect: "Allow"
               Action:
                 - "aoss:APIAccessAll"
-                - "aoss:DashboardAccessAll"
+                - "aoss:DashboardsAccessAll"
               Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
     managed_policy_arns:
       - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
