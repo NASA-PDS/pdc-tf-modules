@@ -32,6 +32,9 @@ iam_roles:
                 - "aoss:APIAccessAll"
                 - "aoss:DashboardAccessAll"
               Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
+    managed_policy_arns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+      - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 
   - iam_role_name: "registry-api-ecs-task-role"
     iam_role_description: "PDS Registry-API ECS Task Role"
