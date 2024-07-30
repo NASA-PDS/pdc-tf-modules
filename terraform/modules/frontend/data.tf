@@ -41,6 +41,15 @@ data "aws_route53_zone" "main" {
   name = data.aws_ssm_parameter.hosted_zone_name.value
 }
 
+# SSL certificate
+data "aws_ssm_parameter" "acm_certificate_arn" {
+  name = "/pds/core/acm-certificate-arn"
+}
+
+
+
+
+# pre-existing policies in dev
 data "aws_ssm_parameter" "cloud_front_cache_policy_id" {
   name = "/pds/core/cache_policy_id"
 }

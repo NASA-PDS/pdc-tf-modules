@@ -1,7 +1,7 @@
-# TODO add the s3 bucket for logs, from a module somewhere else
-# TODO make terraform code for s3-browser
-# TODO update registry API terraform
-# TODO add origin/behavior for DUM API gateway, should be under path /api/dum ?
+# TODO SA add the s3 bucket for logs, from a module somewhere else
+# TODO Dev make terraform code for s3-browser
+# TODO Dev update registry API terraform
+# TODO SA add origin/behavior for DUM API gateway, should be under path /api/dum ?
 
 resource "aws_cloudfront_function" "s3_browser_rewrite_url" {
   name    = "s3_browser_rewrite_url"
@@ -65,16 +65,30 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   aliases = [data.aws_route53_zone.main.name]
 
   viewer_certificate {
-    acm_certificate_arn            = var.acm_certificate_arn
+    acm_certificate_arn            = data.aws_ssm_parameter.acm_certificate_arn.value
     cloudfront_default_certificate = true
     ssl_support_method             = "sni-only" # TODO TO BE CONFIRMED
   }
+
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "default_web_site"
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
+    origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+  }
+
 
   ordered_cache_behavior {
     path_pattern     = "/data/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "registry_api_lb"
+    target_origin_id = "s3_browser_bkt"
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.s3_browser_rewrite_url.arn
@@ -92,10 +106,10 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   }
 
    ordered_cache_behavior {
-    path_pattern     = "/api*"
+    path_pattern     = "/api/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "s3_browser_bkt"
+    target_origin_id = "registry_api_lb"
     function_association {
       event_type   = "viewer-request"
       function_arn = aws_cloudfront_function.api_alb_rewrite_url.arn
@@ -108,21 +122,8 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     compress               = true
     viewer_protocol_policy = "https-only"
     cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
-    origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+    origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa07d3"
 
-  }
-
-  default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "default_web_site"
-    min_ttl                = 0
-    default_ttl            = 86400
-    max_ttl                = 31536000
-    compress               = true
-    viewer_protocol_policy = "https-only"
-    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
-    origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
   }
 
   restrictions {
