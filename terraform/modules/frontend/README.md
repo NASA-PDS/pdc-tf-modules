@@ -17,4 +17,17 @@ They are defined in the SSM parameter store as described in the `data.tf` file.
 From this directory:
 
     terraform apply
+
+
+## Validate the deployment
+
+From the hosted zone defined in route 53, e.g. pds.nasa.gov
+
+You can test:
+1. access to the registry API:
+    curl --header 'application/json' https://pds.nasa.gov/api/search/1/products
+
+2. access to the S3 browser, in a web browser: https://pds.nasa.gov/data
+3. access to the Data Upload Manager API: To Be Defined
+4. access to the PDS Web site placeholder: http://pds.nasa.gov
  
