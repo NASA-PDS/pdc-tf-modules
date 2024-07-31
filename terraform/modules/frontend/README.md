@@ -14,5 +14,7 @@ They are defined in the SSM parameter store as described in the `data.tf` file.
 
 ## Run the deployment
 
+From this directory:
+
     terraform apply
  
