@@ -37,9 +37,6 @@ function handler(event) {
     if (uri.startsWith('/data/catalina-sky-survey')) {
         request.uri = '/';
     }
-    else if (uri.startsWith('/data/aria-share')) {
-        request.uri = '/';
-    }
     /* the path to the main page is on the base root of the s3 bucket origin */
     else if (uri.startsWith('/data/')) {
         request.uri = uri.replace('/data', '');
