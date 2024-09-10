@@ -20,3 +20,10 @@ module "custom_security_groups" {
     Charlie = var.component
   }
 }
+
+module "pds_cognito" {
+  source = "./modules/cognito"
+
+  pds_cognito_initial_users = var.pds_cognito_initial_users
+  pds_welcome_page_client_id = var.pds_welcome_page_client_id
+}
