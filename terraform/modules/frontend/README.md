@@ -5,6 +5,7 @@
 To run, this terraform script requires to have components deployed:
 
 - s3 bucket for the s3 browser application
+- s3 bucket for the portal-wp application
 - s3 bucket as a placeholder for the PDS web site
 - ALB for the registry API
 - a route 53  hosted zone and an SSL certificate
@@ -16,6 +17,7 @@ They are defined in the SSM parameter store as described in the `data.tf` file.
 
 From this directory:
 
+    terraform init
     terraform apply
 
 
