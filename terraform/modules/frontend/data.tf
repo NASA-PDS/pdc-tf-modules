@@ -27,6 +27,15 @@ data "aws_s3_bucket" "s3_web_site_bkt" {
   bucket = data.aws_ssm_parameter.s3_web_site_bkt.value
 }
 
+# Web modernization portal
+data "aws_ssm_parameter" "portal_wp_bkt" {
+  name = "/pds/portal-wp/s3-bucket"
+}
+
+data "aws_s3_bucket" "portal_wp_bkt" {
+  bucket = data.aws_ssm_parameter.portal_wp_bkt.value
+}
+
 # API load balancer
 data "aws_ssm_parameter" "load_balancer_domain" {
   name= "/pds/registry/load-balancer-domain"
