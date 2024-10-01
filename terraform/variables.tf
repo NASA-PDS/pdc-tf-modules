@@ -4,7 +4,7 @@ variable "ec2_instance_configs" {
   description = "List of EC2 instances"
 }
 variable "security_groups" {
-  description = "List of security grousp"
+  description = "List of security groups"
   type        = list(any)
 }
 
@@ -31,6 +31,26 @@ variable "venue" {
 variable "component" {
   description = "Tag value for Charlie"
   type        = string
+}
+
+variable "pds_cognito_initial_users" {
+  type = list(
+    object(
+      {
+        username = string
+        password = string
+        group    = string
+        email    = string
+      }
+    )
+  )
+  description = "List of Cognito users to pre-populate the User Pool with"
+}
+
+variable "pds_welcome_page_client_id" {
+  type        = string
+  description = "PDS Welcome page client ID"
+  default     = "[PDS Welcome page client ID]"
 }
 
 locals {
