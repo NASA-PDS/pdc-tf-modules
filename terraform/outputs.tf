@@ -9,3 +9,15 @@ output "ec2_instance_ids" {
 output "security_group_ids" {
   value = module.custom_security_groups.security_group_id
 }
+
+output "pds_cognito_user_pool_id" {
+  value = module.pds_cognito.pds_cognito_user_pool_id
+}
+
+output "pds_cognito_user_pool_client_id" {
+  value = module.pds_cognito.pds_cognito_user_pool_client_id
+}
+
+output "pds_cognito_initial_users" {
+  value = module.pds_cognito.pds_cognito_initial_users
+}
