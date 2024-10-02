@@ -18,7 +18,11 @@ function handler(event) {
     // Strip out any leading multiple slashies - registry-api#208
     incomingUri = incomingUri.replace("//","/");
     request.uri = incomingUri.replace(TARGET_URI_PREFIX, "");
-    request.headers["x-forwarded-prefix"] = {"value": "/api/" + resultHeader};
+    if (request.uri.length==0){
+        // somehow requests with empty uri return 502 bd gateway
+        request.uri = "/"
+    }
+    request.headers["x-forwarded-prefix"] = {"value": TARGET_URI_PREFIX};
     console.log("The request uri to the origin:" + request.uri);
     return request;
 }
