@@ -19,6 +19,13 @@ resource "aws_cloudfront_function" "api_alb_rewrite_url" {
   code    = file("${path.module}/js/api_alb_rewrite_url.js")
 }
 
+resource "aws_cloudfront_function" "one_page_app_rewrite_url" {
+  name    = "one_page_app_s3_rewrite_url"
+  runtime = "cloudfront-js-2.0"
+  comment = "removes URL prefix before forwarding request to s3 origin bucket"
+  publish = true
+  code    = file("${path.module}/js/one_page_app_s3_rewrite_url.js")
+}
 
 resource "aws_cloudfront_origin_access_control" "s3_oac" {
   name                              = "example"
@@ -49,6 +56,12 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   origin {
     origin_id   = "s3_browser_bkt"
     domain_name = "${data.aws_ssm_parameter.s3_browser_bkt.value}.s3.${data.aws_ssm_parameter.region.value}.amazonaws.com"
+    origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
+  }
+
+  origin {
+    origin_id   = "portal_wp_bkt"
+    domain_name = "${data.aws_ssm_parameter.portal_wp_bkt.value}.s3.${data.aws_ssm_parameter.region.value}.amazonaws.com"
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
   }
 
@@ -126,6 +139,27 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
 
   }
 
+  ordered_cache_behavior {
+    path_pattern     = "/portal/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "portal_wp_bkt"
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.one_page_app_rewrite_url.arn
+    }
+
+
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
+    origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+
+  }
+
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -137,6 +171,12 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     Bravo = data.aws_ssm_parameter.venue.value
     Charlie = "frontend"
   }
+}
+
+resource "aws_ssm_parameter" "cloudfront_distribution" {
+  name  = "/pds/core/cloudfront-distribution/arn"
+  type  = "String"
+  value = aws_cloudfront_distribution.pds_distribution.arn
 }
 
 resource "aws_s3_bucket_policy" "allow_s3_browser_access_from_cloudfront_dist" {
