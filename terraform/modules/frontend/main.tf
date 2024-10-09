@@ -3,14 +3,6 @@
 # TODO Dev update registry API terraform
 # TODO SA add origin/behavior for DUM API gateway, should be under path /api/dum ?
 
-resource "aws_cloudfront_function" "s3_browser_rewrite_url" {
-  name    = "s3_browser_rewrite_url"
-  runtime = "cloudfront-js-2.0"
-  comment = "removes URL prefix before forwarding request to s3 origin bucket"
-  publish = true
-  code    = file("${path.module}/js/s3_browser_rewrite_url.js")
-}
-
 resource "aws_cloudfront_function" "api_alb_rewrite_url" {
   name    = "api_alb_rewrite_url"
   runtime = "cloudfront-js-2.0"
@@ -98,13 +90,13 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
 
 
   ordered_cache_behavior {
-    path_pattern     = "/data/*"
+    path_pattern     = "/data*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "s3_browser_bkt"
     function_association {
       event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.s3_browser_rewrite_url.arn
+      function_arn = aws_cloudfront_function.one_page_app_rewrite_url.arn
     }
 
 
@@ -119,7 +111,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   }
 
    ordered_cache_behavior {
-    path_pattern     = "/api/*"
+    path_pattern     = "/api*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "registry_api_lb"
@@ -140,7 +132,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   }
 
   ordered_cache_behavior {
-    path_pattern     = "/portal/*"
+    path_pattern     = "/portal*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
     target_origin_id = "portal_wp_bkt"
