@@ -12,10 +12,10 @@ output "security_group_ids" {
 
 output "module_iam_role_name" {
   description = "The name of the IAM roles created by the IAM module."
-  value       = module.dev_iam_roles.iam_role_name
+  value       = module.iam_roles.iam_role_name
 }
 
 output "module_iam_role_arn" {
   description = "The ARN of the IAM roles created by the IAM module."
-  value       = module.dev_iam_roles.iam_role_arn
+  value       = module.iam_roles.iam_role_arn
 }

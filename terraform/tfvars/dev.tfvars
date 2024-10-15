@@ -70,4 +70,4 @@ security_groups = [
 ]
 iam_role_preffix    = "pds-mcp-dev"
 permission_boundary = "arn:aws:iam::REDACTED_ACCOUNT_DEV:policy/mcp-tenantOperator-APIG"
-policy_file_path    = "./iam-module/roles/dev_roles.yaml"
+policy_file_path    = "./modules/iam/roles/dev_roles.yml"
