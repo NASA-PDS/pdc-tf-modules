@@ -141,7 +141,6 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
       function_arn = aws_cloudfront_function.one_page_app_rewrite_url.arn
     }
 
-
     min_ttl                = 0
     default_ttl            = 86400
     max_ttl                = 31536000
@@ -151,6 +150,22 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
 
   }
+
+  ordered_cache_behavior {
+    path_pattern     = "/assets*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "portal_wp_bkt"
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
+    origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+
+
+
 
   restrictions {
     geo_restriction {

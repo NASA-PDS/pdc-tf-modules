@@ -1,30 +1,25 @@
 # NASA PDS MCP Infrastructure Repo
 This repo is for the NASA PDS Team to deploy infrastructure resources using Terraform to MCP Cloud.
 
-# My Project
-
-This is the XYZ that does this, that, and the other thing for the Planetary Data System.
-
-Please visit our website at: https://nasa-pds.github.io/pds-my-project
-
-It has useful information for developers and end-users.
 
 ## Prerequisites
 
-Include any system-wide requirements (`brew install`, `apt-get install`, `yum install`, …) **Python 3** should be used regardless as [Python 2 reached end-of-life on January 1st, 2020](https://pythonclock.org/).
-
+terraform
 
 ## User Quickstart
 
-Install with:
+The resources available are:
+- cognito
+- cloudfront
 
-    pip install my_pds_module
+Deploy cloudfront, see README in terraform/module/cloudfront
 
-If possible, make it so that your program works out of the box without any additional configuration—but see the [Configuration](###configuration) section for details.
+Deploy cognito:
 
-To execute, run:
+    cd modules/cognito
+    terraform init
+    terraform apply
 
-    (put your run commands here)
 
 
 ## Code of Conduct

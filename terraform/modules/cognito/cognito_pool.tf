@@ -1,5 +1,4 @@
 # Terraform module for the PDS Cognito User Pool
-
 resource "aws_cognito_user_pool" "pds_cognito_user_pool" {
   name = var.user_pool_name
 
@@ -33,6 +32,7 @@ resource "aws_cognito_user_pool" "pds_cognito_user_pool" {
     require_uppercase = true
     require_numbers   = true
     require_symbols   = true
+    temporary_password_validity_days = 7
   }
 }
 
@@ -41,6 +41,7 @@ resource "aws_ssm_parameter" "pds_cognito_user_pool_id_parameter" {
   type       = "String"
   value      = aws_cognito_user_pool.pds_cognito_user_pool.id
   depends_on = [aws_cognito_user_pool.pds_cognito_user_pool]
+  overwrite = true
 }
 
 resource "aws_cognito_user_pool_client" "pds_cognito_user_pool_client" {
@@ -103,7 +104,7 @@ resource "aws_cognito_user_in_group" "pds_cognito_initial_user_group_assignment"
 
 resource "aws_cognito_user_pool_ui_customization" "pds_cognito_user_pool_ui_customization" {
   css        = ".banner-customizable { background-color: white;}"
-  image_file = filebase64("./modules/cognito/media/pds-logo.png")
+  image_file = filebase64("./media/pds-logo.png")
   user_pool_id = aws_cognito_user_pool_domain.pds_cognito_user_pool_domain.user_pool_id
 }
 
