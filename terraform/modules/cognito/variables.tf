@@ -11,6 +11,12 @@ variable "user_pool_domain" {
   default     = "pds-user-pool"
 }
 
+variable "email_invitation_message" {
+  type        = string
+  description = "Message body for use with invitation emails"
+  default     = "Your PDS Cognito user {username} temporary password is {####}. You must change this password before it expires, in 7 days, by accessing the URL"
+}
+
 variable "email_invitation_subject" {
   type        = string
   description = "Subject line for use with invitation emails"
@@ -29,11 +35,7 @@ variable "pds_welcome_page_client_id" {
   default     = "[PDS Welcome page client ID]"
 }
 
-variable "email_invitation_message" {
-  type        = string
-  description = "Message body for use with invitation emails"
-  default     = "Your PDS Cognito username is {username} and temporary password is {####}  . You must change this password by accessing the password change URL"
-}
+
 
 variable "sms_text_invitation_message" {
   type        = string
