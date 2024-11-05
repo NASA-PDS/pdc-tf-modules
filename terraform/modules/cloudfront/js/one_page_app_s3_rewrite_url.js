@@ -1,13 +1,20 @@
 function handler(event) {
+    // we expect URL with pattern /prefix[anything], anything can be:
+    //.   - empty
+    //.   - /
+    //.   - /path[/path...]/file.extension
+    // where /prefix is a shared prefix for the origin (e.g. an s3 bucket)
+
     var dns = event.context.distributionDomainName;
     var request = event.request;
     var uri = request.uri;
+    const WEB_RESOURCES_EXTENSIONS = ["css", "js", "png", "jpg", "svg", "ico", "woff2"];
 
     // find the second slash in URI after the first at character 0
-    const indexSecondSlash = uri.indexOf("/", 1);
-
-
-    if (uri.includes('.')){
+    var indexSecondSlash = uri.indexOf("/", 1);
+    var uri_dot_split = uri.split(".");
+    if (uri_dot_split.length == 2 && WEB_RESOURCES_EXTENSIONS.includes(uri_dot_split[1]) ){
+        //if uri has exactly one .
         // for resources like .css, .js, etc...
         // just remove the first /prefix of the URI which is used to redirect
         // from the cloudfront distribution to the origin
