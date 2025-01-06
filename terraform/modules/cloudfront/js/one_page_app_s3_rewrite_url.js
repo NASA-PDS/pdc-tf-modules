@@ -8,7 +8,7 @@ function handler(event) {
     var dns = event.context.distributionDomainName;
     var request = event.request;
     var uri = request.uri;
-    const WEB_RESOURCES_EXTENSIONS = ["css", "js", "png", "jpg", "svg", "ico", "woff2"];
+    const WEB_RESOURCES_EXTENSIONS = ["gif", "css", "js", "png", "jpg", "svg", "ico", "woff2"];
 
     // find the second slash in URI after the first at character 0
     var indexSecondSlash = uri.indexOf("/", 1);
