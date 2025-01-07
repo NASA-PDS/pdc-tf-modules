@@ -1,0 +1,164 @@
+iam_roles:
+  - iam_role_name: "ec2-role"
+    iam_role_description: "PDS Registry Role for EC2 Instances"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "ec2.amazonaws.com"
+          Action: "sts:AssumeRole"
+          Condition:
+            StringEquals:
+              "aws:SourceAccount": "REDACTED_ACCOUNT_PROD"
+    custom_policies:
+      - iam_policy_name: "ec2-access-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "EC2Access"
+              Effect: "Allow"
+              Action:
+                - "ec2:Get*"
+                - "ec2:List*"
+                - "ec2:Describe*"
+                - "ec2:RunInstances"
+                - "ec2:StartInstances"
+                - "ec2:StopInstances"
+              Resource: "*"
+            - Sid: "OpenSearchAccess"
+              Effect: "Allow"
+              Action:
+                - "aoss:APIAccessAll"
+                - "aoss:DashboardsAccessAll"
+              Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
+    managed_policy_arns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+      - "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+
+  - iam_role_name: "eng-aoss-role"
+    iam_role_description: "PDS ENG role for OpenSearch Serverless Access"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Federated: "cognito-identity.amazonaws.com"
+          Action: "sts:AssumeRoleWithWebIdentity"
+          Condition:
+            StringEquals:
+              - "cognito-identity.amazonaws.com:aud": "us-west-2:9a3cff4d-a28c-4763-a5e3-844ddfab0764"
+            ForAnyValue:StringLine:
+              - "cognito-identity.amazonaws.com:amr": "authenticated"
+    custom_policies:
+      - iam_policy_name: "opensearch-serverless-access-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "OpenSearchAccess"
+              Effect: "Allow"
+              Action:
+                - "aoss:APIAccessAll"
+                - "aoss:DashboardsAccessAll"
+              Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
+
+  - iam_role_name: "registry-api-ecs-task-role"
+    iam_role_description: "PDS Registry-API ECS Task Role"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "ecs-tasks.amazonaws.com"
+          Action: "sts:AssumeRole"
+          Condition:
+            StringEquals:
+              "aws:SourceAccount": "REDACTED_ACCOUNT_PROD"
+    custom_policies:
+      - iam_policy_name: "registry-ecs-task-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "CloudWatchAccess"
+              Effect: "Allow"
+              Action: "logs:CreateLogGroup"
+              Resource: "arn:aws:logs:*:*:*"
+            - Sid: "SSMAccess"
+              Effect: "Allow"
+              Action: "ssm:GetParameters"
+              Resource: "arn:aws:ssm:us-west-2:REDACTED_ACCOUNT_PROD:parameter/pds/mcp/prod/registry/endpoint"
+
+  - iam_role_name: "registry-sweepers-ecs-task-role"
+    iam_role_description: "PDS Registry Sweepers ECS Task Role"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "ecs-tasks.amazonaws.com"
+          Action: "sts:AssumeRole"
+          Condition:
+            StringEquals:
+              "aws:SourceAccount": "REDACTED_ACCOUNT_PROD"
+    custom_policy_arns:
+      - "arn:aws:iam::REDACTED_ACCOUNT_PROD:policy/pds-mcp-prod-pds-registry-ecs-task-policy"
+
+  - iam_role_name: "registry-api-ecs-task-execution-role"
+    iam_role_description: "PDS Registry API ECS Task Execution Role"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "ecs-tasks.amazonaws.com"
+          Action: "sts:AssumeRole"
+          Condition:
+            StringEquals:
+              "aws:SourceAccount": "REDACTED_ACCOUNT_PROD"
+    custom_policies:
+      - iam_policy_name: "registry-api-ecs-task-execution-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "SSMAccess"
+              Effect: "Allow"
+              Action: "ssm:GetParameters"
+              Resource: "arn:aws:ssm:us-west-2:REDACTED_ACCOUNT_PROD:parameter/pds/mcp/prod/registry/opensearch/endpoint"
+            - Sid: "OpenSearchAccess"
+              Effect: "Allow"
+              Action:
+                - "aoss:APIAccessAll"
+                - "aoss:DashboardsAccessAll"
+              Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
+    managed_policy_arns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+
+  - iam_role_name: "registry-sweepers-ecs-task-execution-role"
+    iam_role_description: "PDS Registry Sweepers ECS Task Execution Role"
+    trust_relationship:
+      Version: '2012-10-17'
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "ecs-tasks.amazonaws.com"
+          Action: "sts:AssumeRole"
+          Condition:
+            StringEquals:
+              "aws:SourceAccount": "REDACTED_ACCOUNT_PROD"
+    custom_policies:
+      - iam_policy_name: "registry-sweepers-ecs-task-execution-policy"
+        iam_policy_document:
+          Version: '2012-10-17'
+          Statement:
+            - Sid: "SSMAccess"
+              Effect: "Allow"
+              Action: "ssm:GetParameters"
+              Resource: "arn:aws:ssm:us-west-2:REDACTED_ACCOUNT_PROD:parameter/pds/mcp/prod/registry/opensearch/endpoint"
+            - Sid: "OpenSearchAccess"
+              Effect: "Allow"
+              Action:
+                - "aoss:APIAccessAll"
+                - "aoss:DashboardsAccessAll"
+              Resource: "arn:aws:aoss:us-west-2:REDACTED_ACCOUNT_PROD:collection/REDACTED_AOSS_COLLECTION"
+    managed_policy_arns:
+      - "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"

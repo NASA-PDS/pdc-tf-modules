@@ -33,6 +33,29 @@ variable "component" {
   type        = string
 }
 
+variable "policy_file_path" {
+  type        = string
+  description = "Path to the YAML containing IAM policy and trust relationships"
+  default     = ""
+}
+
+variable "iam_role_preffix" {
+  type        = string
+  description = "IAM role Preffix"
+}
+
+variable "permission_boundary" {
+  type        = string
+  description = "ARN of the permission boundary policy to attach to the IAM role"
+  default     = ""
+}
+
+variable "required_tags" {
+  type        = map(string)
+  description = "Node, Venue and Component values for PDS application"
+  default     = {}
+}
+
 variable "pds_cognito_initial_users" {
   type = list(
     object(
@@ -53,16 +76,22 @@ variable "pds_welcome_page_client_id" {
   default     = "[PDS Welcome page client ID]"
 }
 
+variable "collection_type" {
+  type        = string
+  description = "Type of the serverless collection. Ex: SEARCH, TIMESERIES or VECTORSEARCH"
+}
+
 locals {
   aws_account_id = data.aws_caller_identity.current.account_id
 }
 
 variable "test_bucket" {
-  type = string
+  type        = string
   description = "The name of the S3 bucket"
-  default = "my_test_bucket"
+  default     = "my_test_bucket"
 }
 variable "partition" {
-  type = string
+  type    = string
   default = "aws"
 }
+
