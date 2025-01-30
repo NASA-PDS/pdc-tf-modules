@@ -1,6 +1,6 @@
 # Changelog
 
-## [«unknown»](https://github.com/NASA-PDS/pds-mcp-infra/tree/«unknown») (2025-01-08)
+## [«unknown»](https://github.com/NASA-PDS/pds-mcp-infra/tree/«unknown») (2025-01-30)
 
 [Full Changelog](https://github.com/NASA-PDS/pds-mcp-infra/compare/45a4cdbdbd502fb94b2cf128aa1423e041a00617...«unknown»)
 
