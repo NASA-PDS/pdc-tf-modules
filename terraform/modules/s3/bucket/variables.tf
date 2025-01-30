@@ -1,61 +1,57 @@
 
-variable "bucket_name"{
-    type = string
+variable "bucket_name" {
+  type = string
 }
 
-variable "partition"{
-    type = string
-    default = "aws"
-}
-
-variable "account_number"{
-    type = string
+variable "partition" {
+  type    = string
+  default = "aws"
 }
 
 variable "bucket_policy" {
-    type = string
-    default = ""
+  type    = string
+  default = ""
 }
 
 variable "sse_algorithm" {
-    type = string
-    default = "AES256"
+  type    = string
+  default = "AES256"
 }
 
 variable "block_public_acls" {
-    type = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "block_public_policy" {
-    type = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "ignore_public_acls" {
-    type = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "restrict_public_buckets" {
-    type = bool
-    default = true
+  type    = bool
+  default = true
 }
 
 variable "enable_blocks" {
-  description = "This toggles if the public access restrictions are applied.Some venues have this enforced at a higher level. That is the only time this should false. (MCP is an example venue)"   
-  type = bool
-  default = true
+  description = "This toggles if the public access restrictions are applied.Some venues have this enforced at a higher level. That is the only time this should false. (MCP is an example venue)"
+  type        = bool
+  default     = true
 }
 
 variable "enable_policy" {
-  description = "This toggles if the public access policy is created.Some venues have this enforced at a higher level. That is the only time this should false. (MCP is an example venue)"   
-  type = bool
-  default = true
+  description = "This toggles if the public access policy is created.Some venues have this enforced at a higher level. That is the only time this should false. (MCP is an example venue)"
+  type        = bool
+  default     = true
 }
 
 variable "versioning" {
   description = "Whether bucket versioning should be enabled or disabled"
-  type = string
-  default = "Disabled"
+  type        = string
+  default     = "Disabled"
 }

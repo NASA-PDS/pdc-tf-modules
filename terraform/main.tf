@@ -24,14 +24,14 @@ module "custom_security_groups" {
 module "pds_cognito" {
   source = "./modules/cognito"
 
-  pds_cognito_initial_users = var.pds_cognito_initial_users
+  pds_cognito_initial_users  = var.pds_cognito_initial_users
   pds_welcome_page_client_id = var.pds_welcome_page_client_id
 }
 
 module "s3_bucket" {
-  source = "./modules/s3/bucket"
-  bucket_name = var.test_bucket
-  partition = var.partition
+  source        = "./modules/s3/bucket"
+  bucket_name   = var.test_bucket
+  partition     = var.partition
   bucket_policy = <<POLICY
  {
      "Version": "2012-10-17",
@@ -52,4 +52,28 @@ module "s3_bucket" {
  POLICY
   enable_blocks = true
   enable_policy = true
+}
+
+module "iam_roles" {
+  source              = "./modules/iam"
+  iam_role_preffix    = var.iam_role_preffix
+  permission_boundary = var.permission_boundary
+  policy_file_path    = var.policy_file_path
+  required_tags = {
+    Alfa    = var.node_name_abbr
+    Beta    = var.venue
+    Charlie = var.component
+  }
+}
+
+module "openserach_serverless_collection" {
+  source = "./modules/opensearch_serverless"
+
+  venue           = var.venue
+  collection_type = var.colleciton_type
+  required_tags = {
+    Alfa    = var.node_name_abbr
+    Bravo   = var.venue
+    Charlie = var.component
+  }
 }
