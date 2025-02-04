@@ -1,8 +1,7 @@
-aws_region     = "us-west-2"
-vpc_id         = "vpc-02f8cc4962d6f8dc6"
-node_name_abbr = "en"
-venue          = "prod"
-component      = "pds-registry"
+aws_region = "us-west-2"
+vpc_id     = "vpc-02f8cc4962d6f8dc6"
+project    = "pds-en"
+cicd       = "pds-github"
 ec2_instance_configs = [
   {
     instance_name   = "pdsmcp-dev1"

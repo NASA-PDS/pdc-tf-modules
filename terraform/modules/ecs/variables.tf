@@ -14,3 +14,8 @@ variable "create_service" {
   type        = bool
   default     = true
 }
+
+variable "required_tags" {
+  description = "Required resource tags"
+  type        = map(string)
+}
