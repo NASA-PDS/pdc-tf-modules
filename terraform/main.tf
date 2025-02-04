@@ -77,3 +77,10 @@ module "openserach_serverless_collection" {
     Charlie = var.component
   }
 }
+
+module "ecs" {
+  source         = "./modules/ecs"
+  config_file    = var.config_file
+  create_service = var.create_service
+}
+

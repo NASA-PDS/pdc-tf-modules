@@ -69,5 +69,7 @@ security_groups = [
   }
 ]
 
-pds_cognito_initial_users = []
+pds_cognito_initial_users  = []
 pds_welcome_page_client_id = ""
+config_file                = "./ecs/task-definitions/dev.yml"
+create_service             = false

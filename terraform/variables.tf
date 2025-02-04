@@ -95,3 +95,13 @@ variable "partition" {
   default = "aws"
 }
 
+variable "config_file" {
+  description = "Path for the environment-specific YAML task definition file"
+  type        = string
+}
+
+variable "create_service" {
+  description = "Flag to control where the ECS service should be created or not"
+  type        = bool
+  default     = true
+}
