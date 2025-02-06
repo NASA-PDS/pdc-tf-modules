@@ -44,10 +44,9 @@ variable "permission_boundary" {
   description = "ARN of the permission boundary policy to attach to the IAM role"
   default     = ""
 }
-
 variable "required_tags" {
+  description = "Required resource tags"
   type        = map(string)
-  description = "Node, Venue and Component values for PDS application"
   default     = {}
 }
 

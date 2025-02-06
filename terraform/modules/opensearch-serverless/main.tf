@@ -1,15 +1,21 @@
 # main OS module
 data "aws_caller_identity" "current" {}
 
+# Load external JSON files
+locals {
+  data_access_policies = jsondecode(file("${path.module}/data.json"))
+  network_policy       = jsondecode(file("${path.module}/network.json"))
+}
+
 resource "aws_opensearchserverless_security_policy" "encryption_policy" {
-  name        = "pds-mcp-${var.venue}-encryption-policy"
+  name        = var.encryption_policy_name
   type        = "encryption"
-  description = "Encryption policy for pds-mcp-${var.venue}-collection"
+  description = "Encryption policy for ${var.collection_name}"
   policy = jsonencode({
     Rules = [
       {
         Resource = [
-          "collection/pds-mcp-${var.venue}-collection"
+          "collection/${var.collection_name}"
         ],
         ResourceType = "collection"
       }
@@ -18,98 +24,35 @@ resource "aws_opensearchserverless_security_policy" "encryption_policy" {
   })
 }
 resource "aws_opensearchserverless_security_policy" "public_network_policy" {
-  name        = "pds-mcp-${var.venue}-network-policy"
+  name        = var.network_policy_name
   type        = "network"
-  description = "Public network access policy for OpenSearch Serverless"
+  description = "Network Policy for ${var.collection_name}"
 
-  policy = jsonencode([
-    {
-      Description = "Public access to collection and Dashboards endpoint for pds-mcp-${var.venue}-collection",
-      Rules = [
-        {
-          ResourceType = "collection",
-          Resource = [
-            "collection/pds-mcp-${var.venue}-collection*"
-          ]
-        },
-        {
-          ResourceType = "dashboard"
-          Resource = [
-            "collection/pds-mcp-${var.venue}-collection*"
-          ]
-        }
-      ],
-      AllowFromPublic = true
-    }
-  ])
+  policy = jsonencode({
+    Description     = local.network_policy.Description
+    Rules           = local.network_policy.Rules
+    AllowFromPublic = local.network_policy.AllowFromPublic
+  })
 }
 
 resource "aws_opensearchserverless_access_policy" "data_access_policy" {
-  name        = "pds-mcp-${var.venue}-data-access-policy"
+  name        = var.data_access_policy_name
   type        = "data"
-  description = "Allow index and collection access for PDS Registry"
-  policy = jsonencode([
-    {
-      Description = "PDS - OpenSearch Admin Access"
-      Rules = [
-        {
-          ResourceType = "index",
-          Resource = [
-            "index/*/*"
-          ],
-          Permission = [
-            "aoss:*"
-          ]
-        },
-        {
-          ResourceType = "collection",
-          Resource = [
-            "collection/pds-mcp-${var.venue}-collection*"
-          ],
-          Permission = [
-            "aoss:*"
-          ]
-        }
-      ],
-      Principal = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/pds-registry-admin-aoss-role",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/mcp-OU-tenantOperator"
-      ]
-    },
-    {
-      Description = "PDS - OpenSearch Read Access"
-      Rules = [
-        {
-          ResourceType = "index",
-          Resource = [
-            "index/*/*"
-          ],
-          Permission = [
-            "aoss:ReadDocument",
-            "aoss:DescribeIndex"
-          ]
-        },
-        {
-          ResourceType = "collection",
-          Resource = [
-            "collection/pds-mcp-${var.venue}-collection*"
-          ],
-          Permission = [
-            "aoss:DescribeCollectionItems"
-          ]
-        }
-      ],
-      Principal = [
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/pds-registry-aoss-read-only",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/pds-registry-api-ecs-task-role",
-        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/mcp-OU-tenantDeveloper"
-      ]
-    }
-  ])
+  description = "Data access policies to allow index and collection access for ${var.collection_name}"
+
+  policy = jsonencode({
+    Rules = [
+      for rule in local.data_access_policies.Rules : {
+        Description = rule.Description,
+        Rules       = rule.Rules,
+        Principal   = [for principal in rule.Principal : replace(principal, "{account_id}", data.aws_caller_identity.current.account_id)]
+      }
+    ]
+  })
 }
 
 resource "aws_opensearchserverless_collection" "pds-mcp-registry-collection" {
-  name = "pds-mcp-${var.venue}-collection"
+  name = var.collection_name
   type = var.collection_type
 
   depends_on = [

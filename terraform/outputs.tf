@@ -47,3 +47,10 @@ output "ecs_services" {
   value       = module.ecs.ecs_service_name
 }
 
+output "opensearch_serverless_collection_arn" {
+  value = module.openserach_serverless_collection.collection_arn
+}
+
+output "opensearch_serverless_endpoint" {
+  value = module.openserach_serverless_collection.collection_endpoint
+}

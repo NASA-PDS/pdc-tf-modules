@@ -7,6 +7,8 @@ locals {
 resource "aws_ecs_cluster" "ecs_cluster" {
   for_each = tomap({ for cluster in local.config["clusters"] : cluster["cluster_name"] => cluster })
   name     = each.value["cluster_name"]
+
+  tags = merge(var.required_tags)
 }
 
 #Create Task Definition
@@ -25,6 +27,8 @@ resource "aws_ecs_task_definition" "task_definition" {
     operating_system_family = lookup(each.value, "runtimePlatform", {})["operatingSystemFamily"]
     cpu_architecture        = lookup(each.value, "runtimePlatform", {})["cpuArchitecture"]
   }
+
+  tags = merge(var.required_tags)
 }
 
 #Create ECS Service (conditionally)
@@ -54,4 +58,6 @@ resource "aws_ecs_service" "ecs_service" {
   }
 
   depends_on = [aws_ecs_task_definition.task_definition]
+
+  tags = merge(var.required_tags)
 }

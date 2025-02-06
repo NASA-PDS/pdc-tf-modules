@@ -54,6 +54,11 @@ module "s3_bucket" {
  POLICY
   enable_blocks = true
   enable_policy = true
+
+  required_tags = {
+    project = var.project
+    cicd    = var.cicd
+  }
 }
 
 module "iam_roles" {
