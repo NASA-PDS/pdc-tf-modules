@@ -119,3 +119,9 @@ variable "pds_cognito_initial_users" {
   )
   default = []
 }
+
+variable "required_tags" {
+  description = "Required resource tags"
+  type        = map(string)
+  default     = {}
+}

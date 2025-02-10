@@ -1,4 +1,3 @@
-# outputs
 output "public_network_policy_arn" {
   description = "ARN of the public network access policy"
   value       = aws_opensearchserverless_security_policy.public_network_policy.arn

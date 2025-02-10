@@ -7,4 +7,5 @@ variable "ec2_instance_configs" {
 variable "required_tags" {
   description = "Required resource tags"
   type        = map(string)
+  default     = {}
 }

@@ -6,7 +6,7 @@ resource "aws_iam_role" "iam_role" {
   assume_role_policy   = jsonencode(each.value.trust_relationship)
   permissions_boundary = var.permission_boundary != "" ? var.permission_boundary : null
 
-  tags = var.required_tags
+  tags = merge(var.required_tags)
 }
 
 resource "aws_iam_policy" "iam_policy" {
@@ -14,7 +14,7 @@ resource "aws_iam_policy" "iam_policy" {
   name     = "${var.iam_role_preffix}-${each.value.iam_policy_name}"
   policy   = jsonencode(each.value.iam_policy_document)
 
-  tags = var.required_tags
+  tags = merge(var.required_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "iam_policy_attachment" {

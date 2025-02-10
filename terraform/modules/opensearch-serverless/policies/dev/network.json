@@ -1,0 +1,14 @@
+{
+    "Description": "Public network access policy for OpenSearch Serverless",
+    "Rules": [
+      {
+        "ResourceType": "collection",
+        "Resource": ["collection/{collection_name}*"]
+      },
+      {
+        "ResourceType": "dashboard",
+        "Resource": ["collection/{collection_name}*"]
+      }
+    ],
+    "AllowFromPublic": true
+  }
