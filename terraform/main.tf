@@ -4,9 +4,8 @@ module "mcp-instances" {
 
   ec2_instance_configs = var.ec2_instance_configs
   required_tags = {
-    Alfa    = var.node_name_abbr
-    Bravo   = var.venue
-    Charlie = var.component
+    project = var.project
+    cicd    = var.cicd
   }
 }
 module "custom_security_groups" {
@@ -15,9 +14,8 @@ module "custom_security_groups" {
   vpc_id          = var.vpc_id
   security_groups = var.security_groups
   required_tags = {
-    Alfa    = var.node_name_abbr
-    Bravo   = var.venue
-    Charlie = var.component
+    project = var.project
+    cicd    = var.cicd
   }
 }
 
@@ -26,6 +24,10 @@ module "pds_cognito" {
 
   pds_cognito_initial_users  = var.pds_cognito_initial_users
   pds_welcome_page_client_id = var.pds_welcome_page_client_id
+  required_tags = {
+    project = var.project
+    cicd    = var.cicd
+  }
 }
 
 module "s3_bucket" {
@@ -52,6 +54,11 @@ module "s3_bucket" {
  POLICY
   enable_blocks = true
   enable_policy = true
+
+  required_tags = {
+    project = var.project
+    cicd    = var.cicd
+  }
 }
 
 module "iam_roles" {
@@ -60,9 +67,8 @@ module "iam_roles" {
   permission_boundary = var.permission_boundary
   policy_file_path    = var.policy_file_path
   required_tags = {
-    Alfa    = var.node_name_abbr
-    Beta    = var.venue
-    Charlie = var.component
+    project = var.project
+    cicd    = var.cicd
   }
 }
 
@@ -72,8 +78,18 @@ module "openserach_serverless_collection" {
   venue           = var.venue
   collection_type = var.colleciton_type
   required_tags = {
-    Alfa    = var.node_name_abbr
-    Bravo   = var.venue
-    Charlie = var.component
+    project = var.project
+    cicd    = var.cicd
   }
 }
+
+module "ecs" {
+  source         = "./modules/ecs"
+  config_file    = var.config_file
+  create_service = var.create_service
+  required_tags = {
+    project = var.project
+    cicd    = var.cicd
+  }
+}
+

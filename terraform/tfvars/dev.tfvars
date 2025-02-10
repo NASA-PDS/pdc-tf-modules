@@ -1,8 +1,7 @@
-aws_region     = "us-west-2"
-vpc_id         = "vpc-02f8cc4962d6f8dc6"
-node_name_abbr = "en"
-venue          = "prod"
-component      = "pds-registry"
+aws_region = "us-west-2"
+vpc_id     = "vpc-02f8cc4962d6f8dc6"
+project    = "pds-en"
+cicd       = "pds-github"
 ec2_instance_configs = [
   {
     instance_name   = "pdsmcp-dev1"
@@ -69,5 +68,12 @@ security_groups = [
   }
 ]
 
-pds_cognito_initial_users = []
+pds_cognito_initial_users  = []
 pds_welcome_page_client_id = ""
+config_file                = "./ecs/task-definitions/dev.yml"
+create_service             = false
+collection_name            = "pds-test-collection"
+collection_type            = "SEARCH"
+encryption_policy_name     = "pds-test-encryption-policy"
+network_policy_name        = "pds-test-network-policy"
+data_access_policy_name    = "pds-test-data-access-policy"

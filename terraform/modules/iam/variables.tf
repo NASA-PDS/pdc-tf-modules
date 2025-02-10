@@ -17,8 +17,8 @@ variable "permission_boundary" {
 }
 
 variable "required_tags" {
+  description = "Required resource tags"
   type        = map(string)
-  description = "Node, Venue and Component values for PDS application"
   default     = {}
 }
 

@@ -18,18 +18,13 @@ variable "aws_region" {
   type        = string
 }
 
-variable "node_name_abbr" {
-  description = "Tag value for Alfa. Abbreviated node name."
+variable "project" {
+  description = "Tag value for project. Abbreviated project name."
   type        = string
 }
 
-variable "venue" {
-  description = "Tag value for Beta"
-  type        = string
-}
-
-variable "component" {
-  description = "Tag value for Charlie"
+variable "cicd" {
+  description = "Tag value for CICD deployment method"
   type        = string
 }
 
@@ -49,10 +44,9 @@ variable "permission_boundary" {
   description = "ARN of the permission boundary policy to attach to the IAM role"
   default     = ""
 }
-
 variable "required_tags" {
+  description = "Required resource tags"
   type        = map(string)
-  description = "Node, Venue and Component values for PDS application"
   default     = {}
 }
 
@@ -95,3 +89,13 @@ variable "partition" {
   default = "aws"
 }
 
+variable "config_file" {
+  description = "Path for the environment-specific YAML task definition file"
+  type        = string
+}
+
+variable "create_service" {
+  description = "Flag to control where the ECS service should be created or not"
+  type        = bool
+  default     = true
+}

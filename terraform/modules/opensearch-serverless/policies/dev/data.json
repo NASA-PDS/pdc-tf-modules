@@ -1,0 +1,43 @@
+{
+    "Rules": [
+      {
+        "Description": "PDS - OpenSearch Admin Access",
+        "Rules": [
+          {
+            "ResourceType": "index",
+            "Resource": ["index/*/*"],
+            "Permission": ["aoss:*"]
+          },
+          {
+            "ResourceType": "collection",
+            "Resource": ["collection/{collection_name}*"],
+            "Permission": ["aoss:*"]
+          }
+        ],
+        "Principal": [
+          "arn:aws:iam::{account_id}:role/pds-registry-admin-aoss-role",
+          "arn:aws:iam::{account_id}:role/mcp-OU-tenantOperator"
+        ]
+      },
+      {
+        "Description": "PDS - OpenSearch Read Access",
+        "Rules": [
+          {
+            "ResourceType": "index",
+            "Resource": ["index/*/*"],
+            "Permission": ["aoss:ReadDocument", "aoss:DescribeIndex"]
+          },
+          {
+            "ResourceType": "collection",
+            "Resource": ["collection/{collection_name}*"],
+            "Permission": ["aoss:DescribeCollectionItems"]
+          }
+        ],
+        "Principal": [
+          "arn:aws:iam::{account_id}:role/pds-registry-aoss-read-only",
+          "arn:aws:iam::{account_id}:role/pds-registry-api-ecs-task-role",
+          "arn:aws:iam::{account_id}:role/mcp-OU-tenantDeveloper"
+        ]
+      }
+    ]
+  }
