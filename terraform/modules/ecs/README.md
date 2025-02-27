@@ -155,10 +155,22 @@ services:
 Modify `config.yml` with your settings and exact enviornment values. This is why it cannot be uploaded to GitHub.
 
 #### Add These Files to `.gitignore`
-To prevent them from being committed:
-```sh
-echo "terraform.tfvars" >> .gitignore
-echo "config.yml" >> .gitignore
+To prevent and sensitive configuration files from being committed, add the following to `.gitignore`:
+```
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+*.yml
+*.yaml
+*.json
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.tfvars
 ```
 
 ## Export your AWS Profile locally
