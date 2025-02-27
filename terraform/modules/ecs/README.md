@@ -4,16 +4,17 @@
 A **Terraform Module** is a reusable set of Terraform configuration files that encapsulates resources and logic to be used across multiple environments or projects. Modules help in organizing Terraform code, improving maintainability, and enforcing best practices.
 
 
-
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
 Since **pds-tf-module** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
-Note: If you already have an existing SSH key for GitHub access, you can simply
+**Note:** If you already have an existing SSH key for GitHub access, you can simply.
 
 ### Generate an SSH Key
+[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent]
+
 1. Open a terminal and run:
    ```sh
-   ssh-keygen -t rsa -b 4096 -C "your-email@example.com"
+   ssh-keygen -t ed25519 -C "your_email@example.com"
    ```
 2. When prompted, save the key in the default location (`~/.ssh/id_rsa`) or specify a custom location (you can name your file anything you want)
 3. Once your key is generated, create a config file at `~.ssh/config` with the following content. This will ensure the correct config gets used everytime.
@@ -79,6 +80,8 @@ variable "required_tags" {
 To store environment-specific variables locally:
 
 #### Create a `.tfvars` File
+Modify `terraform.tfvars` with the required values.
+
 ```hcl
 config_file                = "./ecs/task-definitions/config.yml"
 create_service             = true
@@ -89,9 +92,9 @@ cicd       = "pds-github"
 1. The `create_service` variable is a bool. So it can be toggled between `true` or `false`. If it's `fasle` the ECS service will not be created.
 2. Ensure the path to the `config.yml` is accurate.
 
-Modify `terraform.tfvars` with the required values.
-
 #### Create a `.yml` Configuration File
+Modify `config.yml` with your settings and exact enviornment values. This is why it cannot be uploaded to GitHub.
+
 ```yml
 clusters:
   - cluster_name: "pds-test-sweeper-cluster"
@@ -120,7 +123,7 @@ task_definitions:
           - name: "MULTITENANCY_NODE_ID"
             value: "en"
           - name: "PROV_ENDPOINT" # This is the OpenSearch Serverless Collection Endpoint
-            valueFrom: "/path/to/regitry/endpoint"
+            valueFrom: "https://abcdedf012345678abc.us-west-2.aoss.amazonaws.com"
     requires_compatibilities:
       - "FARGATE"
     network_mode: "awsvpc"
@@ -152,7 +155,6 @@ services:
     deployment_controller_type: "ECS"
 
 ```
-Modify `config.yml` with your settings and exact enviornment values. This is why it cannot be uploaded to GitHub.
 
 #### Add These Files to `.gitignore`
 To prevent and sensitive configuration files from being committed, add the following to `.gitignore`:
