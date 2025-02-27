@@ -105,13 +105,6 @@ typescript
 !.gitignore
 !.gitkeep
 
-# Local .terraform directories
-**/.terraform/*
-
-# .tfstate files
-*.tfstate
-*.tfstate.*
-
 # Crash log files
 crash.log
 crash.*.log
@@ -139,3 +132,15 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+*.yml
+*.yaml
+*.json
+
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+*.tfvars
+
