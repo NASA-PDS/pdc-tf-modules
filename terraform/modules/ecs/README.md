@@ -10,7 +10,7 @@ Since **pds-tf-module** is a private repo, pulling the module code will require 
 **Note:** If you already have an existing SSH key for GitHub access, you can simply.
 
 ### Generate an SSH Key
-[https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent]
+[Link to steps on GitHub for SSH Key Generation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
 1. Open a terminal and run:
    ```sh
