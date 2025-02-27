@@ -89,7 +89,7 @@ project    = "pds-en"
 cicd       = "pds-github"
 ```
 **Note:**
-1. The `create_service` variable is a bool. So it can be toggled between `true` or `false`. If it's `fasle` the ECS service will not be created.
+1. Since ECS service creation is optional, the `create_service` variable is a bool. It can be toggled between `true` or `false`. If it's `fasle` the ECS service will not be created.
 2. Ensure the path to the `config.yml` is accurate.
 
 #### Create a `.yml` Configuration File
