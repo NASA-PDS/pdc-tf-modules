@@ -75,25 +75,37 @@ variable "required_tags" {
   type        = map(string)
 }
 ```
+### 3. Optional (recommended): Create a `backend.tf`
+A `backend.tf` file in terraform defines the remote backend configuration (eg: AWS S3) where Terraform stores the state file. It is recommended to configure a backend before running terraform init to ensure that the state is stored remotely and not locally to ensure multiple team members can work on the same infrastructure without overwriting each other's changes.
 
-### 3. Creating Local `.yml` and `.tfvars` Files
+```
+hcl
+terraform {
+  backend "s3" {
+    bucket = "pds-infra"
+    key    = "<path_to_s3_bucket>/<s3_bucket_name>.tfstate"
+    region = "us-west-2"
+  }
+}
+```
+### 4. Creating Local `.yml` and `.tfvars` Files
 To store environment-specific variables locally:
 
 #### Create a `.tfvars` File
-Modify `terraform.tfvars` with the required values.
+Modify `<filename>.tfvars` with the required values.
 
 ```hcl
-config_file                = "./ecs/task-definitions/config.yml"
+config_file                = "./ecs/task-definitions/<env_config-filename>.yml"
 create_service             = true
-project    = "pds-en"
-cicd       = "pds-github"
+project                    = "pds-en"
+cicd                       = "pds-github"
 ```
 **Note:**
 1. Since ECS service creation is optional, the `create_service` variable is a bool. It can be toggled between `true` or `false`. If it's `fasle` the ECS service will not be created.
-2. Ensure the path to the `config.yml` is accurate.
+2. Ensure the path to the `<env_config-filename>.yml` is accurate.
 
 #### Create a `.yml` Configuration File
-Modify `config.yml` with your settings and exact enviornment values. This is why it cannot be uploaded to GitHub.
+Modify `<env_config-filename>.yml` with your settings and exact enviornment values. This is why it cannot be uploaded to GitHub.
 
 ```yml
 clusters:
@@ -157,14 +169,18 @@ services:
 ```
 
 #### Add These Files to `.gitignore`
-To prevent and sensitive configuration files from being committed, add the following to `.gitignore`:
+To prevent any sensitive configuration files from being committed, add the following to `.gitignore`:
+
+**Note** :
+1. DO NOT add `*.yml`, `*.yaml`, or `*.json` as some projects might need them to hold other information that is not-sensitive.
+2. Replace `<env_config-filename>` with your config filename.
 ```
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
-*.yml
-*.yaml
-*.json
+*<env_config-filename>.yml
+*<env_config-filename>.yaml
+*<env_config-filename>.json
 
 # Local .terraform directories
 **/.terraform/*
