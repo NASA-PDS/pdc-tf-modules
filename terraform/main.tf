@@ -32,7 +32,7 @@ module "pds_cognito" {
 
 module "s3_bucket" {
   source        = "./modules/s3/bucket"
-  bucket_name   = var.test_bucket
+  bucket_name   = var.s3_bucket_name
   partition     = var.partition
   bucket_policy = <<POLICY
  {
@@ -45,8 +45,8 @@ module "s3_bucket" {
              },
              "Action": "s3:*",
              "Resource": [
-                 "arn:${var.partition}:s3:::${var.test_bucket}/*",
-                 "arn:${var.partition}:s3:::${var.test_bucket}"
+                 "arn:${var.partition}:s3:::${var.s3_bucket_name}/*",
+                 "arn:${var.partition}:s3:::${var.s3_bucket_name}"
              ]
          }
      ]

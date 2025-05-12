@@ -79,10 +79,9 @@ locals {
   aws_account_id = data.aws_caller_identity.current.account_id
 }
 
-variable "test_bucket" {
+variable "s3_bucket_name" {
   type        = string
   description = "The name of the S3 bucket"
-  default     = "my_test_bucket"
 }
 variable "partition" {
   type    = string
