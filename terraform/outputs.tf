@@ -47,6 +47,15 @@ output "ecs_services" {
   value       = module.ecs.ecs_service_name
 }
 
+output "s3_bucket_id" {
+  description = "ID of the S3 bucket"
+  value       = module.s3_bucket.bucket_id
+}
+output "s3_bucket_arn" {
+  description = "ARN of the S3 bucket"
+  value       = module.s3_bucket.bucket_arn
+}
+
 output "opensearch_serverless_collection_arn" {
   value = module.openserach_serverless_collection.collection_arn
 }
