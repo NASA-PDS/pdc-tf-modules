@@ -5,9 +5,9 @@ A **Terraform Module** is a reusable set of Terraform configuration files that e
 
 
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
-Since **pds-tf-module** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
+Since **pds-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
-**Note:** If you already have an existing SSH key for GitHub access, you can simply.
+**Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps $4-6 in the section below.
 
 ### Generate an SSH Key
 [Link to steps on GitHub for SSH Key Generation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
@@ -38,6 +38,9 @@ Since **pds-tf-module** is a private repo, pulling the module code will require 
 
 ### 1. Reference the Module in Your Terraform Code
 To use a module stored in a private repository, add the following to your Terraform configuration:
+
+**Note:** Below is an example of **recommended** S3 bucket policy. However, it can be modified if needed.
+
 ```hcl
 module "s3_bucket" {
   source        = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3"
@@ -98,8 +101,7 @@ variable "required_tags" {
 ### 3. Optional (recommended): Create a `backend.tf`
 A `backend.tf` file in terraform defines the remote backend configuration (eg: AWS S3) where Terraform stores the state file. It is recommended to configure a backend before running terraform init to ensure that the state is stored remotely and not locally to ensure multiple team members can work on the same infrastructure without overwriting each other's changes.
 
-```
-hcl
+```hcl
 terraform {
   backend "s3" {
     bucket = "pds-infra"
@@ -175,7 +177,7 @@ If you need to introduce a new parameter to the module:
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.
    ```hcl
-   source = "git@github.com:your-org/your-private-module.git//module-path?ref=new-version"
+   source = "git@github.com:your-org/your-private-module.git//module-path"
    ```
 5. Re-run `terraform init -upgrade` to fetch the updated module.
 
