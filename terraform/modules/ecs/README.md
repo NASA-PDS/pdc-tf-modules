@@ -7,7 +7,7 @@ A **Terraform Module** is a reusable set of Terraform configuration files that e
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
 Since **pds-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
-**Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps $4-6 in the section below.
+**Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps #4-6 in the section below.
 
 ### Generate an SSH Key
 [Link to steps on GitHub for SSH Key Generation](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
