@@ -35,23 +35,41 @@ module "s3_bucket" {
   bucket_name   = var.s3_bucket_name
   partition     = var.partition
   bucket_policy = <<POLICY
- {
+  {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Effect": "Deny",
+             "Sid": "AllowOnlyMCPTenantOperator"
+             "Effect": "Allow",
              "Principal": {
-                 "AWS": "*"
+               "AWS": [
+                 "arn:${var.partition}:iam::${data.aws_caller_identity.current.account_id}:role/mcp-tenantOperator"
+               ]
              },
              "Action": "s3:*",
              "Resource": [
                  "arn:${var.partition}:s3:::${var.s3_bucket_name}/*",
                  "arn:${var.partition}:s3:::${var.s3_bucket_name}"
              ]
+         },
+         {
+             "Sid": "AllowSSLRequestsOnly",
+             "Effect": "Deny",
+             "Principal": "*",
+             "Action": "s3:*",
+             "Resource": [
+                "arn:${var.partition}:s3:::${var.s3_bucket_name}",
+                "arn:${var.partition}:s3:::${var.s3_bucket_name}/*"
+              ],
+              "Condition": {
+                "Bool": {
+                   "aws:SecureTransport": "false"
+                 }
+             }
          }
      ]
- }
- POLICY
+  }
+  POLICY
   enable_blocks = true
   enable_policy = true
 
