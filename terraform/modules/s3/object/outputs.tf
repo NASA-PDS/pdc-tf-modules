@@ -8,7 +8,7 @@ output "s3_object_bucket" {
   value       = aws_s3_object.object.bucket
 }
 
-output "s3_oject_source" {
+output "s3_object_source" {
   description = "Source path of the S3 object"
   value       = var.source_path
 }
