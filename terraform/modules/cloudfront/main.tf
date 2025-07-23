@@ -110,7 +110,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
 
   }
 
-   ordered_cache_behavior {
+  ordered_cache_behavior {
     path_pattern     = "/api*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
@@ -163,6 +163,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     viewer_protocol_policy = "https-only"
     cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
     origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+  }
 
 
 
