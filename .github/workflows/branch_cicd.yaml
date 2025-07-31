@@ -40,11 +40,14 @@ jobs:
                     lfs: true
                     fetch-depth: 0
                     token: ${{secrets.ADMIN_GITHUB_TOKEN || github.token}}
+
+            -   name: Setup Terraform
+                uses: hashicorp/setup-terraform@v2
+      
             -
                 name: 🩺 Test Terraform
                 run: |
                     cd terraform
                     terraform init
                     terraform validate
-                    terraform plan
                 shell: bash

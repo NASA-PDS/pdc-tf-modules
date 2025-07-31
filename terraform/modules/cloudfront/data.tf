@@ -41,6 +41,11 @@ data "aws_ssm_parameter" "load_balancer_domain" {
   name= "/pds/registry/load-balancer-domain"
 }
 
+# Nucleus auth load balancer
+data "aws_ssm_parameter" "nucleus_auth_load_balancer_domain" {
+  name= "/pds/nucleus/auth-load-balancer-domain"
+}
+
 # route 53 hosted zone
 data "aws_ssm_parameter" "hosted_zone_name" {
   name = "/pds/hosted-zone/name"
