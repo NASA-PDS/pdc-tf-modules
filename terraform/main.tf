@@ -91,7 +91,7 @@ module "iam_roles" {
 }
 
 module "opensearch_serverless_collection" {
-  source = "./modules/opensearch_serverless"
+  source = "./modules/opensearch-serverless"
 
   venue           = var.venue
   collection_type = var.colleciton_type
