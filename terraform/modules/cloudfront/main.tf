@@ -62,7 +62,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
   }
 
   origin {
-    origin_id   = "nucleus_auth_elb"
+    origin_id   = "nucleus_auth_lb"
     domain_name = "pds-nucleus-2053228459.us-west-2.elb.amazonaws.com"
 
     custom_origin_config {
@@ -184,7 +184,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     path_pattern     = "/nucleus*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "nucleus_auth_elb"
+    target_origin_id = "nucleus_auth_lb"
 
     min_ttl                = 0
     default_ttl            = 86400
@@ -199,7 +199,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     path_pattern     = "/oauth2*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "nucleus_auth_elb"
+    target_origin_id = "nucleus_auth_lb"
 
     min_ttl                = 0
     default_ttl            = 86400
