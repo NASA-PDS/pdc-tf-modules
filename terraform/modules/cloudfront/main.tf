@@ -63,7 +63,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
 
   origin {
     origin_id   = "nucleus_auth_lb"
-    domain_name = "pds-nucleus-2053228459.us-west-2.elb.amazonaws.com"
+    domain_name = data.aws_ssm_parameter.nucleus_auth_load_balancer_domain.value
 
     custom_origin_config {
       http_port = 80
