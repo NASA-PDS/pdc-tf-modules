@@ -11,6 +11,14 @@ resource "aws_cloudfront_function" "api_alb_rewrite_url" {
   code    = file("${path.module}/js/api_alb_rewrite_url.js")
 }
 
+resource "aws_cloudfront_function" "nucleus_rewrite_url" {
+  name    = "nucleus_rewrite_url"
+  runtime = "cloudfront-js-2.0"
+  comment = "rewrites nucleus URLs to make them simple to remember"
+  publish = true
+  code    = file("${path.module}/js/nucleus_rewrite_url.js")
+}
+
 resource "aws_cloudfront_function" "one_page_app_rewrite_url" {
   name    = "one_page_app_s3_rewrite_url"
   runtime = "cloudfront-js-2.0"
@@ -193,6 +201,11 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     viewer_protocol_policy = "https-only"
     cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
     origin_request_policy_id = data.aws_cloudfront_origin_request_policy.manged_all_viewer_origin_request_policy.id
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.nucleus_rewrite_url.arn
+    }
   }
 
   ordered_cache_behavior {
