@@ -5,6 +5,7 @@ variable "user_pool_name" {
   default     = "pds-user-pool"
 }
 
+# See NOTE in cognito_pool.tf regarding impact of changing this value.
 variable "user_pool_domain" {
   type        = string
   description = "Unique domain name for the Cognito Pool"
@@ -23,12 +24,14 @@ variable "email_invitation_subject" {
   default     = "PDS Temporary Cognito Credentials"
 }
 
+# See NOTE in cognito_pool.tf regarding impact of changing this value.
 variable "pds_welcome_page_callback_url" {
   type        = string
   description = "PDS Welcome page callback URL"
   default     = "https://pds.nasa.gov/"
 }
 
+# See NOTE in cognito_pool.tf regarding impact of changing this value.
 variable "pds_welcome_page_client_id" {
   type        = string
   description = "PDS Welcome page client ID"

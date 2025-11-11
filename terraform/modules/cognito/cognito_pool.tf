@@ -2,6 +2,7 @@
 resource "aws_cognito_user_pool" "pds_cognito_user_pool" {
   name = var.user_pool_name
 
+# See NOTE in below regarding impact of changing values in the login URL.
   admin_create_user_config {
     invite_message_template {
       email_subject = var.email_invitation_subject
@@ -52,6 +53,9 @@ resource "aws_ssm_parameter" "pds_cognito_user_pool_id_parameter" {
 # such changes, be sure that any and all associated documentation that includes the login URL 
 # is likewise updated, as well as the general user community notified since old login URL will 
 # no longer work.
+#
+# Similar applies to any change that (re)generates the user pool id and/or changes the user
+# pool domain; as such changes will generate a new login URL.
 # ============================================================================================
 #
 resource "aws_cognito_user_pool_client" "pds_cognito_user_pool_client" {
