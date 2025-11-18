@@ -177,7 +177,7 @@ terraform {
 To store environment-specific variables locally:
 
 #### Create a `.tfvars` File
-Modify `<filename>.tfvars` with the required values.
+Modify `terraform.tfvars` with the required values.
 
 **Note:** These are dummy values. Please substitue variable values with correct ones.
 
