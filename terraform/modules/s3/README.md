@@ -39,7 +39,7 @@ Since **pds-tf-modules** is a private repo, pulling the module code will require
 ### 1. Reference the Module in Your Terraform Code
 To use a module stored in a private repository, add the following to your Terraform configuration:
 
-**Note:** Below is an example of **recommended** S3 bucket policy. However, it can be modified if needed.
+**Note:** Below is an example of **recommended** S3 bucket policy and S3 file (object) upload. However, it can be modified if needed.
 
 ```hcl
 module "s3_bucket" {
@@ -51,7 +51,7 @@ module "s3_bucket" {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Sid": "AllowOnlyMCPTenantOperator"
+             "Sid": "AllowOnlyMCPTenantOperator",
              "Effect": "Allow",
              "Principal": {
                "AWS": [
@@ -82,13 +82,16 @@ module "s3_bucket" {
      ]
   }
   POLICY
-  enable_blocks = true
+  enable_blocks = false
   enable_policy = true
+}
 
-  required_tags = {
-    project = var.project
-    cicd    = var.cicd
-  }
+module "s3_object" {
+  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/object"
+
+  bucket      = module.s3_bucket.bucket_name
+  key         = var.s3_object_key
+  source_path = var.s3_object_source_path
 }
 ```
 Ensure you have SSH access to the repository, or Terraform will fail to fetch the module.
@@ -96,24 +99,66 @@ Ensure you have SSH access to the repository, or Terraform will fail to fetch th
 ### 2. Ensure you have the following variables defined in your `variables.tf`
 ```hcl
 variable "aws_region" {
-  description = "AWS Region"
+  description = "The AWS region to deploy in"
   type        = string
   default     = "us-west-2"
 }
 
-variable "s3_bucket_name" {
-  type        = string
-  description = "The name of the S3 bucket"
-  default     = "my_test_bucket"
-}
 variable "partition" {
   type    = string
   default = "aws"
 }
 
-variable "required_tags" {
-  description = "Required resource tags"
-  type        = map(string)
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+  sensitive   = true
+}
+
+variable "pds_resource_prefix" {
+  description = "PDS Resource prefix for Terrafrom Resources"
+  type        = string
+}
+
+variable "tenant" {
+  description = "Tag value for Tenant"
+  type        = string
+}
+
+variable "cicd" {
+  description = "Tag value for CICD deployment method"
+  type        = string
+}
+
+variable "venue" {
+  description = "Tag value for Venue"
+  type        = string
+}
+
+variable "component" {
+  description = "Tag value for applicaiton component"
+  type        = string
+}
+
+variable "createdBy" {
+  description = "Tag value for owner managing the resource (E.g. for PDS Team we have PDS Team Email Distro)"
+  type        = string
+}
+
+variable "s3_bucket_name" {
+  description = "The name of the S3 bucket"
+  type        = string
+  default     = "my_test_bucket"
+}
+
+variable "s3_object_key" {
+  description = "S3 object key name"
+  type        = string
+}
+
+variable "s3_object_source_path" {
+  description = "S3 object key source path"
+  type        = string
 }
 ```
 ### 3. Optional (recommended): Create a `backend.tf`
@@ -134,11 +179,19 @@ To store environment-specific variables locally:
 #### Create a `.tfvars` File
 Modify `<filename>.tfvars` with the required values.
 
+**Note:** These are dummy values. Please substitue variable values with correct ones.
+
 ```hcl
-s3_bucket_name             = "s3_bucket_name"
-partition                  = "aws"
-project                    = "pds-en"
-cicd                       = "pds-github"
+tenant                = "en"
+cicd                  = "pds-github"
+venue                 = "pds-dev"
+component             = "Storage"
+createdBy             = "email@jpl.nasa.gov"
+vpc_id                = "vpc-abcdef12345678"
+pds_resource_prefix   = "pds-dev"
+s3_bucket_name        = "test-s3-bucket"
+s3_object_key         = "test.txt"
+s3_object_source_path = "files/test.txt"
 ```
 
 #### Add `.tfvars` to `.gitignore`
@@ -162,6 +215,10 @@ terraform.rc
 
 ## Export your AWS Profile locally
 Before running below Terraform commands, ensure you're logged into the correct AWS environment locally.
+
+```hcl
+aws sts get-caller-identity
+```
 
 ## Running Terraform Commands
 After configuring your module, initialize and run Terraform:
