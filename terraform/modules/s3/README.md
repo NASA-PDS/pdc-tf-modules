@@ -164,6 +164,8 @@ variable "s3_object_source_path" {
 ### 3. Optional (recommended): Create a `backend.tf`
 A `backend.tf` file in terraform defines the remote backend configuration (eg: AWS S3) where Terraform stores the state file. It is recommended to configure a backend before running terraform init to ensure that the state is stored remotely and not locally to ensure multiple team members can work on the same infrastructure without overwriting each other's changes.
 
+**Note:** Ensure the **bucket** and **key** names are correct. The bucket name will be different for each MCP environment.
+
 ```hcl
 terraform {
   backend "s3" {
@@ -211,6 +213,7 @@ terraform.rc
 *.tfstate
 *.tfstate.*
 *.tfvars
+*.terraform.lock.hcl
 ```
 
 ## Export your AWS Profile locally
