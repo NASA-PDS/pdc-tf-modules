@@ -3,6 +3,15 @@ resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
 }
 
+# Disable ACLs by setting ownership controls to BucketOwnerEnforced
+# Recommended security practice for new S3 buckets
+resource "aws_s3_bucket_ownership_controls" "bucket_ownership" {
+  bucket = aws_s3_bucket.bucket.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
 # configure server-side encryption with the algorithm specified in "sse_algorithm"
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket-encryption" {
   bucket = aws_s3_bucket.bucket.id
