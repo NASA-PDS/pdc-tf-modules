@@ -11,6 +11,14 @@ resource "aws_cloudfront_function" "api_alb_rewrite_url" {
   code    = file("${path.module}/js/api_alb_rewrite_url.js")
 }
 
+resource "aws_cloudfront_function" "nucleus_rewrite_url" {
+  name    = "nucleus_rewrite_url"
+  runtime = "cloudfront-js-2.0"
+  comment = "rewrites nucleus URLs to make them simple to remember"
+  publish = true
+  code    = file("${path.module}/js/nucleus_rewrite_url.js")
+}
+
 resource "aws_cloudfront_function" "one_page_app_rewrite_url" {
   name    = "one_page_app_s3_rewrite_url"
   runtime = "cloudfront-js-2.0"
@@ -25,6 +33,10 @@ resource "aws_cloudfront_origin_access_control" "s3_oac" {
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
   signing_protocol                  = "sigv4"
+}
+
+data "aws_cloudfront_origin_request_policy" "manged_all_viewer_origin_request_policy" {
+  name = "Managed-AllViewer"
 }
 
 resource "aws_cloudfront_distribution" "pds_distribution" {
@@ -55,6 +67,18 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     origin_id   = "portal_wp_bkt"
     domain_name = "${data.aws_ssm_parameter.portal_wp_bkt.value}.s3.${data.aws_ssm_parameter.region.value}.amazonaws.com"
     origin_access_control_id = aws_cloudfront_origin_access_control.s3_oac.id
+  }
+
+  origin {
+    origin_id   = "nucleus_auth_lb"
+    domain_name = data.aws_ssm_parameter.nucleus_auth_load_balancer_domain.value
+
+    custom_origin_config {
+      http_port = 80
+      https_port = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols = ["TLSv1.2"]
+    }
   }
 
   enabled             = true
@@ -88,7 +112,6 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
   }
 
-
   ordered_cache_behavior {
     path_pattern     = "/data*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
@@ -110,7 +133,7 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
 
   }
 
-   ordered_cache_behavior {
+  ordered_cache_behavior {
     path_pattern     = "/api*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
@@ -163,9 +186,42 @@ resource "aws_cloudfront_distribution" "pds_distribution" {
     viewer_protocol_policy = "https-only"
     cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
     origin_request_policy_id = data.aws_ssm_parameter.cloud_front_origin_request_policy_id.value
+  }
 
+  ordered_cache_behavior {
+    path_pattern     = "/nucleus*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "nucleus_auth_lb"
 
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.manged_all_viewer_origin_request_policy.id
 
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.nucleus_rewrite_url.arn
+    }
+  }
+
+  ordered_cache_behavior {
+    path_pattern     = "/oauth2*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    cached_methods   = ["GET", "HEAD", "OPTIONS"]
+    target_origin_id = "nucleus_auth_lb"
+
+    min_ttl                = 0
+    default_ttl            = 86400
+    max_ttl                = 31536000
+    compress               = true
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = data.aws_ssm_parameter.cloud_front_cache_policy_id.value
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.manged_all_viewer_origin_request_policy.id
+  }
 
   restrictions {
     geo_restriction {
