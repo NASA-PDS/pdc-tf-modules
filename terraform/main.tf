@@ -90,8 +90,8 @@ module "iam_roles" {
   }
 }
 
-module "openserach_serverless_collection" {
-  source = "./modules/opensearch_serverless"
+module "opensearch_serverless_collection" {
+  source = "./modules/opensearch-serverless"
 
   venue           = var.venue
   collection_type = var.colleciton_type
