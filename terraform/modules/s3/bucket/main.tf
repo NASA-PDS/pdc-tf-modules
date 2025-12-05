@@ -46,3 +46,18 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
     status = var.versioning
   }
 }
+
+# Configure lifecycle policy to abort incomplete multipart uploads
+resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
+  count  = var.abort_incomplete_multipart_upload_days > 0 ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    id     = "abort-incomplete-multipart-upload"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.abort_incomplete_multipart_upload_days
+    }
+  }
+}

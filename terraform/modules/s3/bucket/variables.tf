@@ -61,3 +61,9 @@ variable "required_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "abort_incomplete_multipart_upload_days" {
+  description = "Number of days after which incomplete multipart uploads will be aborted. Set to 0 to disable this lifecycle rule."
+  type        = number
+  default     = 7
+}
