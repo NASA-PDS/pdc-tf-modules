@@ -18,6 +18,11 @@ output "collection_arn" {
   value       = aws_opensearchserverless_collection.pds-mcp-registry-collection.arn
 }
 
+output "collection_endpoint" {
+  description = "OpenSearch serverless collection endpoint"
+  value       = aws_opensearchserverless_collection.pds-mcp-registry-collection.collection_endpoint
+}
+
 output "dashboard_endpoint" {
   description = "OpenSearch serverless dashboard endpoint"
   value       = aws_opensearchserverless_collection.pds-mcp-registry-collection.dashboard_endpoint
