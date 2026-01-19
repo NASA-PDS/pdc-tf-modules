@@ -122,17 +122,6 @@ variable "required_tags" {
   type        = map(string)
 }
 
-variable "vpc_id" {
-  description = "VPC ID"
-  type        = string
-  sensitive   = true
-}
-
-variable "pds_resource_prefix" {
-  description = "PDS Resource prefix for Terrafrom Resources"
-  type        = string
-}
-
 variable "tenant" {
   description = "Tag value for Tenant"
   type        = string
@@ -202,8 +191,6 @@ venue                 = "pds-cds-dev"
 component             = "dum"
 cicd                  = "manual"
 managedby             = "email@jpl.nasa.gov"
-vpc_id                = "vpc-abcdef12345678"
-pds_resource_prefix   = "pds-dev"
 s3_bucket_name        = "test-s3-bucket"
 s3_object_key         = "test.txt"
 s3_object_source_path = "files/test.txt"
