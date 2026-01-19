@@ -23,8 +23,28 @@ variable "project" {
   type        = string
 }
 
+variable "tenant" {
+  description = "Tag value for Tenant (e.g. en, img, atm)"
+  type        = string
+}
+
+variable "venue" {
+  description = "Tag value for Venue (e.g. pds-<node>-dev, pds-<node>-prod)"
+  type        = string
+}
+
+variable "component" {
+  description = "Tag value for application component (e.g. dum, nucleus, registry)"
+  type        = string
+}
+
 variable "cicd" {
-  description = "Tag value for CICD deployment method"
+  description = "Tag value for CICD deployment method (e.g. manual, terraform)"
+  type        = string
+}
+
+variable "managedby" {
+  description = "Tag value for owner managing the resource (E.g. owner email address)"
   type        = string
 }
 

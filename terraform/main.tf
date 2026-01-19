@@ -4,8 +4,11 @@ module "mcp-instances" {
 
   ec2_instance_configs = var.ec2_instance_configs
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 module "custom_security_groups" {
@@ -14,8 +17,11 @@ module "custom_security_groups" {
   vpc_id          = var.vpc_id
   security_groups = var.security_groups
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
@@ -25,8 +31,11 @@ module "pds_cognito" {
   pds_cognito_initial_users  = var.pds_cognito_initial_users
   pds_welcome_page_client_id = var.pds_welcome_page_client_id
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
@@ -74,8 +83,11 @@ module "s3_bucket" {
   enable_policy = true
 
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
@@ -85,8 +97,11 @@ module "iam_roles" {
   permission_boundary = var.permission_boundary
   policy_file_path    = var.policy_file_path
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
@@ -99,8 +114,11 @@ module "opensearch_serverless_collection" {
   data_access_policy_name = var.data_access_policy_name
   collection_type         = var.collection_type
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
@@ -109,8 +127,11 @@ module "ecs" {
   config_file    = var.config_file
   create_service = var.create_service
   required_tags = {
-    project = var.project
-    cicd    = var.cicd
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
   }
 }
 
