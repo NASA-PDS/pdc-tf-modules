@@ -198,9 +198,9 @@ Modify `terraform.tfvars` with the required values.
 
 ```hcl
 tenant                = "en"
-cicd                  = "pds-github"
-venue                 = "pds-dev"
-component             = "Storage"
+venue                 = "pds-cds-dev"
+component             = "dum"
+cicd                  = "manual"
 managedby             = "email@jpl.nasa.gov"
 vpc_id                = "vpc-abcdef12345678"
 pds_resource_prefix   = "pds-dev"
