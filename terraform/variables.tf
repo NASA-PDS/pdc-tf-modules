@@ -75,6 +75,26 @@ variable "collection_type" {
   description = "Type of the serverless collection. Ex: SEARCH, TIMESERIES or VECTORSEARCH"
 }
 
+variable "collection_name" {
+  description = "The name of the OpenSearch Serverless collection"
+  type        = string
+}
+
+variable "encryption_policy_name" {
+  type        = string
+  description = "Name of the Security Encryption Policy"
+}
+
+variable "network_policy_name" {
+  type        = string
+  description = "Name of the Network Policy"
+}
+
+variable "data_access_policy_name" {
+  type        = string
+  description = "Name of the Data Access Policy"
+}
+
 locals {
   aws_account_id = data.aws_caller_identity.current.account_id
 }
