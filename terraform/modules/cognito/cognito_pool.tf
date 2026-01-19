@@ -41,7 +41,6 @@ resource "aws_ssm_parameter" "pds_cognito_user_pool_id_parameter" {
   type       = "String"
   value      = aws_cognito_user_pool.pds_cognito_user_pool.id
   depends_on = [aws_cognito_user_pool.pds_cognito_user_pool]
-  overwrite = true
 }
 
 resource "aws_cognito_user_pool_client" "pds_cognito_user_pool_client" {
