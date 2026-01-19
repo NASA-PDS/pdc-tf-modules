@@ -1,6 +1,8 @@
 # create an S3 bucket using a variable for the name.
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
+
+  tags = merge(var.required_tags)
 }
 
 # Disable ACLs by setting ownership controls to BucketOwnerEnforced

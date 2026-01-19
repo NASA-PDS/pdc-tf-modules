@@ -82,7 +82,7 @@ module "s3_bucket" {
      ]
   }
   POLICY
-  enable_blocks = false
+  enable_blocks = true
   enable_policy = true
 }
 
