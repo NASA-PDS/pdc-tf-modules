@@ -60,6 +60,11 @@ variable "required_tags" {
   description = "Required resource tags"
   type        = map(string)
   default     = {}
+
+  validation {
+    condition     = alltrue([for t in ["tenant", "venue", "component", "cicd", "managedby"] : contains(keys(var.required_tags), t)])
+    error_message = "The required_tags map must contain the following keys: tenant, venue, component, cicd, managedby."
+  }
 }
 
 variable "abort_incomplete_multipart_upload_days" {

@@ -84,6 +84,14 @@ module "s3_bucket" {
   POLICY
   enable_blocks = true
   enable_policy = true
+
+  required_tags = {
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
+  }
 }
 
 module "s3_object" {
@@ -107,6 +115,11 @@ variable "aws_region" {
 variable "partition" {
   type    = string
   default = "aws"
+}
+
+variable "required_tags" {
+  description = "Required resource tags"
+  type        = map(string)
 }
 
 variable "vpc_id" {
