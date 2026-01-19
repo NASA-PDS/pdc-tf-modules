@@ -104,7 +104,7 @@ resource "aws_cognito_user_in_group" "pds_cognito_initial_user_group_assignment"
 
 resource "aws_cognito_user_pool_ui_customization" "pds_cognito_user_pool_ui_customization" {
   css        = ".banner-customizable { background-color: white;}"
-  image_file = filebase64("./media/pds-logo.png")
+  image_file = filebase64("${path.module}/media/pds-logo.png")
   user_pool_id = aws_cognito_user_pool_domain.pds_cognito_user_pool_domain.user_pool_id
 }
 
