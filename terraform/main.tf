@@ -93,8 +93,11 @@ module "iam_roles" {
 module "opensearch_serverless_collection" {
   source = "./modules/opensearch-serverless"
 
-  venue           = var.venue
-  collection_type = var.colleciton_type
+  collection_name         = var.collection_name
+  encryption_policy_name  = var.encryption_policy_name
+  network_policy_name     = var.network_policy_name
+  data_access_policy_name = var.data_access_policy_name
+  collection_type         = var.collection_type
   required_tags = {
     project = var.project
     cicd    = var.cicd
