@@ -3,6 +3,15 @@ resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
 }
 
+# Disable ACLs by setting ownership controls to BucketOwnerEnforced
+# Recommended security practice for new S3 buckets
+resource "aws_s3_bucket_ownership_controls" "bucket_ownership" {
+  bucket = aws_s3_bucket.bucket.id
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
 # configure server-side encryption with the algorithm specified in "sse_algorithm"
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket-encryption" {
   bucket = aws_s3_bucket.bucket.id
@@ -35,5 +44,20 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
   bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
     status = var.versioning
+  }
+}
+
+# Configure lifecycle policy to abort incomplete multipart uploads
+resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
+  count  = var.abort_incomplete_multipart_upload_days > 0 ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    id     = "abort-incomplete-multipart-upload"
+    status = "Enabled"
+
+    abort_incomplete_multipart_upload {
+      days_after_initiation = var.abort_incomplete_multipart_upload_days
+    }
   }
 }
