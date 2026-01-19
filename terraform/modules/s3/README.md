@@ -153,7 +153,7 @@ variable "component" {
   type        = string
 }
 
-variable "createdBy" {
+variable "managedby" {
   description = "Tag value for owner managing the resource (E.g. for PDS Team we have PDS Team Email Distro)"
   type        = string
 }
@@ -201,7 +201,7 @@ tenant                = "en"
 cicd                  = "pds-github"
 venue                 = "pds-dev"
 component             = "Storage"
-createdBy             = "email@jpl.nasa.gov"
+managedby             = "email@jpl.nasa.gov"
 vpc_id                = "vpc-abcdef12345678"
 pds_resource_prefix   = "pds-dev"
 s3_bucket_name        = "test-s3-bucket"
