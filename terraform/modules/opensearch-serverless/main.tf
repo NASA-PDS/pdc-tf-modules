@@ -3,8 +3,8 @@ data "aws_caller_identity" "current" {}
 
 # Load external JSON files
 locals {
-  data_access_policies = jsondecode(file("${path.module}/data.json"))
-  network_policy       = jsondecode(file("${path.module}/network.json"))
+  data_access_policies = jsondecode(file("${path.module}/policies/dev/data.json"))
+  network_policy       = jsondecode(file("${path.module}/policies/dev/network.json"))
 }
 
 resource "aws_opensearchserverless_security_policy" "encryption_policy" {
