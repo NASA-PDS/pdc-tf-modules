@@ -19,14 +19,14 @@ data "aws_ami" "amzn-linux-2023" {
   owners = ["794625662971"]
 }
 
-data "aws_iam_instance_profile" "mcp-dev-instance-profile" {
-  name = "MCP-SSM-CloudWatch"
+data "aws_iam_instance_profile" "mcp-instance-profile" {
+  name = var.instance_profile
 }
 
 resource "aws_instance" "mcp_ec2_instance" {
   count                  = length(var.ec2_instance_configs)
   ami                    = data.aws_ami.amzn-linux-2023.id
-  iam_instance_profile   = data.aws_iam_instance_profile.mcp-dev-instance-profile.name
+  iam_instance_profile   = data.aws_iam_instance_profile.mcp-instance-profile.name
   instance_type          = var.ec2_instance_configs[count.index].instance_type
   key_name               = var.ec2_instance_configs[count.index].key_pair_name
   availability_zone      = var.ec2_instance_configs[count.index].az
@@ -39,6 +39,6 @@ resource "aws_instance" "mcp_ec2_instance" {
   }
 
   tags = merge(var.required_tags, {
-    Name = var.ec2_instance_configs[count.index].instance_name
+    Name = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
   })
 }
