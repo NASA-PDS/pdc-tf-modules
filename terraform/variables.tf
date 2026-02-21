@@ -3,6 +3,11 @@ variable "ec2_instance_configs" {
   default     = []
   description = "List of EC2 instances"
 }
+variable "associate_public_ip_address" {
+  type        = bool
+  default     = false
+  description = "Whether to associate a public IP address for all EC2 instances."
+}
 variable "security_groups" {
   description = "List of security groups"
   type        = list(any)
@@ -48,26 +53,41 @@ variable "managedby" {
   type        = string
 }
 
-variable "policy_file_path" {
+variable "iam_role_name" {
   type        = string
-  description = "Path to the YAML containing IAM policy and trust relationships"
+  description = "Name of the IAM role"
+}
+
+variable "iam_role_description" {
+  type        = string
+  description = "Description of the IAM role"
   default     = ""
 }
 
-variable "iam_role_preffix" {
-  type        = string
-  description = "IAM role Preffix"
+variable "iam_assume_role_policy" {
+  description = "Trust relationship policy document (will be JSON-encoded by the module)"
+  type        = any
 }
 
-variable "permission_boundary" {
-  type        = string
-  description = "ARN of the permission boundary policy to attach to the IAM role"
-  default     = ""
+variable "iam_custom_policies" {
+  description = "Map of custom IAM policies to create and attach. Key is the policy name."
+  type = map(object({
+    description     = string
+    policy_document = any
+  }))
+  default = {}
 }
-variable "required_tags" {
-  description = "Required resource tags"
-  type        = map(string)
-  default     = {}
+
+variable "iam_custom_policy_arns" {
+  description = "List of existing IAM policy ARNs to attach to the role"
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_managed_policy_arns" {
+  description = "List of AWS managed policy ARNs to attach to the role"
+  type        = list(string)
+  default     = []
 }
 
 variable "pds_cognito_initial_users" {
