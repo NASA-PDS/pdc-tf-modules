@@ -2,7 +2,8 @@
 module "mcp-instances" {
   source = "./modules/ec2"
 
-  ec2_instance_configs = var.ec2_instance_configs
+  ec2_instance_configs         = var.ec2_instance_configs
+  associate_public_ip_address = var.associate_public_ip_address
   required_tags = {
     tenant    = var.tenant
     venue     = var.venue
@@ -92,10 +93,16 @@ module "s3_bucket" {
 }
 
 module "iam_roles" {
-  source              = "./modules/iam"
-  iam_role_preffix    = var.iam_role_preffix
-  permission_boundary = var.permission_boundary
-  policy_file_path    = var.policy_file_path
+  source = "./modules/iam/roles"
+
+  role_name          = var.iam_role_name
+  role_description   = var.iam_role_description
+  assume_role_policy = var.iam_assume_role_policy
+
+  custom_policies     = var.iam_custom_policies
+  custom_policy_arns  = var.iam_custom_policy_arns
+  managed_policy_arns = var.iam_managed_policy_arns
+
   required_tags = {
     tenant    = var.tenant
     venue     = var.venue

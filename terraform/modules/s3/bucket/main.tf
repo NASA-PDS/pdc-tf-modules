@@ -1,8 +1,6 @@
 # create an S3 bucket using a variable for the name.
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
-
-  tags = merge(var.required_tags)
 }
 
 # Disable ACLs by setting ownership controls to BucketOwnerEnforced
@@ -57,6 +55,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
   rule {
     id     = "abort-incomplete-multipart-upload"
     status = "Enabled"
+    filter {}
 
     abort_incomplete_multipart_upload {
       days_after_initiation = var.abort_incomplete_multipart_upload_days
