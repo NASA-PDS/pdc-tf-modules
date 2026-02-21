@@ -4,6 +4,12 @@ variable "ec2_instance_configs" {
   description = "List of EC2 instances"
 }
 
+variable "associate_public_ip_address" {
+  type        = bool
+  default     = false
+  description = "Whether to associate a public IP address for all EC2 instances created by this module."
+}
+
 variable "instance_profile" {
   type        = string
   default     = "MCP-SSM-CloudWatch"

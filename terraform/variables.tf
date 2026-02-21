@@ -3,6 +3,11 @@ variable "ec2_instance_configs" {
   default     = []
   description = "List of EC2 instances"
 }
+variable "associate_public_ip_address" {
+  type        = bool
+  default     = false
+  description = "Whether to associate a public IP address for all EC2 instances."
+}
 variable "security_groups" {
   description = "List of security groups"
   type        = list(any)

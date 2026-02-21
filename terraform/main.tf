@@ -2,7 +2,8 @@
 module "mcp-instances" {
   source = "./modules/ec2"
 
-  ec2_instance_configs = var.ec2_instance_configs
+  ec2_instance_configs         = var.ec2_instance_configs
+  associate_public_ip_address = var.associate_public_ip_address
   required_tags = {
     tenant    = var.tenant
     venue     = var.venue
