@@ -31,6 +31,12 @@ resource "aws_launch_template" "mcp_ec2" {
   instance_type = var.ec2_instance_configs[count.index].instance_type
   key_name      = var.ec2_instance_configs[count.index].key_pair_name
 
+  network_interfaces {
+    associate_public_ip_address = var.associate_public_ip_address
+    subnet_id                   = var.ec2_instance_configs[count.index].subnet_id
+    security_groups             = var.ec2_instance_configs[count.index].security_groups
+  }
+
   iam_instance_profile {
     name = data.aws_iam_instance_profile.mcp-instance-profile.name
   }
@@ -68,8 +74,6 @@ resource "aws_launch_template" "mcp_ec2" {
 resource "aws_instance" "mcp_ec2_instance" {
   count             = length(var.ec2_instance_configs)
   availability_zone = var.ec2_instance_configs[count.index].az
-  subnet_id         = var.ec2_instance_configs[count.index].subnet_id
-  vpc_security_group_ids = var.ec2_instance_configs[count.index].security_groups
 
   launch_template {
     id      = aws_launch_template.mcp_ec2[count.index].id
