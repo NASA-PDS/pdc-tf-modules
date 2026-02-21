@@ -23,13 +23,13 @@ output "pds_cognito_initial_users" {
 }
 
 output "module_iam_role_name" {
-  description = "The name of the IAM roles created by the IAM module."
-  value       = module.iam_roles.iam_role_name
+  description = "The name of the IAM role created by the IAM module."
+  value       = module.iam_roles.role_name
 }
 
 output "module_iam_role_arn" {
-  description = "The ARN of the IAM roles created by the IAM module."
-  value       = module.iam_roles.iam_role_arn
+  description = "The ARN of the IAM role created by the IAM module."
+  value       = module.iam_roles.role_arn
 }
 
 output "ecs_clusters" {
