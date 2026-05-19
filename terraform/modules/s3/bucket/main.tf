@@ -47,6 +47,16 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
   }
 }
 
+# Configure access logging. Requires a separate S3 bucket designated as the log target.
+# Access logging should be enabled for security auditing and compliance.
+# If intentionally disabled (logging_target_bucket = ""), document the reason at the call site.
+resource "aws_s3_bucket_logging" "bucket_logging" {
+  count         = var.logging_target_bucket != "" ? 1 : 0
+  bucket        = aws_s3_bucket.bucket.id
+  target_bucket = var.logging_target_bucket
+  target_prefix = var.logging_target_prefix
+}
+
 # Configure lifecycle policy to abort incomplete multipart uploads
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
   count  = var.abort_incomplete_multipart_upload_days > 0 ? 1 : 0
