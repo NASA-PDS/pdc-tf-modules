@@ -67,3 +67,15 @@ variable "abort_incomplete_multipart_upload_days" {
   type        = number
   default     = 7
 }
+
+variable "logging_target_bucket" {
+  description = "S3 bucket to deliver access logs to. When set, access logging is enabled. Leave empty to disable access logging (must be documented in calling module if intentionally disabled)."
+  type        = string
+  default     = ""
+}
+
+variable "logging_target_prefix" {
+  description = "Prefix for access log object keys within the logging target bucket."
+  type        = string
+  default     = "s3-access-logs/"
+}
