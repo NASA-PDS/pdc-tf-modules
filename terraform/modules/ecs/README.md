@@ -1,3 +1,15 @@
+# ECS Module
+
+> ⚠️ **UNTESTED MODULE** — This module has no known production consumers in the NASA-PDS organization. It has not been validated outside of development. Use with caution.
+>
+> If you adopt this module, please open a pull request to add your project to the [Known Consumers](#known-consumers) table below and include a usage example.
+
+## Known Consumers
+
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+
+---
+
 # Terraform Module Usage Guide
 
 ## What is a Terraform Module?
