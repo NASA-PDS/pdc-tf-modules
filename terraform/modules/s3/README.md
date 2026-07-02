@@ -1,3 +1,16 @@
+# S3 Modules (`s3/bucket` and `s3/object`)
+
+> ✅ **Actively Used** — These modules are in production use across the NASA-PDS organization.
+
+## Known Consumers
+
+| Repository | Modules Used | Notes |
+|------------|-------------|-------|
+| [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager) | `s3/bucket`, `s3/object` | No `?ref=` pin — tracks default branch |
+| [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) | `s3/bucket`, `s3/object` | Currently pinned to stale branch; should be updated to `main` |
+
+---
+
 # Terraform Module Usage Guide
 
 ## What is a Terraform Module?
