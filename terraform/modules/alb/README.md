@@ -10,7 +10,7 @@ _None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modul
 
 ---
 
-Creates an Application Load Balancer for MCP AWS environments.
+Creates an Application Load Balancer for PDC AWS environments.
 
 ## Inputs
 

@@ -12,7 +12,7 @@ variable "associate_public_ip_address" {
 
 variable "instance_profile" {
   type        = string
-  default     = "MCP-SSM-CloudWatch"
+  default     = ""
   description = "EC2 instance profile name"
 }
 

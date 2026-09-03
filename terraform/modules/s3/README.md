@@ -7,7 +7,7 @@
 | Repository | Modules Used | Notes |
 |------------|-------------|-------|
 | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager) | `s3/bucket`, `s3/object` | No `?ref=` pin — tracks default branch |
-| [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) | `s3/bucket`, `s3/object` | Currently pinned to stale branch; should be updated to `main` |
+| [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) | `s3/bucket`, `s3/object` | Currently pinned to stale branch; should be updated to `main` |
 
 ---
 
@@ -64,11 +64,11 @@ module "s3_bucket" {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Sid": "AllowOnlyMCPTenantOperator",
+             "Sid": "AllowPlatformEngineer",
              "Effect": "Allow",
              "Principal": {
                "AWS": [
-                 "arn:${var.partition}:iam::${data.aws_caller_identity.current.account_id}:role/mcp-tenantOperator"
+                 "arn:${var.partition}:sts::${data.aws_caller_identity.current.account_id}:assumed-role/${var.venue}-en-platform-engineer"
                ]
              },
              "Action": "s3:*",
@@ -179,7 +179,7 @@ variable "s3_object_source_path" {
 ### 3. Optional (recommended): Create a `backend.tf`
 A `backend.tf` file in terraform defines the remote backend configuration (eg: AWS S3) where Terraform stores the state file. It is recommended to configure a backend before running terraform init to ensure that the state is stored remotely and not locally to ensure multiple team members can work on the same infrastructure without overwriting each other's changes.
 
-**Note:** Ensure the **bucket** and **key** names are correct. The bucket name will be different for each MCP environment.
+**Note:** Ensure the **bucket** and **key** names are correct. The bucket name will be different for each PDC environment.
 
 ```hcl
 terraform {
@@ -263,7 +263,7 @@ After configuring your module, initialize and run Terraform:
 ## Advanced Usage: Adding New Parameters to the Module
 If you need to introduce a new parameter to the module:
 
-1. Request PDS project administrators (with MCP Tenant Operator Roles) to update the module.
+1. Request PDS project administrators (with PDC Tenant Operator Roles) to update the module.
 2. The update should be made in the private module repository **pds-tf-modules**
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.
