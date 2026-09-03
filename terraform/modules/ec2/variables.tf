@@ -16,6 +16,12 @@ variable "instance_profile" {
   description = "EC2 instance profile name"
 }
 
+variable "ami_id" {
+  type        = string
+  default     = ""
+  description = "Explicit AMI ID. When set, skips the Oracle Linux 9 auto-detection lookup. Use when a pre-provisioned or component-specific AMI is required."
+}
+
 variable "pds_resource_prefix" {
   type        = string
   default     = ""
