@@ -8,11 +8,6 @@ variable "component" {
   description = "Component name (e.g. o11y-cloudfront-batch). Combined with venue to form the role name: <venue>-<component>-ec2-role."
 }
 
-variable "permissions_boundary_arn" {
-  type        = string
-  description = "ARN of the permissions boundary policy to attach to the IAM role."
-}
-
 variable "additional_policy_arns" {
   type        = list(string)
   default     = []
