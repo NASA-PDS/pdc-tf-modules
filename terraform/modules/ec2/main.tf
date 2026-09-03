@@ -25,6 +25,8 @@ resource "aws_launch_template" "pds_ec2" {
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
+      volume_size           = try(var.ec2_instance_configs[count.index].root_volume_size, 30)
+      volume_type           = try(var.ec2_instance_configs[count.index].root_volume_type, "gp3")
       encrypted             = true
       delete_on_termination = false
     }
