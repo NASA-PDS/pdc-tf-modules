@@ -1,7 +1,6 @@
 resource "aws_iam_role" "ec2" {
-  name                 = "${var.venue}-${var.component}-ec2-role"
-  description          = "EC2 instance role for the ${var.component} component"
-  permissions_boundary = var.permissions_boundary_arn
+  name        = "${var.venue}-${var.component}-ec2-role"
+  description = "EC2 instance role for the ${var.component} component"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
