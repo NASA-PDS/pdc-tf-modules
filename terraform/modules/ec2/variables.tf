@@ -18,8 +18,7 @@ variable "instance_profile" {
 
 variable "ami_id" {
   type        = string
-  default     = ""
-  description = "Explicit AMI ID. When set, skips the Oracle Linux 9 auto-detection lookup. Use when a pre-provisioned or component-specific AMI is required."
+  description = "AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue."
 }
 
 variable "pds_resource_prefix" {

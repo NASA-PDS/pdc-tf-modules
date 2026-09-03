@@ -1,24 +1,3 @@
-data "aws_ami" "oracle_linux_9" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["Oracle-Linux-9*"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["794625662971"]
-}
-
 data "aws_iam_instance_profile" "ec2" {
   name = var.instance_profile
 }
@@ -27,7 +6,7 @@ resource "aws_launch_template" "pds_ec2" {
   count = length(var.ec2_instance_configs)
 
   name_prefix   = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}-" : "${var.ec2_instance_configs[count.index].instance_name}-"
-  image_id      = var.ami_id != "" ? var.ami_id : data.aws_ami.oracle_linux_9.id
+  image_id      = var.ami_id
   instance_type = var.ec2_instance_configs[count.index].instance_type
   key_name      = try(var.ec2_instance_configs[count.index].key_pair_name, null)
 
