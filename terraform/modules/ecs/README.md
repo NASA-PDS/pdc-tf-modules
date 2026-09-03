@@ -232,7 +232,7 @@ After configuring your module, initialize and run Terraform:
 ## Advanced Usage: Adding New Parameters to the Module
 If you need to introduce a new parameter to the module:
 
-1. Request PDS project administrators (with MCP Tenant Operator Roles) to update the module.
+1. Request PDS project administrators (with PDC Tenant Operator Roles) to update the module.
 2. The update should be made in the private module repository **pds-tf-modules**
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.

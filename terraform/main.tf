@@ -1,5 +1,5 @@
 
-module "mcp-instances" {
+module "pds-ec2-instances" {
   source = "./modules/ec2"
 
   ec2_instance_configs         = var.ec2_instance_configs
@@ -49,11 +49,11 @@ module "s3_bucket" {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Sid": "AllowOnlyMCPTenantOperator"
+             "Sid": "AllowPlatformEngineer",
              "Effect": "Allow",
              "Principal": {
                "AWS": [
-                 "arn:${var.partition}:iam::${data.aws_caller_identity.current.account_id}:role/mcp-tenantOperator"
+                 "arn:${var.partition}:sts::${data.aws_caller_identity.current.account_id}:assumed-role/${var.venue}-en-platform-engineer"
                ]
              },
              "Action": "s3:*",

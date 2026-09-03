@@ -1,14 +1,14 @@
 # pds-tf-modules
 
-Reusable Terraform modules for NASA PDS infrastructure deployed to MCP (Mission Cloud Platform) AWS environments.
+Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetary Data Cloud) AWS environments.
 
 ## Module Status
 
 | Module | Status | Known Consumers |
 |--------|--------|-----------------|
-| [`s3/bucket`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) |
-| [`s3/object`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) |
-| [`ec2`](terraform/modules/ec2) | ⚠️ Internal/local use only | [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) (local path ref — not consumed via git ref) |
+| [`s3/bucket`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
+| [`s3/object`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
+| [`ec2`](terraform/modules/ec2) | ⚠️ Internal/local use only | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) (local path ref — not consumed via git ref) |
 | [`ecs`](terraform/modules/ecs) | ❓ Untested | None |
 | [`iam/roles`](terraform/modules/iam/roles) | ❓ Untested | None |
 | [`alb`](terraform/modules/alb) | ❓ Untested | None |
@@ -26,7 +26,7 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to MCP (Mission 
 ## Prerequisites
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
-- AWS credentials with appropriate MCP tenant permissions
+- AWS credentials with appropriate PDC tenant permissions
 - SSH access to this repository (required by Terraform to fetch modules via `git@github.com:...`)
 
 See [terraform/modules/s3/README.md](terraform/modules/s3/README.md) for SSH key setup instructions.
@@ -67,7 +67,7 @@ Every module accepts a `required_tags = map(string)` variable with these standar
 
 | Tag | Description |
 |-----|-------------|
-| `tenant` | MCP tenant identifier (e.g. `en`) |
+| `tenant` | PDC tenant identifier (e.g. `en`) |
 | `venue` | Deployment environment (e.g. `pds-cds-dev`) |
 | `component` | Application component name |
 | `cicd` | CI/CD method (e.g. `terraform`, `pds-github`) |

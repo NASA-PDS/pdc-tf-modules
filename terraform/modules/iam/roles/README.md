@@ -36,7 +36,7 @@ module "s3_readonly_role" {
         Sid    = "AllowTenantOperatorAssume"
         Effect = "Allow"
         Principal = {
-          AWS = "arn:aws:iam::123456789012:role/mcp-tenantOperator"
+          AWS = "arn:aws:sts::<account-id>:assumed-role/<venue>-en-platform-engineer"
         }
         Action = "sts:AssumeRole"
       }
@@ -139,7 +139,7 @@ module "ecs_task_role" {
 | `role_name` | Name of the IAM role | `string` | — | yes |
 | `role_description` | Description of the IAM role | `string` | `""` | no |
 | `assume_role_policy` | Trust relationship policy document (JSON-encoded by the module) | `any` | — | yes |
-| `permissions_boundary_policy_name` | Name of the permissions boundary policy | `string` | `"mcp-tenantOperator-APIG"` | no |
+| `permissions_boundary_policy_name` | Name of the permissions boundary policy | `string` | `""` | no |
 | `custom_policies` | Map of custom policies to create and attach (key = policy name) | `map(object({description, policy_document}))` | `{}` | no |
 | `custom_policy_arns` | List of existing IAM policy ARNs to attach | `list(string)` | `[]` | no |
 | `managed_policy_arns` | List of AWS managed policy ARNs to attach | `list(string)` | `[]` | no |

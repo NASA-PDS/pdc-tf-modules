@@ -1,9 +1,9 @@
-data "aws_ami" "amzn-linux-2023" {
+data "aws_ami" "oracle_linux_9" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["MCP Amazon Linux 2 *"]
+    values = ["Oracle-Linux-9*"]
   }
 
   filter {
@@ -19,15 +19,15 @@ data "aws_ami" "amzn-linux-2023" {
   owners = ["794625662971"]
 }
 
-data "aws_iam_instance_profile" "mcp-instance-profile" {
+data "aws_iam_instance_profile" "ec2" {
   name = var.instance_profile
 }
 
-resource "aws_launch_template" "mcp_ec2" {
+resource "aws_launch_template" "pds_ec2" {
   count = length(var.ec2_instance_configs)
 
   name_prefix   = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}-" : "${var.ec2_instance_configs[count.index].instance_name}-"
-  image_id      = data.aws_ami.amzn-linux-2023.id
+  image_id      = data.aws_ami.oracle_linux_9.id
   instance_type = var.ec2_instance_configs[count.index].instance_type
   key_name      = var.ec2_instance_configs[count.index].key_pair_name
 
@@ -38,7 +38,7 @@ resource "aws_launch_template" "mcp_ec2" {
   }
 
   iam_instance_profile {
-    name = data.aws_iam_instance_profile.mcp-instance-profile.name
+    name = data.aws_iam_instance_profile.ec2.name
   }
 
   block_device_mappings {
@@ -71,12 +71,12 @@ resource "aws_launch_template" "mcp_ec2" {
   tags = var.required_tags
 }
 
-resource "aws_instance" "mcp_ec2_instance" {
+resource "aws_instance" "pds_ec2" {
   count             = length(var.ec2_instance_configs)
   availability_zone = var.ec2_instance_configs[count.index].az
 
   launch_template {
-    id      = aws_launch_template.mcp_ec2[count.index].id
+    id      = aws_launch_template.pds_ec2[count.index].id
     version = "$Latest"
   }
 
