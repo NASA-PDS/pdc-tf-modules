@@ -58,6 +58,11 @@ resource "aws_instance" "pds_ec2" {
   count             = length(var.ec2_instance_configs)
   availability_zone = try(var.ec2_instance_configs[count.index].az, null)
 
+  # Mirrors the launch template's network_interfaces.associate_public_ip_address
+  # (default false) — set explicitly here too since static analysis (SonarCloud)
+  # scans this resource directly and can't resolve the inherited launch template value.
+  associate_public_ip_address = var.associate_public_ip_address
+
   launch_template {
     id      = aws_launch_template.pds_ec2[count.index].id
     version = "$Latest"
