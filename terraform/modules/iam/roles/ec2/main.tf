@@ -31,6 +31,25 @@ resource "aws_iam_role_policy_attachment" "additional" {
   policy_arn = each.value
 }
 
+resource "aws_iam_role_policy" "ec2users_dynamodb" {
+  name = "ec2users-dynamodb"
+  role = aws_iam_role.ec2.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "dynamodb:Get*",
+        "dynamodb:Query"
+      ]
+      Resource = [
+        "arn:aws:dynamodb:us-west-2:456238491188:table/ec2users"
+      ]
+    }]
+  })
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "${var.venue}-${var.component}-ec2-role"
   role = aws_iam_role.ec2.name
