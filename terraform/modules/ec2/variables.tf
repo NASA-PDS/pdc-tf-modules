@@ -18,7 +18,8 @@ variable "instance_profile" {
 
 variable "ami_id" {
   type        = string
-  description = "AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue."
+  default     = "ami-0ed8a3d7cef9ee5b2"
+  description = "AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue — override the default if a different AMI is required."
 }
 
 variable "pds_resource_prefix" {
