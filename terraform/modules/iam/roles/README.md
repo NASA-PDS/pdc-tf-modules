@@ -4,7 +4,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 

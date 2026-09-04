@@ -18,7 +18,7 @@ A **Terraform Module** is a reusable set of Terraform configuration files that e
 
 
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
-Since **pds-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
+Since **pdc-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
 **Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps #4-6 in the section below.
 
@@ -56,7 +56,7 @@ To use a module stored in a private repository, add the following to your Terraf
 
 ```hcl
 module "s3_bucket" {
-  source        = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/bucket"
+  source        = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/s3/bucket"
   bucket_name   = var.s3_bucket_name
   partition     = var.partition
   bucket_policy = <<POLICY
@@ -108,7 +108,7 @@ module "s3_bucket" {
 }
 
 module "s3_object" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/object"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/s3/object"
 
   bucket      = module.s3_bucket.bucket_name
   key         = var.s3_object_key
@@ -264,7 +264,7 @@ After configuring your module, initialize and run Terraform:
 If you need to introduce a new parameter to the module:
 
 1. Request PDS project administrators (with PDC Tenant Operator Roles) to update the module.
-2. The update should be made in the private module repository **pds-tf-modules**
+2. The update should be made in the private module repository **pdc-tf-modules**
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.
    ```hcl

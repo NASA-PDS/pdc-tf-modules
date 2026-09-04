@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -26,7 +26,7 @@ _No outputs defined._
 
 ```hcl
 module "alb" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/alb?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/alb?ref=main"
 
   required_tags = {
     tenant    = var.tenant

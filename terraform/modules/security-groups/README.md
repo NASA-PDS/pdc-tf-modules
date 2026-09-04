@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -30,7 +30,7 @@ Creates one or more VPC security groups from a list of configuration objects.
 
 ```hcl
 module "security_groups" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/security-groups?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/security-groups?ref=main"
 
   vpc_id = var.vpc_id
 
