@@ -1,12 +1,10 @@
 # IAM Role: EC2
 
-> ⚠️ **UNTESTED MODULE** — This module has no known production consumers in the NASA-PDS organization. It has not been validated outside of development. Use with caution.
->
-> If you adopt this module, please open a pull request to add your project to the [Known Consumers](#known-consumers) table below and include a usage example.
-
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
+| Repository | Source Reference | Notes |
+|------------|-----------------|-------|
+| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=feature/update-ec2-module-oracle-linux-pdc` (`terraform/iam/roles`) | Tested — creates the EC2 instance role/profile for the Logstash instance. Update to `?ref=main` once this branch merges. |
 
 ---
 
@@ -72,9 +70,10 @@ module "ec2_instances" {
 
   ec2_instance_configs = [
     {
-      instance_name = "pds-worker"
-      instance_type = "t3.medium"
-      subnet_id     = var.subnet_id
+      instance_name   = "pds-worker"
+      instance_type   = "t3.medium"
+      subnet_id       = var.subnet_id
+      security_groups = [var.security_group_id]
     }
   ]
 
