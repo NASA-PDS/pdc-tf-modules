@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -38,7 +38,7 @@ Creates an OpenSearch Serverless collection with encryption policy, network poli
 
 ```hcl
 module "opensearch_serverless" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/opensearch-serverless?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/opensearch-serverless?ref=main"
 
   collection_name         = "pds-registry"
   collection_type         = "SEARCH"

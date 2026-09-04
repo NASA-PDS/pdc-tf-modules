@@ -1,4 +1,4 @@
-# pds-tf-modules
+# pdc-tf-modules
 
 Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetary Data Cloud) AWS environments.
 
@@ -38,7 +38,7 @@ Reference a module in your Terraform configuration:
 
 ```hcl
 module "s3_bucket" {
-  source      = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/bucket?ref=main"
+  source      = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/s3/bucket?ref=main"
   bucket_name = var.s3_bucket_name
   partition   = var.partition
 
@@ -93,7 +93,7 @@ If you adopt an **untested** module and it works in your environment, please ope
 1. Add your project to the Known Consumers column in the table above
 2. Update the module's README with your usage example
 
-For bugs, feature requests, or new module proposals, [open an issue](https://github.com/NASA-PDS/pds-tf-modules/issues).
+For bugs, feature requests, or new module proposals, [open an issue](https://github.com/NASA-PDS/pdc-tf-modules/issues).
 
 See [CONTRIBUTING.md](https://github.com/NASA-PDS/.github/blob/main/CONTRIBUTING.md) for general NASA-PDS contribution guidelines.
 

@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -46,7 +46,7 @@ This module pairs with the [`ec2`](../../../ec2) module — create the role here
 
 ```hcl
 module "ec2_instance_role" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/iam/roles/ec2?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/iam/roles/ec2?ref=main"
 
   venue     = var.venue
   component = var.component
@@ -65,7 +65,7 @@ module "ec2_instance_role" {
 }
 
 module "ec2_instances" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/ec2?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=main"
 
   ami_id            = var.ami_id
   instance_profile  = module.ec2_instance_role.instance_profile_name

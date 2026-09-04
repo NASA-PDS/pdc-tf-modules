@@ -1,16 +1,15 @@
 # EC2 Module
 
-> ⚠️ **Internal/local use only** — This module is referenced in [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) via a local filesystem path (`../../pds-tf-modules/terraform/modules/ec2`), not via a versioned git ref. It has not been consumed or tested as a standalone remote module.
->
-> If you adopt this module via a git ref and it works in your environment, please open a pull request to update the [Known Consumers](#known-consumers) table and the [module status in the root README](../../../../README.md).
-
 ## Known Consumers
 
 | Repository | Source Reference | Notes |
 |------------|-----------------|-------|
+| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=feature/update-ec2-module-oracle-linux-pdc` (`terraform/logstash`) | Logstash EC2. Update to `?ref=main` once this branch merges. |
 | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) | Local path `../../pds-tf-modules/terraform/modules/ec2` | Not a versioned git ref — developer workspace coupling |
 
 ---
+
+**Prerequisite:** this module looks up an existing IAM instance profile by name — it does not create one. Create the role/profile first with the [`iam/roles/ec2`](../iam/roles/ec2) module (see its README for usage), then pass the resulting `instance_profile_name` output into this module's `instance_profile` input.
 
 Provisions one or more EC2 instances (via a launch template + `aws_instance`) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` must be the exact, SA-provided AMI ID for the target venue. The instance profile is **not created by this module**; it looks up an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-dev-ec2-role`), or reference another venue-scoped role created elsewhere.
 
@@ -57,7 +56,7 @@ A dedicated, purpose-scoped security group is recommended over reusing a broad, 
 
 ```hcl
 module "ec2_instance_role" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/iam/roles/ec2?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/iam/roles/ec2?ref=main"
 
   venue     = var.venue
   component = var.component
@@ -72,7 +71,7 @@ module "ec2_instance_role" {
 }
 
 module "ec2_security_group" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/security-groups?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/security-groups?ref=main"
 
   vpc_id = var.vpc_id
 
@@ -112,7 +111,7 @@ module "ec2_security_group" {
 }
 
 module "ec2" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/ec2?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=main"
 
   ami_id           = var.ami_id
   instance_profile = module.ec2_instance_role.instance_profile_name
