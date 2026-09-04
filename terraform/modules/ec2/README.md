@@ -4,7 +4,7 @@
 
 | Repository | Source Reference | Notes |
 |------------|-----------------|-------|
-| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=feature/update-ec2-module-oracle-linux-pdc` (`terraform/logstash`) | Logstash EC2. Update to `?ref=main` once this branch merges. |
+| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=main` (`terraform/logstash`) | Logstash EC2. |
 | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) | Local path `../../pds-tf-modules/terraform/modules/ec2` | Not a versioned git ref — developer workspace coupling |
 
 ---
