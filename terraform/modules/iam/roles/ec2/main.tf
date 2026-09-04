@@ -44,7 +44,7 @@ resource "aws_iam_role_policy" "ec2users_dynamodb" {
         "dynamodb:Query"
       ]
       Resource = [
-        "arn:aws:dynamodb:us-west-2:456238491188:table/ec2users"
+        var.ec2users_dynamodb_table_arn
       ]
     }]
   })
