@@ -11,6 +11,7 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetar
 | [`ec2`](terraform/modules/ec2) | ⚠️ Internal/local use only | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) (local path ref — not consumed via git ref) |
 | [`ecs`](terraform/modules/ecs) | ❓ Untested | None |
 | [`iam/roles`](terraform/modules/iam/roles) | ❓ Untested | None |
+| [`iam/roles/ec2`](terraform/modules/iam/roles/ec2) | ❓ Untested | None |
 | [`alb`](terraform/modules/alb) | ❓ Untested | None |
 | [`cognito`](terraform/modules/cognito) | ❓ Untested | None |
 | [`opensearch-serverless`](terraform/modules/opensearch-serverless) | ❓ Untested | None |
