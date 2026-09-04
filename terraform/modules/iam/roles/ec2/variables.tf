@@ -14,6 +14,11 @@ variable "additional_policy_arns" {
   description = "Additional managed policy ARNs to attach beyond AmazonSSMManagedInstanceCore and CloudWatchAgentServerPolicy."
 }
 
+variable "ec2users_dynamodb_table_arn" {
+  type        = string
+  description = "ARN of the DynamoDB ec2users table to grant Get*/Query access on all EC2 instance roles."
+}
+
 variable "required_tags" {
   type        = map(string)
   default     = {}
