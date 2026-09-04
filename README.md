@@ -8,10 +8,10 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetar
 |--------|--------|-----------------|
 | [`s3/bucket`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
 | [`s3/object`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
-| [`ec2`](terraform/modules/ec2) | ⚠️ Internal/local use only | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) (local path ref — not consumed via git ref) |
+| [`ec2`](terraform/modules/ec2) | ✅ Actively used | [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) (Logstash EC2), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) (local path ref — not consumed via git ref) |
 | [`ecs`](terraform/modules/ecs) | ❓ Untested | None |
 | [`iam/roles`](terraform/modules/iam/roles) | ❓ Untested | None |
-| [`iam/roles/ec2`](terraform/modules/iam/roles/ec2) | ❓ Untested | None |
+| [`iam/roles/ec2`](terraform/modules/iam/roles/ec2) | ✅ Actively used | [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) |
 | [`alb`](terraform/modules/alb) | ❓ Untested | None |
 | [`cognito`](terraform/modules/cognito) | ❓ Untested | None |
 | [`opensearch-serverless`](terraform/modules/opensearch-serverless) | ❓ Untested | None |
