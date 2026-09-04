@@ -1,0 +1,89 @@
+# IAM Role: EC2
+
+> ⚠️ **UNTESTED MODULE** — This module has no known production consumers in the NASA-PDS organization. It has not been validated outside of development. Use with caution.
+>
+> If you adopt this module, please open a pull request to add your project to the [Known Consumers](#known-consumers) table below and include a usage example.
+
+## Known Consumers
+
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+
+---
+
+Creates a venue/component-scoped IAM role and matching instance profile for EC2 instances, with `AmazonSSMManagedInstanceCore` and `CloudWatchAgentServerPolicy` attached by default (SSM Session Manager access + CloudWatch agent metrics/logs). Additional managed policy ARNs can be attached via `additional_policy_arns`.
+
+The role ARN and instance profile name are also published to SSM Parameter Store so other stacks/components can look them up without a Terraform remote-state dependency.
+
+This module pairs with the [`ec2`](../../../ec2) module — create the role here, then pass the resulting `instance_profile_name` into the `ec2` module's `instance_profile` input.
+
+## Resources Created
+
+- **IAM Role** — trust policy scoped to `ec2.amazonaws.com`, named `<venue>-<component>-ec2-role`
+- **IAM Role Policy Attachments** — `AmazonSSMManagedInstanceCore`, `CloudWatchAgentServerPolicy`, plus any ARNs in `additional_policy_arns`
+- **IAM Instance Profile** — same name as the role
+- **SSM Parameters**:
+  - `/pds/<component>/iam/roles/ec2/instance-role-arn`
+  - `/pds/<component>/iam/roles/ec2/instance-profile-name`
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|----------|
+| `venue` | Deployment venue/environment (e.g. `pds-cds-dev`). Used in resource naming. | `string` | — | yes |
+| `component` | Component name (e.g. `o11y-cloudfront-batch`). Combined with `venue` to form the role name: `<venue>-<component>-ec2-role`. | `string` | — | yes |
+| `additional_policy_arns` | Additional managed policy ARNs to attach beyond `AmazonSSMManagedInstanceCore` and `CloudWatchAgentServerPolicy`. | `list(string)` | `[]` | no |
+| `required_tags` | Required resource tags (tenant, venue, component, cicd, managedby) | `map(string)` | `{}` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| `role_arn` | ARN of the EC2 instance IAM role |
+| `instance_profile_name` | Name of the EC2 instance profile |
+| `instance_profile_arn` | ARN of the EC2 instance profile |
+
+## Usage
+
+```hcl
+module "ec2_instance_role" {
+  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/iam/roles/ec2?ref=main"
+
+  venue     = var.venue
+  component = var.component
+
+  additional_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+  ]
+
+  required_tags = {
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
+  }
+}
+
+module "ec2_instances" {
+  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/ec2?ref=main"
+
+  ami_id            = var.ami_id
+  instance_profile  = module.ec2_instance_role.instance_profile_name
+
+  ec2_instance_configs = [
+    {
+      instance_name = "pds-worker"
+      instance_type = "t3.medium"
+      subnet_id     = var.subnet_id
+    }
+  ]
+
+  required_tags = {
+    tenant    = var.tenant
+    venue     = var.venue
+    component = var.component
+    cicd      = var.cicd
+    managedby = var.managedby
+  }
+}
+```

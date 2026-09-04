@@ -38,16 +38,19 @@ module "security_groups" {
     {
       name        = "pds-alb-sg"
       description = "Allow HTTPS inbound to ALB"
-      ingress = [
+      sg_name_tag = "pds-alb-sg"
+      ingress_rules = [
         {
+          description = "HTTPS from anywhere"
           from_port   = 443
           to_port     = 443
           protocol    = "tcp"
           cidr_blocks = ["0.0.0.0/0"]
         }
       ]
-      egress = [
+      egress_rules = [
         {
+          description = "Allow all outbound"
           from_port   = 0
           to_port     = 0
           protocol    = "-1"
