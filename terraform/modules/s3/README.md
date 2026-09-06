@@ -98,6 +98,11 @@ module "s3_bucket" {
   enable_blocks = true
   enable_policy = true
 
+  # Optional: lifecycle-managed storage class (STANDARD = no transition)
+  # storage_class                 = "INTELLIGENT_TIERING"
+  # storage_class_transition_days = 0
+
+  # required_tags are applied to the bucket resource
   required_tags = {
     tenant    = var.tenant
     venue     = var.venue
