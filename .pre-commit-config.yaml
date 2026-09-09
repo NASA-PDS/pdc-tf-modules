@@ -7,7 +7,6 @@ repos:
     - id: debug-statements
     - id: check-yaml
     - id: check-json
-    - id: pretty-format-json
 
 # -   repo: https://github.com/antonbabenko/pre-commit-terraform
 #     rev: v1.81.0
