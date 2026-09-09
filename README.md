@@ -87,6 +87,43 @@ terraform/
 terraform.archive/   # Archived modules no longer in active use
 ```
 
+## Secret Detection
+
+This repo uses [`detect-secrets`](https://github.com/Yelp/detect-secrets) to prevent credentials from being committed.
+
+### How it works
+
+- **Pre-commit hook** — `scripts/detect_secrets_baseline.sh` runs automatically on every commit and checks for new or unresolved findings.
+- **GitHub Actions workflow** — `.github/workflows/secrets-detection.yaml` runs the same check on every push and pull request to `main`.
+- **Baseline file** — `.secrets.baseline` tracks all known false positives that have been audited and confirmed safe.
+- **Exclusions file** — `.detect-secrets-ignore` lists path patterns (regexes, one per line) that are excluded from scanning for this repo.
+
+### First-time setup
+
+```sh
+pip install detect-secrets~=1.5.0
+pre-commit install
+```
+
+### Handling a new finding
+
+If a commit is blocked or CI fails with a secret detection warning:
+
+1. **Regenerate the baseline** to capture the new finding:
+   ```sh
+   scripts/detect_secrets_baseline.sh scan
+   ```
+
+2. **Audit each finding** — classify it as a real secret or a false positive:
+   ```sh
+   scripts/detect_secrets_baseline.sh audit
+   ```
+
+3. If the finding is a **real secret**, remove it from the codebase before committing.
+4. If it is a **false positive**, commit the updated `.secrets.baseline`.
+
+To permanently exclude a file path from future scans, add a regex to `.detect-secrets-ignore`.
+
 ## Contributing
 
 If you adopt an **untested** module and it works in your environment, please open a pull request to:
