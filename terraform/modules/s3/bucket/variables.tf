@@ -1,4 +1,3 @@
-
 variable "bucket_name" {
   type = string
 }
@@ -78,4 +77,37 @@ variable "logging_target_prefix" {
   description = "Prefix for access log object keys within the logging target bucket."
   type        = string
   default     = "s3-access-logs/"
+}
+
+variable "storage_class" {
+  description = <<-EOT
+    Desired object storage class managed via lifecycle transition.
+    STANDARD = no transition (objects stay in S3 Standard).
+    Other values create a lifecycle rule transitioning objects after
+    storage_class_transition_days (default 0).
+  EOT
+  type        = string
+  default     = "INTELLIGENT_TIERING"
+
+  validation {
+    condition = contains(
+      [
+        "STANDARD",
+        "INTELLIGENT_TIERING",
+        "STANDARD_IA",
+        "ONEZONE_IA",
+        "GLACIER_IR",
+        "GLACIER",
+        "DEEP_ARCHIVE",
+      ],
+      upper(var.storage_class)
+    )
+    error_message = "storage_class must be one of: STANDARD, INTELLIGENT_TIERING, STANDARD_IA, ONEZONE_IA, GLACIER_IR, GLACIER, DEEP_ARCHIVE."
+  }
+}
+
+variable "storage_class_transition_days" {
+  description = "Days after object creation before transitioning to storage_class. Ignored when storage_class is STANDARD."
+  type        = number
+  default     = 0
 }
