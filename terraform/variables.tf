@@ -8,6 +8,10 @@ variable "associate_public_ip_address" {
   default     = false
   description = "Whether to associate a public IP address for all EC2 instances."
 }
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue."
+}
 variable "security_groups" {
   description = "List of security groups"
   type        = list(any)
