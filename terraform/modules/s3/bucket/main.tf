@@ -1,6 +1,7 @@
 # create an S3 bucket using a variable for the name.
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
+  tags   = var.required_tags
 }
 
 # Disable ACLs by setting ownership controls to BucketOwnerEnforced
@@ -57,18 +58,46 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   target_prefix = var.logging_target_prefix
 }
 
-# Configure lifecycle policy to abort incomplete multipart uploads
+locals {
+  storage_class_normalized        = upper(var.storage_class)
+  enable_storage_class_transition = !contains(["STANDARD"], local.storage_class_normalized)
+  enable_lifecycle = (
+    var.abort_incomplete_multipart_upload_days > 0 ||
+    local.enable_storage_class_transition
+  )
+}
+
+# Lifecycle: abort incomplete multipart uploads and/or transition to a storage class.
+# STANDARD means no transition (objects remain in the default S3 Standard class).
+# Other classes (e.g. INTELLIGENT_TIERING) are applied via lifecycle transition.
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
-  count  = var.abort_incomplete_multipart_upload_days > 0 ? 1 : 0
+  count  = local.enable_lifecycle ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
 
-  rule {
-    id     = "abort-incomplete-multipart-upload"
-    status = "Enabled"
-    filter {}
+  dynamic "rule" {
+    for_each = var.abort_incomplete_multipart_upload_days > 0 ? [1] : []
+    content {
+      id     = "abort-incomplete-multipart-upload"
+      status = "Enabled"
+      filter {}
 
-    abort_incomplete_multipart_upload {
-      days_after_initiation = var.abort_incomplete_multipart_upload_days
+      abort_incomplete_multipart_upload {
+        days_after_initiation = var.abort_incomplete_multipart_upload_days
+      }
+    }
+  }
+
+  dynamic "rule" {
+    for_each = local.enable_storage_class_transition ? [1] : []
+    content {
+      id     = "transition-to-${lower(replace(local.storage_class_normalized, "_", "-"))}"
+      status = "Enabled"
+      filter {}
+
+      transition {
+        days          = var.storage_class_transition_days
+        storage_class = local.storage_class_normalized
+      }
     }
   }
 }
