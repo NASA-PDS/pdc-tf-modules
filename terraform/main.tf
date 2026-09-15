@@ -50,20 +50,6 @@ module "s3_bucket" {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Sid": "AllowPlatformEngineer",
-             "Effect": "Allow",
-             "Principal": {
-               "AWS": [
-                 "arn:${var.partition}:sts::${data.aws_caller_identity.current.account_id}:assumed-role/${var.venue}-en-platform-engineer"
-               ]
-             },
-             "Action": "s3:*",
-             "Resource": [
-                 "arn:${var.partition}:s3:::${var.s3_bucket_name}/*",
-                 "arn:${var.partition}:s3:::${var.s3_bucket_name}"
-             ]
-         },
-         {
              "Sid": "AllowSSLRequestsOnly",
              "Effect": "Deny",
              "Principal": "*",
