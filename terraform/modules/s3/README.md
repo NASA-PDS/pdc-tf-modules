@@ -7,7 +7,7 @@
 | Repository | Modules Used | Notes |
 |------------|-------------|-------|
 | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager) | `s3/bucket`, `s3/object` | No `?ref=` pin — tracks default branch |
-| [pds-mcp-infra](https://github.com/NASA-PDS/pds-mcp-infra) | `s3/bucket`, `s3/object` | Currently pinned to stale branch; should be updated to `main` |
+| [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) | `s3/bucket`, `s3/object` | Currently pinned to stale branch; should be updated to `main` |
 
 ---
 
@@ -18,7 +18,7 @@ A **Terraform Module** is a reusable set of Terraform configuration files that e
 
 
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
-Since **pds-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
+Since **pdc-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
 **Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps #4-6 in the section below.
 
@@ -56,7 +56,7 @@ To use a module stored in a private repository, add the following to your Terraf
 
 ```hcl
 module "s3_bucket" {
-  source        = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/bucket"
+  source        = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/s3/bucket"
   bucket_name   = var.s3_bucket_name
   partition     = var.partition
   bucket_policy = <<POLICY
@@ -64,11 +64,11 @@ module "s3_bucket" {
      "Version": "2012-10-17",
      "Statement": [
          {
-             "Sid": "AllowOnlyMCPTenantOperator",
+             "Sid": "AllowPlatformEngineer",
              "Effect": "Allow",
              "Principal": {
                "AWS": [
-                 "arn:${var.partition}:iam::${data.aws_caller_identity.current.account_id}:role/mcp-tenantOperator"
+                 "arn:${var.partition}:sts::${data.aws_caller_identity.current.account_id}:assumed-role/${var.venue}-en-platform-engineer"
                ]
              },
              "Action": "s3:*",
@@ -113,7 +113,7 @@ module "s3_bucket" {
 }
 
 module "s3_object" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/s3/object"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/s3/object"
 
   bucket      = module.s3_bucket.bucket_name
   key         = var.s3_object_key
@@ -184,7 +184,7 @@ variable "s3_object_source_path" {
 ### 3. Optional (recommended): Create a `backend.tf`
 A `backend.tf` file in terraform defines the remote backend configuration (eg: AWS S3) where Terraform stores the state file. It is recommended to configure a backend before running terraform init to ensure that the state is stored remotely and not locally to ensure multiple team members can work on the same infrastructure without overwriting each other's changes.
 
-**Note:** Ensure the **bucket** and **key** names are correct. The bucket name will be different for each MCP environment.
+**Note:** Ensure the **bucket** and **key** names are correct. The bucket name will be different for each PDC environment.
 
 ```hcl
 terraform {
@@ -268,8 +268,8 @@ After configuring your module, initialize and run Terraform:
 ## Advanced Usage: Adding New Parameters to the Module
 If you need to introduce a new parameter to the module:
 
-1. Request PDS project administrators (with MCP Tenant Operator Roles) to update the module.
-2. The update should be made in the private module repository **pds-tf-modules**
+1. Request PDS project administrators (with PDC Tenant Operator Roles) to update the module.
+2. The update should be made in the private module repository **pdc-tf-modules**
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.
    ```hcl

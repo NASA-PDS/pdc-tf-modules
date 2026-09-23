@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -41,7 +41,7 @@ Creates a Cognito User Pool with app client, domain, user groups, and optional i
 
 ```hcl
 module "cognito" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/cognito?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/cognito?ref=main"
 
   user_pool_name   = "my-pds-user-pool"
   user_pool_domain = "my-pds-user-pool"

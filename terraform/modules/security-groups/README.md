@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -30,7 +30,7 @@ Creates one or more VPC security groups from a list of configuration objects.
 
 ```hcl
 module "security_groups" {
-  source = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/security-groups?ref=main"
+  source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/security-groups?ref=main"
 
   vpc_id = var.vpc_id
 
@@ -38,16 +38,19 @@ module "security_groups" {
     {
       name        = "pds-alb-sg"
       description = "Allow HTTPS inbound to ALB"
-      ingress = [
+      sg_name_tag = "pds-alb-sg"
+      ingress_rules = [
         {
+          description = "HTTPS from anywhere"
           from_port   = 443
           to_port     = 443
           protocol    = "tcp"
           cidr_blocks = ["0.0.0.0/0"]
         }
       ]
-      egress = [
+      egress_rules = [
         {
+          description = "Allow all outbound"
           from_port   = 0
           to_port     = 0
           protocol    = "-1"

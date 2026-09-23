@@ -6,7 +6,7 @@
 
 ## Known Consumers
 
-_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pds-tf-modules/pulls)._
+_None yet. Be the first — [open a PR](https://github.com/NASA-PDS/pdc-tf-modules/pulls)._
 
 ---
 
@@ -17,7 +17,7 @@ A **Terraform Module** is a reusable set of Terraform configuration files that e
 
 
 ## Setting Up SSH Authentication for a Private Terraform Module Repository
-Since **pds-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
+Since **pdc-tf-modules** is a private repo, pulling the module code will require SSH Access. To access a private Terraform module repository, you need to generate an SSH key and add it to your GitHub/GitLab account.
 
 **Note:** If you already have an existing SSH key for GitHub access, you can simply use the same key and upload it to GitHub using Steps #4-6 in the section below.
 
@@ -52,7 +52,7 @@ Since **pds-tf-modules** is a private repo, pulling the module code will require
 To use a module stored in a private repository, add the following to your Terraform configuration:
 ```hcl
 module "ecs" {
-  source         = "git@github.com:NASA-PDS/pds-tf-modules.git//terraform/modules/ecs"
+  source         = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/ecs"
   config_file    = var.config_file
   create_service = var.create_service
   required_tags = {
@@ -232,8 +232,8 @@ After configuring your module, initialize and run Terraform:
 ## Advanced Usage: Adding New Parameters to the Module
 If you need to introduce a new parameter to the module:
 
-1. Request PDS project administrators (with MCP Tenant Operator Roles) to update the module.
-2. The update should be made in the private module repository **pds-tf-modules**
+1. Request PDS project administrators (with PDC Tenant Operator Roles) to update the module.
+2. The update should be made in the private module repository **pdc-tf-modules**
 3. A Pull Request (PR) should be created and reviewed.
 4. Once merged, update your module reference to the latest version.
    ```hcl

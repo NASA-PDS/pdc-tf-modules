@@ -1,7 +1,7 @@
 variable "ec2_instance_configs" {
   type        = list(any)
   default     = []
-  description = "List of EC2 instances"
+  description = "List of EC2 instances. Each entry supports optional root_volume_size (GB, default 50) and root_volume_type (default \"gp3\") to size the root EBS volume."
 }
 
 variable "associate_public_ip_address" {
@@ -12,8 +12,13 @@ variable "associate_public_ip_address" {
 
 variable "instance_profile" {
   type        = string
-  default     = "MCP-SSM-CloudWatch"
+  default     = ""
   description = "EC2 instance profile name"
+}
+
+variable "ami_id" {
+  type        = string
+  description = "AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue."
 }
 
 variable "pds_resource_prefix" {

@@ -17,7 +17,7 @@ variable "assume_role_policy" {
 variable "permissions_boundary_policy_name" {
   description = "Name of the permissions boundary policy"
   type        = string
-  default     = "mcp-tenantOperator-APIG"
+  default     = ""
 }
 
 variable "custom_policies" {

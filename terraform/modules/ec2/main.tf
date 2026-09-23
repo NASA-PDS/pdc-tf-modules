@@ -1,35 +1,14 @@
-data "aws_ami" "amzn-linux-2023" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = ["MCP Amazon Linux 2 *"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-
-  owners = ["REDACTED_ACCOUNT_UNKNOWN"]
-}
-
-data "aws_iam_instance_profile" "mcp-instance-profile" {
+data "aws_iam_instance_profile" "ec2" {
   name = var.instance_profile
 }
 
-resource "aws_launch_template" "mcp_ec2" {
+resource "aws_launch_template" "pds_ec2" {
   count = length(var.ec2_instance_configs)
 
   name_prefix   = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}-" : "${var.ec2_instance_configs[count.index].instance_name}-"
-  image_id      = data.aws_ami.amzn-linux-2023.id
+  image_id      = var.ami_id
   instance_type = var.ec2_instance_configs[count.index].instance_type
-  key_name      = var.ec2_instance_configs[count.index].key_pair_name
+  key_name      = try(var.ec2_instance_configs[count.index].key_pair_name, null)
 
   network_interfaces {
     associate_public_ip_address = var.associate_public_ip_address
@@ -38,12 +17,16 @@ resource "aws_launch_template" "mcp_ec2" {
   }
 
   iam_instance_profile {
-    name = data.aws_iam_instance_profile.mcp-instance-profile.name
+    name = data.aws_iam_instance_profile.ec2.name
   }
+
+  user_data = try(var.ec2_instance_configs[count.index].user_data, null)
 
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
+      volume_size           = try(var.ec2_instance_configs[count.index].root_volume_size, 50)
+      volume_type           = try(var.ec2_instance_configs[count.index].root_volume_type, "gp3")
       encrypted             = true
       delete_on_termination = false
     }
@@ -71,16 +54,26 @@ resource "aws_launch_template" "mcp_ec2" {
   tags = var.required_tags
 }
 
-resource "aws_instance" "mcp_ec2_instance" {
+resource "aws_instance" "pds_ec2" {
   count             = length(var.ec2_instance_configs)
-  availability_zone = var.ec2_instance_configs[count.index].az
+  availability_zone = try(var.ec2_instance_configs[count.index].az, null)
+
+  # Mirrors the launch template's network_interfaces.associate_public_ip_address
+  # (default false) — set explicitly here too since static analysis (SonarCloud)
+  # scans this resource directly and can't resolve the inherited launch template value.
+  associate_public_ip_address = var.associate_public_ip_address
 
   launch_template {
-    id      = aws_launch_template.mcp_ec2[count.index].id
+    id      = aws_launch_template.pds_ec2[count.index].id
     version = "$Latest"
   }
 
   tags = merge(var.required_tags, {
     Name = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
   })
+
+  lifecycle {
+    # Compliance automation stamps Audit, CreatedBy, CreationTime on launch — ignore to avoid stripping them on re-apply.
+    ignore_changes = [tags["Audit"], tags["CreatedBy"], tags["CreationTime"]]
+  }
 }
