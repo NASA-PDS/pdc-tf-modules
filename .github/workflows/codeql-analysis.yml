@@ -71,7 +71,7 @@ jobs:
       uses: github/codeql-action/analyze@v2
 
     - run: |
-        pip install nasa-scrub
+        pip install --only-binary :all: nasa-scrub==3.0.2
 
         results_dir=`realpath ${{ github.workspace }}/../results`
         sarif_files=`find $results_dir -name '*.sarif'`
