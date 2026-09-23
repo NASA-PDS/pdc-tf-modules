@@ -1,7 +1,7 @@
 variable "ec2_instance_configs" {
   type        = list(any)
   default     = []
-  description = "List of EC2 instances. Each entry supports optional root_volume_size (GB, default 30) and root_volume_type (default \"gp3\") to size the root EBS volume."
+  description = "List of EC2 instances. Each entry supports optional root_volume_size (GB, default 50) and root_volume_type (default \"gp3\") to size the root EBS volume."
 }
 
 variable "associate_public_ip_address" {
