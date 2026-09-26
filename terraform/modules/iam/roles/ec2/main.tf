@@ -41,7 +41,8 @@ resource "aws_iam_role_policy" "ec2users_dynamodb" {
       Effect = "Allow"
       Action = [
         "dynamodb:Get*",
-        "dynamodb:Query"
+        "dynamodb:Query",
+        "dynamodb:Scan"
       ]
       Resource = [
         var.ec2users_dynamodb_table_arn
