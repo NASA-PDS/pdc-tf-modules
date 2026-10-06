@@ -22,7 +22,7 @@ Every EC2 instance role created by this module gets the following policies attac
 |--------|------|---------|
 | `CloudWatchAgentServerPolicy` | AWS managed | CloudWatch agent metrics/logs |
 | `AmazonSSMManagedInstanceCore` | AWS managed | SSM Session Manager access |
-| `ec2users-dynamodb` | Inline role policy | `dynamodb:Get*`/`dynamodb:Query` on the `ec2users` DynamoDB table (see `ec2users_dynamodb_table_arn`) |
+| `ec2users-dynamodb` | Inline role policy | `dynamodb:Get*`/`dynamodb:Query`/`dynamodb:Scan` on the `ec2users` DynamoDB table (see `ec2users_dynamodb_table_arn`) |
 | *(your custom policy)* | Managed, via `additional_policy_arns` | Component-specific permissions |
 
 The `ec2users-dynamodb` policy grants read access to a DynamoDB table used to look up EC2 user account/login info. **This table's ARN is account/environment-specific and not published here** — pass it in via `ec2users_dynamodb_table_arn`. It is required for every EC2 instance role created with this module; ask a platform engineer for the correct ARN for your account if you don't have it.
