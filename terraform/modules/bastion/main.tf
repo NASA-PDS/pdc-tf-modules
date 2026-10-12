@@ -1,65 +1,4 @@
 # ──────────────────────────────────────────────────────────────────────────────
-# IAM role + instance profile
-#
-# SSH auth is handled entirely by the SA-provided AMI, which validates each
-# login against the ec2-users DynamoDB table (local key auth). No EC2 key
-# pair is used or needed.
-#
-# CloudWatchAgentServerPolicy: always attached (logging).
-# ec2users DynamoDB inline policy: always attached (SSH auth gate).
-# AmazonSSMManagedInstanceCore: only when enable_ssm = true (dev elevated
-#   access via ssm-user with passwordless sudo).
-# ──────────────────────────────────────────────────────────────────────────────
-
-resource "aws_iam_role" "bastion" {
-  name        = "${var.name_prefix}-bastion-ec2-role"
-  description = "EC2 instance role for the ${var.name_prefix} bastion host"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-
-  tags = var.required_tags
-}
-
-resource "aws_iam_role_policy_attachment" "cloudwatch" {
-  role       = aws_iam_role.bastion.name
-  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-}
-
-resource "aws_iam_role_policy_attachment" "ssm" {
-  count = var.enable_ssm ? 1 : 0
-
-  role       = aws_iam_role.bastion.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
-resource "aws_iam_role_policy" "ec2users_dynamodb" {
-  name = "ec2users-dynamodb"
-  role = aws_iam_role.bastion.id
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect   = "Allow"
-      Action   = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan"]
-      Resource = [var.ec2users_dynamodb_table_arn]
-    }]
-  })
-}
-
-resource "aws_iam_instance_profile" "bastion" {
-  name = "${var.name_prefix}-bastion-ec2-role"
-  role = aws_iam_role.bastion.name
-  tags = var.required_tags
-}
-
-# ──────────────────────────────────────────────────────────────────────────────
 # Security groups
 # ──────────────────────────────────────────────────────────────────────────────
 
@@ -118,7 +57,7 @@ module "ec2" {
   source = "../ec2"
 
   ami_id                      = var.ami_id
-  instance_profile            = aws_iam_instance_profile.bastion.name
+  instance_profile            = var.instance_profile_name
   associate_public_ip_address = true
   pds_resource_prefix         = var.name_prefix
   required_tags               = var.required_tags

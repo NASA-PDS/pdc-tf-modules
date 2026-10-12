@@ -34,21 +34,15 @@ variable "private_subnet_cidr" {
   type        = string
 }
 
-variable "enable_ssm" {
-  description = "Enable SSM Session Manager on the bastion. Should be true in dev/test only — ssm-user has passwordless sudo. Default false (SSH only, no elevated access)."
-  type        = bool
-  default     = false
+variable "instance_profile_name" {
+  description = "Name of the IAM instance profile to attach to the bastion EC2. Must be created by the caller (terraform/bastion/iam/) and passed in — IAM resources are not managed by this module."
+  type        = string
 }
 
 variable "assign_eip" {
   description = "Assign an Elastic IP to the bastion. Recommended for production so the public address survives instance replacement."
   type        = bool
   default     = true
-}
-
-variable "ec2users_dynamodb_table_arn" {
-  description = "ARN of the ec2-users DynamoDB table. The SA-provided AMI queries this table at login time to authenticate SSH users via their local key. Without this policy, nobody can SSH into the bastion regardless of network access."
-  type        = string
 }
 
 variable "required_tags" {
