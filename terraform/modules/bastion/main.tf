@@ -34,7 +34,7 @@ resource "aws_vpc_security_group_egress_rule" "bastion_to_private" {
 # bastion — no hard-coded IPs, no open-world SSH.
 resource "aws_security_group" "target" {
   name        = "${var.name_prefix}-bastion-target-sg"
-  description = "Allow SSH from the ${var.name_prefix} bastion SG only — attach to private EC2s reachable via this bastion"
+  description = "Allow SSH from the ${var.name_prefix} bastion SG only - attach to private EC2s reachable via this bastion"
   vpc_id      = var.vpc_id
 
   tags = merge(var.required_tags, { Name = "${var.name_prefix}-bastion-target-sg" })
