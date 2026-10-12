@@ -35,7 +35,7 @@ variable "private_subnet_cidr" {
 }
 
 variable "instance_profile_name" {
-  description = "Name of the IAM instance profile to attach to the bastion EC2. Must be created by the caller (terraform/bastion/iam/) and passed in — IAM resources are not managed by this module."
+  description = "Name of the IAM instance profile to attach to the bastion EC2. Must be created by the caller (e.g. terraform/bastion-core/iam/) and passed in — IAM resources are not managed by this module."
   type        = string
 }
 

@@ -18,13 +18,19 @@ resource "aws_launch_template" "pds_ec2" {
 
   user_data = try(var.ec2_instance_configs[count.index].user_data, null)
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
+
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
       volume_size           = try(var.ec2_instance_configs[count.index].root_volume_size, 50)
       volume_type           = try(var.ec2_instance_configs[count.index].root_volume_type, "gp3")
       encrypted             = true
-      delete_on_termination = false
+      delete_on_termination = true
     }
   }
 
