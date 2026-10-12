@@ -30,6 +30,16 @@ resource "aws_vpc_security_group_egress_rule" "bastion_to_private" {
   cidr_ipv4         = var.private_subnet_cidr
 }
 
+# SSM Agent, package updates, and other management traffic require outbound HTTPS.
+resource "aws_vpc_security_group_egress_rule" "bastion_https_out" {
+  security_group_id = aws_security_group.bastion.id
+  description       = "Outbound HTTPS for SSM Agent and management traffic"
+  from_port         = 443
+  to_port           = 443
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
 # Callers attach this SG to any private EC2 that should be reachable via the
 # bastion — no hard-coded IPs, no open-world SSH.
 resource "aws_security_group" "target" {
