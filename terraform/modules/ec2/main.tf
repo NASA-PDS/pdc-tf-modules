@@ -1,7 +1,3 @@
-data "aws_iam_instance_profile" "ec2" {
-  name = var.instance_profile
-}
-
 resource "aws_launch_template" "pds_ec2" {
   count = length(var.ec2_instance_configs)
 
@@ -17,7 +13,7 @@ resource "aws_launch_template" "pds_ec2" {
   }
 
   iam_instance_profile {
-    name = data.aws_iam_instance_profile.ec2.name
+    name = var.instance_profile
   }
 
   user_data = try(var.ec2_instance_configs[count.index].user_data, null)
@@ -48,7 +44,7 @@ resource "aws_launch_template" "pds_ec2" {
 
   tag_specifications {
     resource_type = "network-interface"
-    tags = var.required_tags
+    tags          = var.required_tags
   }
 
   tags = var.required_tags
