@@ -34,13 +34,14 @@ Session Manager (passwordless `sudo` as `ssm-user`).
 module "bastion" {
   source = "git::ssh://git@github.com/NASA-PDS/pdc-tf-modules.git//terraform/modules/bastion?ref=<release-tag>"
 
-  name_prefix           = "pds-cds-dev"
+  name_prefix           = "pds-cds"
+  resource_name         = "bastion-core"
   vpc_id                = "vpc-0123456789abcdef0"
   subnet_id             = "subnet-0123456789abcdef0"   # public subnet
   ami_id                = "ami-0123456789abcdef0"
   allowed_ssh_cidrs     = ["198.51.100.0/24"]
   private_subnet_cidr   = "10.1.0.0/16"                # CIDR covering all target subnets
-  instance_profile_name = "pds-cds-dev-bastion-core-ec2-role"
+  instance_profile_name = "pds-cds-bastion-core-ec2-role"
   assign_eip            = true
   required_tags         = { tenant = "en", venue = "pds-cds-dev", component = "cds-infra", cicd = "iac", managedby = "terraform" }
 }
@@ -65,7 +66,8 @@ module "app_ec2" {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| `name_prefix` | Prefix for all resource names (e.g. `pds-cds-dev`) | `string` | n/a | yes |
+| `name_prefix` | Prefix for all resource names (e.g. `pds-cds`) | `string` | n/a | yes |
+| `resource_name` | Suffix identifying this bastion; names become `<name_prefix>-<resource_name>-sg`, `-target-sg`, `-eip`, and the instance Name tag | `string` | `"bastion"` | no |
 | `vpc_id` | VPC to deploy into | `string` | n/a | yes |
 | `subnet_id` | Public subnet for the bastion | `string` | n/a | yes |
 | `ami_id` | AMI ID (SA-provided) | `string` | n/a | yes |
