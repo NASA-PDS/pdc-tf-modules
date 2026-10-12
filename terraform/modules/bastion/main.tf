@@ -3,11 +3,11 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 resource "aws_security_group" "bastion" {
-  name        = "${var.name_prefix}-bastion-sg"
+  name        = "${var.name_prefix}-${var.resource_name}-sg"
   description = "Bastion host: inbound SSH from allowed CIDRs, outbound SSH to private subnet only"
   vpc_id      = var.vpc_id
 
-  tags = merge(var.required_tags, { Name = "${var.name_prefix}-bastion-sg" })
+  tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-sg" })
 }
 
 resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
@@ -43,11 +43,11 @@ resource "aws_vpc_security_group_egress_rule" "bastion_https_out" {
 # Callers attach this SG to any private EC2 that should be reachable via the
 # bastion — no hard-coded IPs, no open-world SSH.
 resource "aws_security_group" "target" {
-  name        = "${var.name_prefix}-bastion-target-sg"
-  description = "Allow SSH from the ${var.name_prefix} bastion SG only - attach to private EC2s reachable via this bastion"
+  name        = "${var.name_prefix}-${var.resource_name}-target-sg"
+  description = "Allow SSH from the ${var.name_prefix}-${var.resource_name} SG only - attach to private EC2s reachable via this bastion"
   vpc_id      = var.vpc_id
 
-  tags = merge(var.required_tags, { Name = "${var.name_prefix}-bastion-target-sg" })
+  tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-target-sg" })
 }
 
 resource "aws_vpc_security_group_ingress_rule" "target_ssh_from_bastion" {
@@ -73,7 +73,7 @@ module "ec2" {
   required_tags               = var.required_tags
 
   ec2_instance_configs = [{
-    instance_name   = "bastion"
+    instance_name   = var.resource_name
     instance_type   = var.instance_type
     subnet_id       = var.subnet_id
     security_groups = [aws_security_group.bastion.id]
@@ -89,5 +89,5 @@ resource "aws_eip" "bastion" {
   domain   = "vpc"
   instance = module.ec2.ec2_instance_id[0]
 
-  tags = merge(var.required_tags, { Name = "${var.name_prefix}-bastion-eip" })
+  tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-eip" })
 }

@@ -1,6 +1,12 @@
 variable "name_prefix" {
-  description = "Prefix for all resource names (e.g., pds-portal-dev). Combined with 'bastion' to form resource names."
+  description = "Prefix for all resource names (e.g., pds-cds). Combined with resource_name to form resource names."
   type        = string
+}
+
+variable "resource_name" {
+  description = "Suffix that identifies this specific bastion (e.g., bastion-core, bastion). Combined with name_prefix: <name_prefix>-<resource_name>-sg."
+  type        = string
+  default     = "bastion"
 }
 
 variable "vpc_id" {
