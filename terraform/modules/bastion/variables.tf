@@ -46,10 +46,9 @@ variable "assign_eip" {
   default     = true
 }
 
-variable "key_name" {
-  description = "EC2 key pair name for SSH access. Required when enable_ssm = false."
+variable "ec2users_dynamodb_table_arn" {
+  description = "ARN of the ec2-users DynamoDB table. The SA-provided AMI queries this table at login time to authenticate SSH users via their local key. Without this policy, nobody can SSH into the bastion regardless of network access."
   type        = string
-  default     = null
 }
 
 variable "required_tags" {

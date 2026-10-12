@@ -1,9 +1,14 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # IAM role + instance profile
 #
-# When enable_ssm = false: CloudWatchAgentServerPolicy only (no sudo path in).
-# When enable_ssm = true:  adds AmazonSSMManagedInstanceCore (ssm-user gets
-#   passwordless sudo — dev/test only).
+# SSH auth is handled entirely by the SA-provided AMI, which validates each
+# login against the ec2-users DynamoDB table (local key auth). No EC2 key
+# pair is used or needed.
+#
+# CloudWatchAgentServerPolicy: always attached (logging).
+# ec2users DynamoDB inline policy: always attached (SSH auth gate).
+# AmazonSSMManagedInstanceCore: only when enable_ssm = true (dev elevated
+#   access via ssm-user with passwordless sudo).
 # ──────────────────────────────────────────────────────────────────────────────
 
 resource "aws_iam_role" "bastion" {
@@ -34,17 +39,24 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy" "ec2users_dynamodb" {
+  name = "ec2users-dynamodb"
+  role = aws_iam_role.bastion.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["dynamodb:GetItem", "dynamodb:Query", "dynamodb:Scan"]
+      Resource = [var.ec2users_dynamodb_table_arn]
+    }]
+  })
+}
+
 resource "aws_iam_instance_profile" "bastion" {
   name = "${var.name_prefix}-bastion-ec2-role"
   role = aws_iam_role.bastion.name
   tags = var.required_tags
-
-  lifecycle {
-    precondition {
-      condition     = var.enable_ssm || var.key_name != null
-      error_message = "key_name must be set when enable_ssm is false."
-    }
-  }
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -116,7 +128,6 @@ module "ec2" {
     instance_type   = var.instance_type
     subnet_id       = var.subnet_id
     security_groups = [aws_security_group.bastion.id]
-    key_pair_name   = var.key_name
   }]
 }
 
