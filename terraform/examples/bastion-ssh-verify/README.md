@@ -31,7 +31,7 @@ task apply VENUE=dev COMPONENT=tests/bastion-ssh-verify
 **Step 1 — get the private IP:**
 
 ```bash
-INSTANCE_ID=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw instance_id)
+INSTANCE_ID=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw instance_id | tail -1)
 PRIVATE_IP=$(aws ec2 describe-instances \
   --instance-ids "${INSTANCE_ID}" \
   --query 'Reservations[0].Instances[0].PrivateIpAddress' \
