@@ -23,8 +23,7 @@ then destroy it.
 All commands run from a checkout of `cds-infra-deploy`:
 
 ```bash
-VENUE="dev"
-task apply VENUE=${VENUE} COMPONENT=tests/bastion-ssh-verify
+task apply VENUE=dev COMPONENT=tests/bastion-ssh-verify
 ```
 
 ## Verify
@@ -32,7 +31,7 @@ task apply VENUE=${VENUE} COMPONENT=tests/bastion-ssh-verify
 **Step 1 — get the private IP:**
 
 ```bash
-INSTANCE_ID=$(terragrunt output -raw instance_id)
+INSTANCE_ID=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw instance_id)
 PRIVATE_IP=$(aws ec2 describe-instances \
   --instance-ids "${INSTANCE_ID}" \
   --query 'Reservations[0].Instances[0].PrivateIpAddress' \
@@ -66,8 +65,7 @@ DynamoDB-based authentication is working end-to-end.
 ## Destroy
 
 ```bash
-VENUE="dev"
-task destroy VENUE=${VENUE} COMPONENT=tests/bastion-ssh-verify
+task destroy VENUE=dev COMPONENT=tests/bastion-ssh-verify
 ```
 
 The test EC2 and its security group are removed. The bastion-core stack is
