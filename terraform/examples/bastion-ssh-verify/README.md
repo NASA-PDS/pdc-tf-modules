@@ -39,19 +39,17 @@ PRIVATE_IP=$(aws ec2 describe-instances \
 echo "${PRIVATE_IP}"
 ```
 
-**Step 2 — SSH from the bastion to the test EC2:**
+**Step 2 — SSH through the bastion directly to the test EC2 (run locally):**
 
 ```bash
 USER="<your-username>"
 ZONE=$(aws ssm get-parameter \
   --name /pds/hosted-zone/name \
   --query Parameter.Value --output text --region us-west-2)
-ssh ${USER}@pds-cds-bastion-core.${ZONE}
-# then from the bastion:
-ssh ${USER}@${PRIVATE_IP}
+ssh -J ${USER}@pds-cds-bastion-core.${ZONE} ${USER}@${PRIVATE_IP}
 ```
 
-**Step 3 — confirm pdsops access:**
+**Step 3 — confirm pdsops access (run on the test EC2):**
 
 ```bash
 sudo -iu pdsops
