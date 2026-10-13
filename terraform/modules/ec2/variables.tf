@@ -24,13 +24,13 @@ variable "ami_id" {
 variable "pds_resource_prefix" {
   type        = string
   default     = ""
-  description = "Optional prefix for resource naming (e.g., pds-dev-gh01dc)"
+  description = "Optional prefix for resource naming (e.g., pds-<venue>-<component>)"
 }
 
 variable "bastion_target_sg_ssm_path" {
   type        = string
   default     = ""
-  description = "SSM parameter path for the bastion target security group ID (e.g. /pds/cds-infra/bastion-core/target-security-group-id). When set, the SG is automatically appended to every instance's security groups, enabling SSH access from the bastion. Leave empty to skip (e.g. for the bastion EC2 itself)."
+  description = "SSM parameter path for the bastion target security group ID (e.g. /pds/<component>/bastion-core/target-security-group-id). When set, the SG is automatically appended to every instance's security groups, enabling SSH access from the bastion. Leave empty to skip (e.g. for the bastion EC2 itself)."
 }
 
 variable "disable_api_termination" {
