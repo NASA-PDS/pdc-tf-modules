@@ -28,6 +28,13 @@ AMI validates each login against the `ec2users` DynamoDB table, so the caller's 
 `dynamodb:GetItem/Query/Scan` on that table. Add `AmazonSSMManagedInstanceCore` to the role in dev/test to allow SSM
 Session Manager (passwordless `sudo` as `ssm-user`).
 
+The SA-provided AMI pre-provisions a shared `pdsops` service account on every EC2. Once logged in as your personal
+user, switch to it with:
+
+```bash
+sudo -iu pdsops
+```
+
 ## Usage
 
 ```hcl

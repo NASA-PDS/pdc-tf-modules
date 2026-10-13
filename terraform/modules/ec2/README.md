@@ -42,13 +42,14 @@ Each entry in `ec2_instance_configs` supports:
 | `root_volume_size` | Root EBS volume size in GB | no | `30` |
 | `root_volume_type` | Root EBS volume type | no | `"gp3"` |
 
-The root EBS volume is always encrypted and `delete_on_termination = false`.
+The root EBS volume is always encrypted and `delete_on_termination = true`. IMDSv2 is required (`http_tokens = "required"`).
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | `ec2_instance_id` | List of IDs of the created EC2 instances |
+| `ec2_public_ip` | List of public IPs (empty string per instance when none assigned; changes on stop/start unless an EIP is attached) |
 
 ## Usage
 
