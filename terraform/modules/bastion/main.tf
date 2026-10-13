@@ -81,13 +81,19 @@ module "ec2" {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Optional Elastic IP
+# Elastic IP — allocation and association are separate resources so the EIP
+# allocation survives instance replacement without being destroyed/recreated.
 # ──────────────────────────────────────────────────────────────────────────────
 
 resource "aws_eip" "bastion" {
-  count    = var.assign_eip ? 1 : 0
-  domain   = "vpc"
-  instance = module.ec2.ec2_instance_id[0]
+  count  = var.assign_eip ? 1 : 0
+  domain = "vpc"
 
   tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-eip" })
+}
+
+resource "aws_eip_association" "bastion" {
+  count         = var.assign_eip ? 1 : 0
+  instance_id   = module.ec2.ec2_instance_id[0]
+  allocation_id = aws_eip.bastion[0].id
 }
