@@ -27,6 +27,12 @@ variable "pds_resource_prefix" {
   description = "Optional prefix for resource naming (e.g., pds-dev-gh01dc)"
 }
 
+variable "disable_api_termination" {
+  type        = bool
+  default     = true
+  description = "Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform's destroy command disables this automatically before terminating. Default true."
+}
+
 variable "required_tags" {
   description = "Required resource tags"
   type        = map(string)

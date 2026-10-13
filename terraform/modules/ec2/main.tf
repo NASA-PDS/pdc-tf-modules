@@ -65,6 +65,8 @@ resource "aws_instance" "pds_ec2" {
   # scans this resource directly and can't resolve the inherited launch template value.
   associate_public_ip_address = var.associate_public_ip_address
 
+  disable_api_termination = var.disable_api_termination
+
   launch_template {
     id      = aws_launch_template.pds_ec2[count.index].id
     version = "$Latest"
