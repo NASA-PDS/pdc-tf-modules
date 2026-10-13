@@ -20,7 +20,7 @@ data "aws_subnets" "private" {
 # Outbound open so the SSM agent and DynamoDB SSH auth can reach AWS endpoints.
 resource "aws_security_group" "test" {
   name        = "pds-cds-bastion-ssh-verify"
-  description = "Test EC2 for bastion SSH verification — destroy after use"
+  description = "Test EC2 for bastion SSH verification - destroy after use"
   vpc_id      = var.vpc_id
 
   egress {
