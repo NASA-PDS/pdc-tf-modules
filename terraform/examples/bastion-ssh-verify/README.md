@@ -39,15 +39,26 @@ PRIVATE_IP=$(aws ec2 describe-instances \
 echo "${PRIVATE_IP}"
 ```
 
-**Step 2 — SSH through the bastion directly to the test EC2 (run locally):**
+**Step 2 — SSH to the bastion, then to the test EC2:**
+
+Get the private IP first (local terminal), then carry it into the bastion session:
 
 ```bash
 USER="<your-username>"
 ZONE=$(aws ssm get-parameter \
   --name /pds/hosted-zone/name \
   --query Parameter.Value --output text --region us-west-2)
-ssh -J ${USER}@pds-cds-bastion-core.${ZONE} ${USER}@${PRIVATE_IP}
+echo "Private IP: ${PRIVATE_IP}"
+ssh ${USER}@pds-cds-bastion-core.${ZONE}
 ```
+
+Then from the bastion, SSH to the private IP you noted above:
+
+```bash
+ssh <your-username>@<private-ip>
+```
+
+> **Note:** `ssh -J` (ProxyJump) hangs on new host keys — both hops prompt for key verification but only the first gets an interactive terminal. Use the two-step approach above instead.
 
 **Step 3 — confirm pdsops access (run on the test EC2):**
 
