@@ -23,6 +23,7 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | `ami_id` | AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue — override the default. | `string` | `"ami-0ed8a3d7cef9ee5b2"` | no |
 | `instance_profile` | Name of an existing EC2 instance profile (e.g. from the [`iam/roles/ec2`](../iam/roles/ec2) module's `instance_profile_name` output) | `string` | `""` | yes |
 | `associate_public_ip_address` | Whether to associate a public IP address for all EC2 instances created by this module. **Defaults to `false`** — instances are not internet-reachable unless explicitly opted in. | `bool` | `false` | no |
+| `bastion_target_sg_ssm_path` | SSM path for the bastion target SG ID (e.g. `/pds/cds-infra/bastion-core/target-security-group-id`). When set, that SG is appended to every instance's security groups, enabling SSH from the bastion. Empty (default) skips it — set empty on the bastion EC2 itself to avoid a self-referencing loop. | `string` | `""` | no |
 | `disable_api_termination` | Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform handles disabling this automatically before a `destroy`. | `bool` | `true` | no |
 | `pds_resource_prefix` | Optional prefix for resource naming (e.g., `pds-dev-gh01dc`) | `string` | `""` | no |
 | `required_tags` | Required resource tags (tenant, venue, component, cicd, managedby) | `map(string)` | `{}` | yes |

@@ -1,3 +1,8 @@
+data "aws_ssm_parameter" "bastion_target_sg" {
+  count = var.bastion_target_sg_ssm_path != "" ? 1 : 0
+  name  = var.bastion_target_sg_ssm_path
+}
+
 resource "aws_launch_template" "pds_ec2" {
   count = length(var.ec2_instance_configs)
 
@@ -9,7 +14,10 @@ resource "aws_launch_template" "pds_ec2" {
   network_interfaces {
     associate_public_ip_address = var.associate_public_ip_address
     subnet_id                   = var.ec2_instance_configs[count.index].subnet_id
-    security_groups             = var.ec2_instance_configs[count.index].security_groups
+    security_groups = concat(
+      var.ec2_instance_configs[count.index].security_groups,
+      var.bastion_target_sg_ssm_path != "" ? [data.aws_ssm_parameter.bastion_target_sg[0].value] : []
+    )
   }
 
   iam_instance_profile {
