@@ -8,7 +8,7 @@ then destroy it.
 
 | Acceptance criterion | How verified |
 |---|---|
-| Bastion target SG is attached and allows inbound SSH from the bastion | `ssh <user>@<private-ip>` succeeds from the bastion |
+| Bastion target SG is attached and allows inbound SSH from the bastion | `ssh ${USER}@${PRIVATE_IP}` succeeds from the bastion |
 | DynamoDB SSH auth is working (ec2-users table lookup) | Login succeeds using your personal key — no key pair needed |
 | `sudo -iu pdsops` works on the target EC2 | Run it after logging in |
 | `bastion_target_sg_ssm_path` wires up correctly via the ec2 module | No manual SG ID lookup needed — the module reads it from SSM |
@@ -55,7 +55,7 @@ ssh ${USER}@pds-cds-bastion-core.${ZONE}
 Then from the bastion, SSH to the private IP you noted above:
 
 ```bash
-ssh <your-username>@<private-ip>
+ssh ${USER}@${PRIVATE_IP}
 ```
 
 > **Note:** `ssh -J` (ProxyJump) hangs on new host keys — both hops prompt for key verification but only the first gets an interactive terminal. Use the two-step approach above instead.

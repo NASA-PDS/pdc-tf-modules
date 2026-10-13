@@ -15,7 +15,7 @@ the instance profile and passes its name in via `instance_profile_name`.
 | `aws_security_group.bastion` | Inbound SSH from `allowed_ssh_cidrs`; egress SSH to `private_subnet_cidr`, HTTPS to `0.0.0.0/0` |
 | `aws_security_group.target` | Inbound SSH from the bastion SG only. Attach to private EC2s |
 | `module.ec2` | Launch template + instance (encrypted root volume, IMDSv2 required) |
-| `aws_eip.bastion` | Optional, controlled by `assign_eip` |
+| `aws_eip.bastion` + `aws_eip_association.bastion` | EIP allocation and instance association are separate resources — the EIP survives instance replacement without being destroyed |
 
 The HTTPS egress rule (`0.0.0.0/0:443`) is intentionally open-world: the SSM Agent and OS package updates need it and
 the bastion has no VPC endpoints. SSH egress is scoped to `private_subnet_cidr`. DNS and NTP traffic to the VPC
@@ -50,7 +50,7 @@ module "bastion" {
   private_subnet_cidr   = "10.1.0.0/16"                # CIDR covering all target subnets
   instance_profile_name = "pds-cds-bastion-core-ec2-role"
   assign_eip            = true
-  required_tags         = { tenant = "en", venue = "pds-cds-dev", component = "cds-infra", cicd = "iac", managedby = "terraform" }
+  required_tags         = { tenant = "<tenant>", venue = "<venue>", component = "<component>", cicd = "iac", managedby = "<email>" }
 }
 ```
 

@@ -31,8 +31,18 @@ variable "instance_type" {
 }
 
 variable "allowed_ssh_cidrs" {
-  description = "CIDRs allowed to SSH to the bastion on port 22."
+  description = "IPv4 CIDRs allowed to SSH to the bastion on port 22. 0.0.0.0/0 is rejected."
   type        = list(string)
+
+  validation {
+    condition     = alltrue([for c in var.allowed_ssh_cidrs : can(cidrhost(c, 0)) && length(regexall(":", c)) == 0])
+    error_message = "allowed_ssh_cidrs must contain valid IPv4 CIDRs only."
+  }
+
+  validation {
+    condition     = !contains(var.allowed_ssh_cidrs, "0.0.0.0/0")
+    error_message = "Open-world SSH (0.0.0.0/0) is not allowed on the bastion."
+  }
 }
 
 variable "private_subnet_cidr" {

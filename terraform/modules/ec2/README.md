@@ -11,7 +11,7 @@
 
 **Prerequisite:** this module looks up an existing IAM instance profile by name — it does not create one. Create the role/profile first with the [`iam/roles/ec2`](../iam/roles/ec2) module (see its README for usage), then pass the resulting `instance_profile_name` output into this module's `instance_profile` input.
 
-Provisions one or more EC2 instances (via a launch template + `aws_instance`) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` must be the exact, SA-provided AMI ID for the target venue. It defaults to `ami-0ed8a3d7cef9ee5b2`, the current SA-provided AMI used across the system; override it explicitly if a different AMI is required. The instance profile is **not created by this module**; it looks up an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-dev-ec2-role`), or reference another venue-scoped role created elsewhere.
+Provisions one or more EC2 instances (via a launch template + `aws_instance`) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` must be the exact, SA-provided AMI ID for the target venue. It defaults to `ami-0ed8a3d7cef9ee5b2`, the current SA-provided AMI used across the system; override it explicitly if a different AMI is required. The instance profile is **not created by this module**; it looks up an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-<venue>-ec2-role`), or reference another venue-scoped role created elsewhere.
 
 Instances are **private by default** — `associate_public_ip_address` defaults to `false`, so no public IP is assigned unless a consumer explicitly opts in via that variable.
 
@@ -116,8 +116,9 @@ module "ec2_security_group" {
 module "ec2" {
   source = "git@github.com:NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=main"
 
-  ami_id           = var.ami_id
-  instance_profile = module.ec2_instance_role.instance_profile_name
+  ami_id                     = var.ami_id
+  instance_profile           = module.ec2_instance_role.instance_profile_name
+  bastion_target_sg_ssm_path = "/pds/<component>/bastion-core/target-security-group-id"
 
   ec2_instance_configs = [
     {
@@ -138,4 +139,8 @@ module "ec2" {
 }
 ```
 
-> **Note:** SSM Session Manager (via `AmazonSSMManagedInstanceCore`, attached by the [`iam/roles/ec2`](../iam/roles/ec2) module) needs no inbound rule — prefer it over opening port 22, and drop the SSH ingress rule above entirely if it's not needed.
+> **Bastion SSH access:** set `bastion_target_sg_ssm_path` to the SSM path published by the bastion stack (e.g. `/pds/cds-infra/bastion-core/target-security-group-id`). The module reads the SG ID and appends it automatically — no manual data source needed. Leave empty to skip.
+>
+> **Termination protection:** `disable_api_termination` defaults to `true` — instances are protected against accidental deletion via the console or API. Set `false` for ephemeral test instances.
+>
+> **SSM Session Manager** (via `AmazonSSMManagedInstanceCore`, attached by the [`iam/roles/ec2`](../iam/roles/ec2) module) needs no inbound rule and is the recommended access path for day-to-day operations.
