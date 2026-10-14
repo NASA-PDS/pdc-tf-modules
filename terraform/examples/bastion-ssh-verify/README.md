@@ -8,7 +8,7 @@ then destroy it.
 
 | Acceptance criterion | How verified |
 |---|---|
-| Bastion target SG is attached and allows inbound SSH from the bastion | `ssh ${USER}@${PRIVATE_IP}` succeeds from the bastion |
+| Bastion target SG is attached and allows inbound SSH from the bastion | `ssh ${USER}@bastion-ssh-verify.${ZONE}` succeeds from the bastion |
 | DynamoDB SSH auth is working (ec2-users table lookup) | Login succeeds using your personal key — no key pair needed |
 | `sudo -iu pdsops` works on the target EC2 | Run it after logging in |
 | `bastion_target_sg_ssm_path` wires up correctly via the ec2 module | No manual SG ID lookup needed — the module reads it from SSM |
@@ -28,34 +28,27 @@ task apply VENUE=dev COMPONENT=tests/bastion-ssh-verify
 
 ## Verify
 
-**Step 1 — get the private IP:**
+**Step 1 — get the DNS name and connect:**
 
 ```bash
-INSTANCE_ID=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw instance_id | tail -1)
-PRIVATE_IP=$(aws ec2 describe-instances \
-  --instance-ids "${INSTANCE_ID}" \
-  --query 'Reservations[0].Instances[0].PrivateIpAddress' \
-  --output text --region us-west-2)
-echo "${PRIVATE_IP}"
-```
-
-**Step 2 — SSH to the bastion, then to the test EC2:**
-
-Get the private IP first (local terminal), then carry it into the bastion session:
-
-```bash
-USER="<your-username>"
+USER="<nasa-id>"
 ZONE=$(aws ssm get-parameter \
   --name /pds/hosted-zone/name \
   --query Parameter.Value --output text --region us-west-2)
-echo "Private IP: ${PRIVATE_IP}"
+FQDN=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw fqdn | tail -1)
+echo "Test EC2: ${FQDN}"
+```
+
+**Step 2 — SSH to the bastion, then to the test EC2 by name:**
+
+```bash
 ssh ${USER}@pds-cds-bastion-core.${ZONE}
 ```
 
-Then from the bastion, SSH to the private IP you noted above:
+Then from the bastion:
 
 ```bash
-ssh ${USER}@${PRIVATE_IP}
+ssh ${USER}@bastion-ssh-verify.${ZONE}
 ```
 
 > **Note:** `ssh -J` (ProxyJump) hangs on new host keys — both hops prompt for key verification but only the first gets an interactive terminal. Use the two-step approach above instead.

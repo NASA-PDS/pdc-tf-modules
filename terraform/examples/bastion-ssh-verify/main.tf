@@ -50,3 +50,21 @@ module "ec2" {
     security_groups = [aws_security_group.test.id]
   }]
 }
+
+# Use the existing hosted zone — same zone as the bastion host.
+data "aws_ssm_parameter" "hosted_zone_name" {
+  name = "/pds/hosted-zone/name"
+}
+
+data "aws_route53_zone" "main" {
+  name = data.aws_ssm_parameter.hosted_zone_name.value
+}
+
+# DNS record matching the EC2 Name tag so SSH alias and instance name are the same.
+resource "aws_route53_record" "test" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "bastion-ssh-verify"
+  type    = "A"
+  ttl     = 30
+  records = [module.ec2.ec2_private_ip[0]]
+}
