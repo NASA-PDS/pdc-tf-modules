@@ -39,6 +39,8 @@ FQDN=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw fqdn | t
 echo "Test EC2: ${FQDN}"
 ```
 
+> **Allow a few minutes** after `task apply` completes before attempting to SSH — the EC2 needs time to boot, run user data, and have the SSM Agent register with Fleet Manager.
+
 **Step 2 — note the values, then SSH:**
 
 ```bash
