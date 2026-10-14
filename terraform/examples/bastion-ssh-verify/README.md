@@ -39,17 +39,15 @@ FQDN=$(cd venues/dev/tests/bastion-ssh-verify && terragrunt output -raw fqdn | t
 echo "Test EC2: ${FQDN}"
 ```
 
-**Step 2 — SSH to the bastion, then to the test EC2 by name:**
+**Step 2 — note the values, then SSH:**
 
 ```bash
+echo "Bastion:  ${USER}@pds-cds-bastion-core.${ZONE}"
+echo "Test EC2: ${USER}@${FQDN}"
 ssh ${USER}@pds-cds-bastion-core.${ZONE}
 ```
 
-Then from the bastion:
-
-```bash
-ssh ${USER}@bastion-ssh-verify.${ZONE}
-```
+Then from the bastion, paste the `Test EC2:` line that was printed above.
 
 > **Note:** `ssh -J` (ProxyJump) hangs on new host keys — both hops prompt for key verification but only the first gets an interactive terminal. Use the two-step approach above instead.
 
