@@ -72,6 +72,8 @@ module "ec2" {
   pds_resource_prefix         = var.name_prefix
   required_tags               = var.required_tags
 
+  root_volume_delete_on_termination = true
+
   ec2_instance_configs = [{
     instance_name   = var.resource_name
     instance_type   = var.instance_type

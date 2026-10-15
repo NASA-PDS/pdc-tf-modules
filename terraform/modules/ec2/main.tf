@@ -38,7 +38,7 @@ resource "aws_launch_template" "pds_ec2" {
       volume_size           = try(var.ec2_instance_configs[count.index].root_volume_size, 50)
       volume_type           = try(var.ec2_instance_configs[count.index].root_volume_type, "gp3")
       encrypted             = true
-      delete_on_termination = true
+      delete_on_termination = var.root_volume_delete_on_termination
     }
   }
 

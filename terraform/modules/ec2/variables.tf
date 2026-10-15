@@ -39,6 +39,12 @@ variable "disable_api_termination" {
   description = "Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform's destroy command disables this automatically before terminating. Default true."
 }
 
+variable "root_volume_delete_on_termination" {
+  type        = bool
+  default     = false
+  description = "Delete the root EBS volume when the instance terminates."
+}
+
 variable "required_tags" {
   description = "Required resource tags"
   type        = map(string)

@@ -26,6 +26,7 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | `bastion_target_sg_ssm_path` | SSM path for the bastion target SG ID (e.g. `/pds/<component>/bastion-core/target-security-group-id`). When set, that SG is appended to every instance's security groups, enabling SSH from the bastion. Empty (default) skips it — set empty on the bastion EC2 itself to avoid a self-referencing loop. | `string` | `""` | no |
 | `disable_api_termination` | Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform handles disabling this automatically before a `destroy`. | `bool` | `true` | no |
 | `pds_resource_prefix` | Optional prefix for resource naming (e.g., `pds-dev-gh01dc`) | `string` | `""` | no |
+| `root_volume_delete_on_termination` | Delete the root EBS volume when the instance terminates. Defaults to `false` to preserve existing behavior for current consumers. | `bool` | `false` | no |
 | `required_tags` | Required resource tags (tenant, venue, component, cicd, managedby) | `map(string)` | `{}` | yes |
 
 ### `ec2_instance_configs` object shape
@@ -44,7 +45,7 @@ Each entry in `ec2_instance_configs` supports:
 | `root_volume_size` | Root EBS volume size in GB | no | `30` |
 | `root_volume_type` | Root EBS volume type | no | `"gp3"` |
 
-The root EBS volume is always encrypted and `delete_on_termination = true`. IMDSv2 is required (`http_tokens = "required"`).
+The root EBS volume is always encrypted. Whether it is deleted on termination is controlled by `root_volume_delete_on_termination` (default `false`). IMDSv2 is required (`http_tokens = "required"`).
 
 ## Outputs
 
