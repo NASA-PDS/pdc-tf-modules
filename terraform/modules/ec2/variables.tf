@@ -24,7 +24,25 @@ variable "ami_id" {
 variable "pds_resource_prefix" {
   type        = string
   default     = ""
-  description = "Optional prefix for resource naming (e.g., pds-dev-gh01dc)"
+  description = "Optional prefix for resource naming (e.g., pds-<venue>-<component>)"
+}
+
+variable "bastion_target_sg_ssm_path" {
+  type        = string
+  default     = ""
+  description = "SSM parameter path for the bastion target security group ID (e.g. /pds/<component>/bastion-core/target-security-group-id). When set, the SG is automatically appended to every instance's security groups, enabling SSH access from the bastion. Leave empty to skip (e.g. for the bastion EC2 itself)."
+}
+
+variable "disable_api_termination" {
+  type        = bool
+  default     = true
+  description = "Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform's destroy command disables this automatically before terminating. Default true."
+}
+
+variable "root_volume_delete_on_termination" {
+  type        = bool
+  default     = false
+  description = "Delete the root EBS volume when the instance terminates."
 }
 
 variable "required_tags" {
