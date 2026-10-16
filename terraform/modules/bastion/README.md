@@ -78,7 +78,7 @@ module "app_ec2" {
 | `vpc_id` | VPC to deploy into | `string` | n/a | yes |
 | `subnet_id` | Public subnet for the bastion | `string` | n/a | yes |
 | `ami_id` | AMI ID (SA-provided) | `string` | n/a | yes |
-| `instance_type` | EC2 instance type | `string` | `"t3.micro"` | no |
+| `instance_type` | EC2 instance type; must have at least 4 GiB of memory (`nano`, `micro`, and `small` sizes are rejected) | `string` | `"t3.medium"` | no |
 | `allowed_ssh_cidrs` | CIDRs allowed to SSH to the bastion on 22 | `list(string)` | n/a | yes |
 | `private_subnet_cidr` | CIDR of the private target subnet(s); bastion SSH egress is scoped to this | `string` | n/a | yes |
 | `instance_profile_name` | Existing IAM instance profile to attach (created by the caller) | `string` | n/a | yes |
