@@ -1,7 +1,17 @@
 # create an S3 bucket using a variable for the name.
+# Object Lock can be enabled on new and existing buckets (versioning must be Enabled).
+# It cannot be disabled afterward; true -> false forces bucket replacement.
 resource "aws_s3_bucket" "bucket" {
-  bucket = var.bucket_name
-  tags   = var.required_tags
+  bucket              = var.bucket_name
+  object_lock_enabled = var.object_lock_enabled ? true : null
+  tags                = var.required_tags
+
+  lifecycle {
+    precondition {
+      condition     = !var.object_lock_enabled || var.versioning == "Enabled"
+      error_message = "Object Lock requires versioning = \"Enabled\"."
+    }
+  }
 }
 
 # Disable ACLs by setting ownership controls to BucketOwnerEnforced
@@ -48,6 +58,22 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
   }
 }
 
+# Default retention for new objects. Governance mode allows a privileged
+# principal to bypass the lock. Existing objects are not locked retroactively.
+resource "aws_s3_bucket_object_lock_configuration" "bucket_object_lock" {
+  count  = var.object_lock_enabled ? 1 : 0
+  bucket = aws_s3_bucket.bucket.id
+
+  rule {
+    default_retention {
+      mode = "GOVERNANCE"
+      days = var.object_lock_days
+    }
+  }
+
+  depends_on = [aws_s3_bucket_versioning.bucket_versioning]
+}
+
 # Configure access logging. Requires a separate S3 bucket designated as the log target.
 # Access logging should be enabled for security auditing and compliance.
 # If intentionally disabled (logging_target_bucket = ""), document the reason at the call site.
@@ -61,9 +87,13 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
 locals {
   storage_class_normalized        = upper(var.storage_class)
   enable_storage_class_transition = !contains(["STANDARD"], local.storage_class_normalized)
+  enable_noncurrent_expiration    = var.versioning == "Enabled" && var.noncurrent_version_expiration_days > 0
+  enable_object_expiration        = var.object_expiration_days > 0
   enable_lifecycle = (
     var.abort_incomplete_multipart_upload_days > 0 ||
-    local.enable_storage_class_transition
+    local.enable_storage_class_transition ||
+    local.enable_noncurrent_expiration ||
+    local.enable_object_expiration
   )
 }
 
@@ -73,6 +103,8 @@ locals {
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
   count  = local.enable_lifecycle ? 1 : 0
   bucket = aws_s3_bucket.bucket.id
+
+  depends_on = [aws_s3_bucket_versioning.bucket_versioning]
 
   dynamic "rule" {
     for_each = var.abort_incomplete_multipart_upload_days > 0 ? [1] : []
@@ -97,6 +129,38 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
       transition {
         days          = var.storage_class_transition_days
         storage_class = local.storage_class_normalized
+      }
+    }
+  }
+
+  # Keeps the current version. Expires noncurrent versions past the retention
+  # count once they are older than noncurrent_version_expiration_days.
+  # newer_noncurrent_versions = 0 drops the cap and expires every old version.
+  dynamic "rule" {
+    for_each = local.enable_noncurrent_expiration ? [1] : []
+    content {
+      id     = "expire-old-noncurrent-versions"
+      status = "Enabled"
+      filter {}
+
+      noncurrent_version_expiration {
+        noncurrent_days           = var.noncurrent_version_expiration_days
+        newer_noncurrent_versions = var.newer_noncurrent_versions > 0 ? var.newer_noncurrent_versions : null
+      }
+    }
+  }
+
+  # Current-object expiration. Used by the access-log bucket (60 days).
+  # Left off for data buckets so archive objects are not deleted.
+  dynamic "rule" {
+    for_each = local.enable_object_expiration ? [1] : []
+    content {
+      id     = "expire-current-objects"
+      status = "Enabled"
+      filter {}
+
+      expiration {
+        days = var.object_expiration_days
       }
     }
   }
