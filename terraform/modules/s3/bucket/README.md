@@ -1,6 +1,6 @@
 # s3/bucket
 
-Shared S3 bucket module. Several node teams use it, including developer buckets that do not need versioning, Object Lock, or access logging. Those three are **off by default**; the caller turns on what it needs.
+Shared S3 bucket module. Versioning, Object Lock and access logging are **off by default**; the caller turns on what it needs.
 
 If a caller turns versioning on, old versions are capped by default (90 days, keep 2), so a versioned bucket never keeps unlimited versions.
 
@@ -39,6 +39,31 @@ Two things to know before turning it on:
 
 - It cannot be turned off again. Setting `object_lock_enabled` back to `false` after it was `true` makes the AWS provider replace the bucket.
 - The default retention applies to objects written after it is set. Objects already in the bucket are not locked retroactively.
+
+### Bypassing Governance retention
+
+Governance mode lets a privileged caller shorten or remove retention on an object, or delete a locked object version. A bucket policy or an IAM identity policy must allow `s3:BypassGovernanceRetention` for that caller, and the request must also set the bypass header. The permission alone does nothing.
+
+This module does not build the bucket policy: the caller passes `bucket_policy`. To allow bypass, add the action to the policy the caller supplies, scoped to objects:
+
+```json
+{
+  "Sid": "AllowOperatorGovernanceBypass",
+  "Effect": "Allow",
+  "Principal": { "AWS": ["arn:aws:iam::<account-id>:role/<operator-role>"] },
+  "Action": ["s3:BypassGovernanceRetention"],
+  "Resource": ["arn:aws:s3:::<bucket-name>/*"]
+}
+```
+
+With the AWS CLI, use `s3api` with `--bypass-governance-retention`. `aws s3 rm` has no bypass option:
+
+```bash
+aws s3api delete-object --bucket <bucket-name> --key <key> \
+  --version-id <id> --bypass-governance-retention
+```
+
+Changing `object_lock_days` does not need bypass, but it only affects objects written after the change. Lifecycle rules cannot delete a version before its retention ends.
 
 ## Server access logging
 
