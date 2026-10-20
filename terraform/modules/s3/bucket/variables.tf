@@ -50,9 +50,91 @@ variable "enable_policy" {
 }
 
 variable "versioning" {
-  description = "Whether bucket versioning should be enabled or disabled"
+  description = "Bucket versioning status: Enabled or Disabled. Off by default; the caller opts in. Object Lock requires Enabled."
   type        = string
   default     = "Disabled"
+
+  validation {
+    condition     = contains(["Enabled", "Disabled"], var.versioning)
+    error_message = "versioning must be Enabled or Disabled."
+  }
+}
+
+variable "object_lock_enabled" {
+  description = <<-EOT
+    Enable S3 Object Lock. Off by default; the caller opts in. Retention mode is
+    always GOVERNANCE, for object_lock_days days.
+    Works on new and existing buckets; versioning must be Enabled. Once on, it
+    cannot be turned off, and false -> true is the only supported direction
+    (true -> false forces bucket replacement in the AWS provider).
+    Default retention applies to objects written after it is set.
+  EOT
+  type        = bool
+  default     = false
+}
+
+variable "object_lock_days" {
+  description = "Object Lock default retention in days. Used only when object_lock_enabled is true."
+  type        = number
+  default     = 90
+
+  validation {
+    condition     = var.object_lock_days >= 1
+    error_message = "object_lock_days must be at least 1."
+  }
+}
+
+variable "noncurrent_version_expiration_days" {
+  description = <<-EOT
+    Expire noncurrent object versions after this many days. Applies only when
+    versioning is Enabled, so a versioned bucket never keeps old versions
+    forever. Default 90. Set 0 to create no rule and keep every noncurrent
+    version.
+  EOT
+  type        = number
+  default     = 90
+
+  validation {
+    condition     = var.noncurrent_version_expiration_days >= 0
+    error_message = "noncurrent_version_expiration_days must be 0 or greater."
+  }
+}
+
+variable "newer_noncurrent_versions" {
+  description = <<-EOT
+    How many noncurrent versions to keep, in addition to the current version.
+    Versions beyond that count are eligible for expiration once
+    noncurrent_version_expiration_days has passed. Default 2. Used only when
+    that variable is greater than 0.
+    0 puts no count limit: every noncurrent version expires after
+    noncurrent_version_expiration_days. Use 0 where each object key is written
+    once (for example a log bucket), otherwise the single noncurrent version of
+    each key is always inside the "keep 2" count and never expires.
+  EOT
+  type        = number
+  default     = 2
+
+  validation {
+    condition     = var.newer_noncurrent_versions >= 0
+    error_message = "newer_noncurrent_versions must be 0 or greater."
+  }
+}
+
+variable "object_expiration_days" {
+  description = <<-EOT
+    Expire current objects after this many days. 0 (default) leaves current
+    objects in place. Meant for log buckets; do not set it on buckets that hold
+    data. Object Lock blocks deletion until retention ends, so a bucket that
+    expires objects earlier than object_lock_days should leave
+    object_lock_enabled false.
+  EOT
+  type        = number
+  default     = 0
+
+  validation {
+    condition     = var.object_expiration_days >= 0
+    error_message = "object_expiration_days must be 0 or greater."
+  }
 }
 
 variable "required_tags" {
@@ -68,7 +150,12 @@ variable "abort_incomplete_multipart_upload_days" {
 }
 
 variable "logging_target_bucket" {
-  description = "S3 bucket to deliver access logs to. When set, access logging is enabled. Leave empty to disable access logging (must be documented in calling module if intentionally disabled)."
+  description = <<-EOT
+    S3 bucket that receives server access logs. When set, access logging is
+    enabled. Leave empty to disable it, and document why at the call site.
+    PDS tenant buckets set this to pds-<node>-logs-<venue>. The logs bucket
+    itself must leave this empty and set object_expiration_days = 60.
+  EOT
   type        = string
   default     = ""
 }
