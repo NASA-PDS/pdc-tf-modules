@@ -35,7 +35,7 @@ resource "aws_security_group" "test" {
 }
 
 module "ec2" {
-  source = "git::ssh://git@github.com/NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=feature/51-bastion-module"
+  source = "git::ssh://git@github.com/NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=develop"
 
   ami_id                     = var.ami_id
   instance_profile           = data.aws_ssm_parameter.instance_profile_name.value
