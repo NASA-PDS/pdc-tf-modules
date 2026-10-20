@@ -3,7 +3,7 @@ output "account_id" {
 }
 
 output "ec2_instance_ids" {
-  value = module.pds-ec2-instances.ec2_instance_id
+  value = module.pds-ec2-instances.instance_ids
 }
 
 output "security_group_ids" {

@@ -1,6 +1,6 @@
 output "bastion_instance_id" {
   description = "Instance ID of the bastion host."
-  value       = module.ec2.ec2_instance_id[0]
+  value       = module.ec2.instance_ids[var.resource_name]
 }
 
 output "bastion_eip" {
@@ -10,7 +10,7 @@ output "bastion_eip" {
 
 output "bastion_public_ip" {
   description = "Public IP of the bastion: the Elastic IP when assign_eip = true, otherwise the instance's dynamic public IP (changes on stop/start)."
-  value       = var.assign_eip ? aws_eip.bastion[0].public_ip : module.ec2.ec2_public_ip[0]
+  value       = var.assign_eip ? aws_eip.bastion[0].public_ip : module.ec2.public_ips[var.resource_name]
 }
 
 output "bastion_security_group_id" {
