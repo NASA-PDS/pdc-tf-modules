@@ -1,6 +1,6 @@
 output "instance_id" {
   description = "Instance ID of the test EC2."
-  value       = module.ec2.ec2_instance_id[0]
+  value       = module.ec2.instance_ids["bastion-ssh-verify"]
 }
 
 output "fqdn" {
