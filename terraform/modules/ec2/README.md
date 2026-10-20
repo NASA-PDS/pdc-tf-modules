@@ -9,9 +9,9 @@
 
 ---
 
-**Prerequisite:** this module looks up an existing IAM instance profile by name — it does not create one. Create the role/profile first with the [`iam/roles/ec2`](../iam/roles/ec2) module (see its README for usage), then pass the resulting `instance_profile_name` output into this module's `instance_profile` input.
+**Prerequisite:** this module attaches an existing IAM instance profile by name — it does not create one. Create the role/profile first with the [`iam/roles/ec2`](../iam/roles/ec2) module (see its README for usage), then pass the resulting `instance_profile_name` output into this module's `instance_profile` input.
 
-Provisions one or more EC2 instances (plain `aws_instance` resources, no launch template) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` is required and must be the exact, SA-provided AMI ID for the target venue. The instance profile is **not created by this module**; it attaches an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-<venue>-ec2-role`), or reference another venue-scoped role created elsewhere.
+Provisions one or more EC2 instances (plain `aws_instance` resources) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` is required and must be the exact, SA-provided AMI ID for the target venue. The instance profile is **not created by this module**; it attaches an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-<venue>-ec2-role`), or reference another venue-scoped role created elsewhere.
 
 Instances are **private by default** — `associate_public_ip_address` defaults to `false`, so no public IP is assigned unless a consumer explicitly opts in via that variable.
 
@@ -26,7 +26,7 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | `bastion_target_sg_ssm_path` | SSM path for the bastion target SG ID (e.g. `/pds/<component>/bastion-core/target-security-group-id`). When set, that SG is appended to every instance's security groups, enabling SSH from the bastion. Empty (default) skips it — set empty on the bastion EC2 itself to avoid a self-referencing loop. | `string` | `""` | no |
 | `disable_api_termination` | Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform handles disabling this automatically before a `destroy`. | `bool` | `true` | no |
 | `pds_resource_prefix` | Optional prefix for resource naming (e.g., `pds-<venue>-<component>`) | `string` | `""` | no |
-| `root_volume_delete_on_termination` | Delete the root EBS volume when the instance terminates. Defaults to `false` to preserve existing behavior for current consumers. | `bool` | `false` | no |
+| `root_volume_delete_on_termination` | Delete the root EBS volume when the instance terminates. Defaults to `false`. | `bool` | `false` | no |
 | `required_tags` | Required resource tags (tenant, venue, component, cicd, managedby) | `map(string)` | `{}` | yes |
 
 ### `ec2_instance_configs` object shape
@@ -60,7 +60,7 @@ Outputs are maps keyed by `instance_name`, e.g. `module.ec2.instance_ids["pds-wo
 
 ## Changing an existing instance
 
-All settings are declared directly on `aws_instance`, so Terraform plans every change. How the AWS provider applies them:
+Every setting is declared on `aws_instance`, so Terraform plans every change. How the AWS provider applies them:
 
 | Change | Result |
 |--------|--------|

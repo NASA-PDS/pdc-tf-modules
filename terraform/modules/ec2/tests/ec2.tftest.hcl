@@ -37,7 +37,7 @@ run "instances_are_keyed_by_name_with_settings_on_the_instance" {
 
   assert {
     condition     = aws_instance.pds_ec2["beta"].instance_type == "t3.large" && aws_instance.pds_ec2["beta"].root_block_device[0].volume_size == 100
-    error_message = "instance_type and root volume size must be set directly on aws_instance."
+    error_message = "instance_type and root volume size must be set on aws_instance."
   }
 
   assert {

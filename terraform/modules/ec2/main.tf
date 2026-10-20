@@ -5,7 +5,7 @@ data "aws_ssm_parameter" "bastion_target_sg" {
 
 locals {
   # Keyed by instance_name so adding, removing or reordering entries never replaces
-  # unrelated instances (a list index would).
+  # unrelated instances.
   instances = { for c in var.ec2_instance_configs : c.instance_name => c }
 
   # lifecycle.ignore_changes only accepts literal attribute names, so it cannot be toggled
@@ -25,9 +25,8 @@ locals {
   all_instances = merge(aws_instance.pds_ec2, aws_instance.pds_ec2_profile_unmanaged)
 }
 
-# Every launch setting is declared directly on aws_instance (no launch template) so that
-# Terraform diffs and applies each one. In-place vs. replacement behavior is documented in
-# the module README.
+# Every launch setting is declared on aws_instance, so Terraform diffs and applies each
+# one. In-place vs. replacement behavior is documented in the module README.
 #
 # KEEP aws_instance.pds_ec2 AND aws_instance.pds_ec2_profile_unmanaged IDENTICAL except for
 # for_each and the lifecycle block. The test suite asserts they stay in sync.
