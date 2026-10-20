@@ -25,9 +25,14 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  description = "EC2 instance type for the bastion."
+  description = "EC2 instance type for the bastion. Must have at least 4 GiB of memory (t3.medium or larger): DNF/rpm is memory intensive during patching and fails on smaller sizes."
   type        = string
-  default     = "t3.micro"
+  default     = "t3.medium"
+
+  validation {
+    condition     = !can(regex("\\.(nano|micro|small)$", var.instance_type))
+    error_message = "instance_type must have at least 4 GiB of memory (t3.medium or larger); nano, micro, and small sizes fail DNF/rpm patching."
+  }
 }
 
 variable "allowed_ssh_cidrs" {
