@@ -36,7 +36,7 @@ Each entry in `ec2_instance_configs` supports:
 | Key | Description | Required | Default |
 |-----|-------------|----------|---------|
 | `instance_name` | Name for the instance (combined with `pds_resource_prefix` if set) | yes | — |
-| `instance_type` | EC2 instance type (e.g. `t3.medium`) | yes | — |
+| `instance_type` | EC2 instance type (e.g. `t3.medium`). Changing it resizes the existing instance in place (the provider stops, modifies and restarts it, so expect a brief outage; the instance ID is kept). | yes | — |
 | `subnet_id` | Subnet ID to launch the instance in | yes | — |
 | `security_groups` | List of security group IDs. Prefer a dedicated SG scoped to this instance/component over reusing a broad, shared SG — see [Usage](#usage) below. | yes | — |
 | `key_pair_name` | SSH key pair name | no | `null` |

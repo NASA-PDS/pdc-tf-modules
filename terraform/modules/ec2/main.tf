@@ -75,6 +75,13 @@ resource "aws_instance" "pds_ec2" {
 
   disable_api_termination = var.disable_api_termination
 
+  # Set explicitly (not just via the launch template) so a change to instance_type is
+  # seen as a diff on this resource. The launch template is only read at launch time and
+  # version = "$Latest" never changes in config, so without this a new size would update
+  # the template but leave the running instance untouched. The AWS provider applies an
+  # instance_type change in place (stop, modify, start) and keeps the instance ID.
+  instance_type = var.ec2_instance_configs[count.index].instance_type
+
   launch_template {
     id      = aws_launch_template.pds_ec2[count.index].id
     version = "$Latest"
