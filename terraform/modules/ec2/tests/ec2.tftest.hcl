@@ -110,3 +110,86 @@ run "empty_security_groups_are_rejected" {
 
   expect_failures = [var.ec2_instance_configs]
 }
+
+run "profile_flag_routes_instances_and_keeps_both_resources_in_sync" {
+  command = plan
+
+  variables {
+    instance_profile = "profile-a"
+    ec2_instance_configs = [
+      { instance_name = "managed", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==" },
+      { instance_name = "swapped", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==", ignore_instance_profile_changes = true },
+    ]
+  }
+
+  assert {
+    condition     = contains(keys(aws_instance.pds_ec2), "managed") && !contains(keys(aws_instance.pds_ec2), "swapped")
+    error_message = "Instances without the flag belong to aws_instance.pds_ec2 only."
+  }
+
+  assert {
+    condition     = contains(keys(aws_instance.pds_ec2_profile_unmanaged), "swapped") && !contains(keys(aws_instance.pds_ec2_profile_unmanaged), "managed")
+    error_message = "Instances with ignore_instance_profile_changes belong to aws_instance.pds_ec2_profile_unmanaged only."
+  }
+
+  assert {
+    condition     = length(output.instance_ids) == 2 && contains(keys(output.instance_ids), "managed") && contains(keys(output.instance_ids), "swapped")
+    error_message = "Outputs must include instances from both resources."
+  }
+
+  # Guard against the two near-identical resource blocks drifting apart.
+  assert {
+    condition = alltrue([
+      aws_instance.pds_ec2["managed"].ami == aws_instance.pds_ec2_profile_unmanaged["swapped"].ami,
+      aws_instance.pds_ec2["managed"].instance_type == aws_instance.pds_ec2_profile_unmanaged["swapped"].instance_type,
+      aws_instance.pds_ec2["managed"].subnet_id == aws_instance.pds_ec2_profile_unmanaged["swapped"].subnet_id,
+      aws_instance.pds_ec2["managed"].vpc_security_group_ids == aws_instance.pds_ec2_profile_unmanaged["swapped"].vpc_security_group_ids,
+      aws_instance.pds_ec2["managed"].iam_instance_profile == aws_instance.pds_ec2_profile_unmanaged["swapped"].iam_instance_profile,
+      aws_instance.pds_ec2["managed"].user_data_base64 == aws_instance.pds_ec2_profile_unmanaged["swapped"].user_data_base64,
+      aws_instance.pds_ec2["managed"].disable_api_termination == aws_instance.pds_ec2_profile_unmanaged["swapped"].disable_api_termination,
+      aws_instance.pds_ec2["managed"].associate_public_ip_address == aws_instance.pds_ec2_profile_unmanaged["swapped"].associate_public_ip_address,
+      aws_instance.pds_ec2["managed"].metadata_options[0].http_endpoint == aws_instance.pds_ec2_profile_unmanaged["swapped"].metadata_options[0].http_endpoint,
+      aws_instance.pds_ec2["managed"].metadata_options[0].http_tokens == aws_instance.pds_ec2_profile_unmanaged["swapped"].metadata_options[0].http_tokens,
+      aws_instance.pds_ec2["managed"].metadata_options[0].http_put_response_hop_limit == aws_instance.pds_ec2_profile_unmanaged["swapped"].metadata_options[0].http_put_response_hop_limit,
+      aws_instance.pds_ec2["managed"].root_block_device[0].volume_size == aws_instance.pds_ec2_profile_unmanaged["swapped"].root_block_device[0].volume_size,
+      aws_instance.pds_ec2["managed"].root_block_device[0].volume_type == aws_instance.pds_ec2_profile_unmanaged["swapped"].root_block_device[0].volume_type,
+      aws_instance.pds_ec2["managed"].root_block_device[0].encrypted == aws_instance.pds_ec2_profile_unmanaged["swapped"].root_block_device[0].encrypted,
+      aws_instance.pds_ec2["managed"].root_block_device[0].delete_on_termination == aws_instance.pds_ec2_profile_unmanaged["swapped"].root_block_device[0].delete_on_termination,
+    ])
+    error_message = "aws_instance.pds_ec2 and aws_instance.pds_ec2_profile_unmanaged must apply identical settings."
+  }
+}
+
+run "apply_with_initial_profile" {
+  command = apply
+
+  variables {
+    instance_profile = "profile-a"
+    ec2_instance_configs = [
+      { instance_name = "managed", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"] },
+      { instance_name = "swapped", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], ignore_instance_profile_changes = true },
+    ]
+  }
+}
+
+run "later_profile_change_only_reaches_instances_that_did_not_opt_out" {
+  command = plan
+
+  variables {
+    instance_profile = "profile-b"
+    ec2_instance_configs = [
+      { instance_name = "managed", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"] },
+      { instance_name = "swapped", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], ignore_instance_profile_changes = true },
+    ]
+  }
+
+  assert {
+    condition     = aws_instance.pds_ec2["managed"].iam_instance_profile == "profile-b"
+    error_message = "A changed instance_profile must be applied to instances that did not opt out."
+  }
+
+  assert {
+    condition     = aws_instance.pds_ec2_profile_unmanaged["swapped"].iam_instance_profile == "profile-a"
+    error_message = "ignore_instance_profile_changes must keep the existing instance profile on later applies."
+  }
+}

@@ -1,17 +1,18 @@
 variable "ec2_instance_configs" {
   type = list(object({
-    instance_name    = string
-    instance_type    = string
-    subnet_id        = string
-    security_groups  = list(string)
-    key_pair_name    = optional(string)
-    user_data        = optional(string)
-    az               = optional(string)
-    root_volume_size = optional(number, 50)
-    root_volume_type = optional(string, "gp3")
+    instance_name                   = string
+    instance_type                   = string
+    subnet_id                       = string
+    security_groups                 = list(string)
+    key_pair_name                   = optional(string)
+    user_data                       = optional(string)
+    az                              = optional(string)
+    root_volume_size                = optional(number, 50)
+    root_volume_type                = optional(string, "gp3")
+    ignore_instance_profile_changes = optional(bool, false)
   }))
   default     = []
-  description = "List of EC2 instances to create. instance_name must be unique; it is the key of the module outputs and is combined with pds_resource_prefix for the Name tag. user_data must already be base64-encoded (e.g. base64encode(templatefile(...))). root_volume_size is in GB (default 50) and root_volume_type defaults to gp3."
+  description = "List of EC2 instances to create. instance_name must be unique; it is the key of the module outputs and is combined with pds_resource_prefix for the Name tag. user_data must already be base64-encoded (e.g. base64encode(templatefile(...))). root_volume_size is in GB (default 50) and root_volume_type defaults to gp3. Set ignore_instance_profile_changes = true for an instance whose IAM instance profile is swapped outside Terraform after boot, so later applies do not revert it (default false)."
 
   validation {
     condition     = length(distinct([for c in var.ec2_instance_configs : c.instance_name])) == length(var.ec2_instance_configs)

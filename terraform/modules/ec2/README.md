@@ -44,6 +44,7 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | `az` | Availability zone override for the instance | no | `null` |
 | `root_volume_size` | Root EBS volume size in GB | no | `50` |
 | `root_volume_type` | Root EBS volume type | no | `"gp3"` |
+| `ignore_instance_profile_changes` | Set `true` for an instance whose IAM instance profile is swapped outside Terraform after boot, so later applies do not revert it. See [Instances whose IAM instance profile is swapped outside Terraform](#instances-whose-iam-instance-profile-is-swapped-outside-terraform). | no | `false` |
 
 The root EBS volume is always encrypted. Whether it is deleted on termination is controlled by `root_volume_delete_on_termination` (default `false`). IMDSv2 is required (`http_tokens = "required"`).
 
@@ -64,14 +65,46 @@ All settings are declared directly on `aws_instance`, so Terraform plans every c
 | Change | Result |
 |--------|--------|
 | `tags`, `required_tags`, `pds_resource_prefix` (Name tag), `disable_api_termination` | In place, no downtime |
-| `security_groups`, `bastion_target_sg_ssm_path`, `instance_profile` | In place, no downtime |
+| `security_groups`, `bastion_target_sg_ssm_path`, `instance_profile` | In place, no downtime (`instance_profile` is not applied to instances with `ignore_instance_profile_changes = true`) |
 | `instance_type`, `user_data` | In place, but the provider **stops and restarts** the instance (brief outage). The instance ID is kept. A change to an instance type with a different CPU architecture forces replacement. |
 | `root_volume_size`, `root_volume_type` | In place when growing the volume or changing its type (not verified for shrinking; expect replacement) |
 | `ami_id`, `subnet_id`, `az`, `key_pair_name`, `associate_public_ip_address` | **Replaces the instance** |
+| `ignore_instance_profile_changes` (flipping it on an existing instance) | **Moves the instance to the other resource address** (`pds_ec2` <-> `pds_ec2_profile_unmanaged`). Add a `moved` block, or Terraform plans a replacement. See below. |
 
-Compliance-stamped tags (`Audit`, `CreatedBy`, `CreationTime`) are ignored so they are not stripped on re-apply. The module does not ignore `iam_instance_profile`: if a stack swaps the instance profile after boot, a later apply will put the configured profile back.
+Compliance-stamped tags (`Audit`, `CreatedBy`, `CreationTime`) are ignored so they are not stripped on re-apply. By default the module manages `iam_instance_profile`: if a stack swaps the instance profile after boot, a later apply puts the configured profile back. Opt out per instance with `ignore_instance_profile_changes` (next section).
 
 The primary network interface is not tagged separately (`aws_instance` has no argument for it); it relies on provider `default_tags`.
+
+## Instances whose IAM instance profile is swapped outside Terraform
+
+Some hosts launch with a bootstrap profile that has broader access (for example, to fetch secrets at first boot) and are then moved by hand to a locked-down profile once setup finishes. A normal apply would put the configured profile back, undoing the hardening.
+
+Set `ignore_instance_profile_changes = true` on that instance's entry. The profile is set at launch from `instance_profile` and is never changed by later applies, whatever value `instance_profile` has afterwards:
+
+```hcl
+ec2_instance_configs = [
+  {
+    instance_name                   = "app"
+    instance_type                   = "t3.large"
+    subnet_id                       = var.subnet_id
+    security_groups                 = [aws_security_group.app.id]
+    ignore_instance_profile_changes = true
+  }
+]
+```
+
+Notes:
+
+- `lifecycle.ignore_changes` only accepts literal attribute names, so the module cannot toggle it with a variable. Instances with the flag are created by `aws_instance.pds_ec2_profile_unmanaged`; all others by `aws_instance.pds_ec2`. The two resources are identical apart from that, and the test suite asserts it. Outputs include both.
+- The flag only affects the `iam_instance_profile` attribute. It does not stop Terraform from recreating the instance for other reasons (AMI, subnet, ...); a replacement launches with `instance_profile` again, so repeat the manual swap afterwards.
+- Choose the flag when the instance is created. Adding or removing it on an existing instance changes its resource address, so move the state or Terraform plans a replacement:
+
+```hcl
+moved {
+  from = module.ec2.aws_instance.pds_ec2["app"]
+  to   = module.ec2.aws_instance.pds_ec2_profile_unmanaged["app"]
+}
+```
 
 ## Usage
 
