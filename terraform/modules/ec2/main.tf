@@ -1,5 +1,6 @@
-data "aws_iam_instance_profile" "ec2" {
-  name = var.instance_profile
+data "aws_ssm_parameter" "bastion_target_sg" {
+  count = var.bastion_target_sg_ssm_path != "" ? 1 : 0
+  name  = var.bastion_target_sg_ssm_path
 }
 
 resource "aws_launch_template" "pds_ec2" {
@@ -13,14 +14,23 @@ resource "aws_launch_template" "pds_ec2" {
   network_interfaces {
     associate_public_ip_address = var.associate_public_ip_address
     subnet_id                   = var.ec2_instance_configs[count.index].subnet_id
-    security_groups             = var.ec2_instance_configs[count.index].security_groups
+    security_groups = concat(
+      var.ec2_instance_configs[count.index].security_groups,
+      var.bastion_target_sg_ssm_path != "" ? [data.aws_ssm_parameter.bastion_target_sg[0].value] : []
+    )
   }
 
   iam_instance_profile {
-    name = data.aws_iam_instance_profile.ec2.name
+    name = var.instance_profile
   }
 
   user_data = try(var.ec2_instance_configs[count.index].user_data, null)
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
 
   block_device_mappings {
     device_name = "/dev/xvda"
@@ -28,7 +38,7 @@ resource "aws_launch_template" "pds_ec2" {
       volume_size           = try(var.ec2_instance_configs[count.index].root_volume_size, 50)
       volume_type           = try(var.ec2_instance_configs[count.index].root_volume_type, "gp3")
       encrypted             = true
-      delete_on_termination = false
+      delete_on_termination = var.root_volume_delete_on_termination
     }
   }
 
@@ -48,7 +58,7 @@ resource "aws_launch_template" "pds_ec2" {
 
   tag_specifications {
     resource_type = "network-interface"
-    tags = var.required_tags
+    tags          = var.required_tags
   }
 
   tags = var.required_tags
@@ -62,6 +72,8 @@ resource "aws_instance" "pds_ec2" {
   # (default false) — set explicitly here too since static analysis (SonarCloud)
   # scans this resource directly and can't resolve the inherited launch template value.
   associate_public_ip_address = var.associate_public_ip_address
+
+  disable_api_termination = var.disable_api_termination
 
   launch_template {
     id      = aws_launch_template.pds_ec2[count.index].id
