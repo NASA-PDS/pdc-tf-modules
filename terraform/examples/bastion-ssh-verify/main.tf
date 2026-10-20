@@ -45,7 +45,7 @@ module "ec2" {
 
   ec2_instance_configs = [{
     instance_name   = "bastion-ssh-verify"
-    instance_type   = "t3.micro"
+    instance_type   = "t3.medium"
     subnet_id       = sort(data.aws_subnets.private.ids)[0]
     security_groups = [aws_security_group.test.id]
   }]
