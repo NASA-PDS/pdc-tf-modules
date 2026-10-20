@@ -66,5 +66,5 @@ resource "aws_route53_record" "test" {
   name    = "bastion-ssh-verify"
   type    = "A"
   ttl     = 30
-  records = [module.ec2.ec2_private_ip[0]]
+  records = [module.ec2.private_ips["bastion-ssh-verify"]]
 }
