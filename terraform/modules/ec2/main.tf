@@ -59,7 +59,8 @@ resource "aws_instance" "pds_ec2" {
   }
 
   tags = merge(var.required_tags, {
-    Name = local.instance_full_names[each.key]
+    Name  = local.instance_full_names[each.key]
+    Patch = "true"
   })
 
   # Tags for the EBS volumes attached to the instance (root volume included).
@@ -105,7 +106,8 @@ resource "aws_instance" "pds_ec2_profile_unmanaged" {
   }
 
   tags = merge(var.required_tags, {
-    Name = local.instance_full_names[each.key]
+    Name  = local.instance_full_names[each.key]
+    Patch = "true"
   })
 
   # Tags for the EBS volumes attached to the instance (root volume included).
