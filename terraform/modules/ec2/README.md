@@ -13,6 +13,8 @@
 
 Provisions one or more EC2 instances (via a launch template + `aws_instance`) in a PDC AWS environment. The AMI is **not** auto-selected — `ami_id` must be the exact, SA-provided AMI ID for the target venue. It defaults to `ami-0ed8a3d7cef9ee5b2`, the current SA-provided AMI used across the system; override it explicitly if a different AMI is required. The instance profile is **not created by this module**; it looks up an existing instance profile by name via `instance_profile`. Use the [`iam/roles/ec2`](../iam/roles/ec2) module to create that role/profile (e.g. `pds-cds-<venue>-ec2-role`), or reference another venue-scoped role created elsewhere.
 
+Every instance is tagged `Patch = "true"` (in addition to `required_tags` and `Name`) so it is picked up by patching automation.
+
 Instances are **private by default** — `associate_public_ip_address` defaults to `false`, so no public IP is assigned unless a consumer explicitly opts in via that variable.
 
 ## Inputs

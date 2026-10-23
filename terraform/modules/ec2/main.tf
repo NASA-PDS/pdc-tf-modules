@@ -45,7 +45,8 @@ resource "aws_launch_template" "pds_ec2" {
   tag_specifications {
     resource_type = "instance"
     tags = merge(var.required_tags, {
-      Name = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
+      Name  = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
+      Patch = "true"
     })
   }
 
@@ -81,7 +82,8 @@ resource "aws_instance" "pds_ec2" {
   }
 
   tags = merge(var.required_tags, {
-    Name = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
+    Name  = var.pds_resource_prefix != "" ? "${var.pds_resource_prefix}-${var.ec2_instance_configs[count.index].instance_name}" : var.ec2_instance_configs[count.index].instance_name
+    Patch = "true"
   })
 
   lifecycle {
