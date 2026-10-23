@@ -90,6 +90,10 @@ lib64/
 .*.swp
 var/
 
+# Emacs autosave (#file#) and lock (.#file) files
+\#*\#
+.\#*
+
 # other stuff
 *.log
 *.xpr
