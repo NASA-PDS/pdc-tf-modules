@@ -59,6 +59,32 @@ run "instances_are_keyed_by_name_with_settings_on_the_instance" {
     condition     = aws_instance.pds_ec2["alpha"].metadata_options[0].http_tokens == "required"
     error_message = "IMDSv2 must be required."
   }
+
+  assert {
+    condition     = aws_instance.pds_ec2["alpha"].tags["Patch"] == "true" && !contains(keys(aws_instance.pds_ec2["alpha"].volume_tags), "Patch")
+    error_message = "Instances must be tagged Patch = \"true\" (instance tags only, not volume tags)."
+  }
+
+  assert {
+    condition     = aws_instance.pds_ec2["alpha"].user_data_replace_on_change == false
+    error_message = "user_data_replace_on_change must default to false."
+  }
+}
+
+run "user_data_replace_on_change_is_set_per_instance" {
+  command = plan
+
+  variables {
+    ec2_instance_configs = [
+      { instance_name = "bootstrap", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], user_data = "dGVzdA==", user_data_replace_on_change = true },
+      { instance_name = "plain", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], user_data = "dGVzdA==" },
+    ]
+  }
+
+  assert {
+    condition     = aws_instance.pds_ec2["bootstrap"].user_data_replace_on_change == true && aws_instance.pds_ec2["plain"].user_data_replace_on_change == false
+    error_message = "user_data_replace_on_change must apply only to the instances that set it."
+  }
 }
 
 run "prefix_and_bastion_sg_are_applied" {
@@ -117,8 +143,8 @@ run "profile_flag_routes_instances_and_keeps_both_resources_in_sync" {
   variables {
     instance_profile = "profile-a"
     ec2_instance_configs = [
-      { instance_name = "managed", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==" },
-      { instance_name = "swapped", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==", ignore_instance_profile_changes = true },
+      { instance_name = "managed", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==", user_data_replace_on_change = true },
+      { instance_name = "swapped", instance_type = "t3.medium", subnet_id = "subnet-1", security_groups = ["sg-1"], root_volume_size = 80, user_data = "dGVzdA==", user_data_replace_on_change = true, ignore_instance_profile_changes = true },
     ]
   }
 
@@ -146,6 +172,9 @@ run "profile_flag_routes_instances_and_keeps_both_resources_in_sync" {
       aws_instance.pds_ec2["managed"].vpc_security_group_ids == aws_instance.pds_ec2_profile_unmanaged["swapped"].vpc_security_group_ids,
       aws_instance.pds_ec2["managed"].iam_instance_profile == aws_instance.pds_ec2_profile_unmanaged["swapped"].iam_instance_profile,
       aws_instance.pds_ec2["managed"].user_data_base64 == aws_instance.pds_ec2_profile_unmanaged["swapped"].user_data_base64,
+      aws_instance.pds_ec2["managed"].user_data_replace_on_change == aws_instance.pds_ec2_profile_unmanaged["swapped"].user_data_replace_on_change,
+      { for k, v in aws_instance.pds_ec2["managed"].tags : k => v if k != "Name" } == { for k, v in aws_instance.pds_ec2_profile_unmanaged["swapped"].tags : k => v if k != "Name" },
+      { for k, v in aws_instance.pds_ec2["managed"].volume_tags : k => v if k != "Name" } == { for k, v in aws_instance.pds_ec2_profile_unmanaged["swapped"].volume_tags : k => v if k != "Name" },
       aws_instance.pds_ec2["managed"].disable_api_termination == aws_instance.pds_ec2_profile_unmanaged["swapped"].disable_api_termination,
       aws_instance.pds_ec2["managed"].associate_public_ip_address == aws_instance.pds_ec2_profile_unmanaged["swapped"].associate_public_ip_address,
       aws_instance.pds_ec2["managed"].metadata_options[0].http_endpoint == aws_instance.pds_ec2_profile_unmanaged["swapped"].metadata_options[0].http_endpoint,

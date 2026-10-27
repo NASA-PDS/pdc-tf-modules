@@ -42,6 +42,7 @@ resource "aws_instance" "pds_ec2" {
   key_name                    = each.value.key_pair_name
   iam_instance_profile        = var.instance_profile != "" ? var.instance_profile : null
   user_data_base64            = each.value.user_data
+  user_data_replace_on_change = each.value.user_data_replace_on_change
 
   disable_api_termination = var.disable_api_termination
 
@@ -89,6 +90,7 @@ resource "aws_instance" "pds_ec2_profile_unmanaged" {
   key_name                    = each.value.key_pair_name
   iam_instance_profile        = var.instance_profile != "" ? var.instance_profile : null
   user_data_base64            = each.value.user_data
+  user_data_replace_on_change = each.value.user_data_replace_on_change
 
   disable_api_termination = var.disable_api_termination
 

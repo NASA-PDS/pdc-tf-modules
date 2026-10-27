@@ -6,13 +6,14 @@ variable "ec2_instance_configs" {
     security_groups                 = list(string)
     key_pair_name                   = optional(string)
     user_data                       = optional(string)
+    user_data_replace_on_change     = optional(bool, false)
     az                              = optional(string)
     root_volume_size                = optional(number, 50)
     root_volume_type                = optional(string, "gp3")
     ignore_instance_profile_changes = optional(bool, false)
   }))
   default     = []
-  description = "List of EC2 instances to create. instance_name must be unique; it is the key of the module outputs and is combined with pds_resource_prefix for the Name tag. user_data must already be base64-encoded (e.g. base64encode(templatefile(...))). root_volume_size is in GB (default 50) and root_volume_type defaults to gp3. Set ignore_instance_profile_changes = true for an instance whose IAM instance profile is swapped outside Terraform after boot, so later applies do not revert it (default false)."
+  description = "List of EC2 instances to create. instance_name must be unique; it is the key of the module outputs and is combined with pds_resource_prefix for the Name tag. user_data must already be base64-encoded (e.g. base64encode(templatefile(...)) or base64gzip(templatefile(...)) for scripts over 16 KiB). By default a user_data change stops and restarts the instance without re-running cloud-init; set user_data_replace_on_change = true for first-boot bootstrap scripts so a change replaces the instance and the new script runs (default false). root_volume_size is in GB (default 50) and root_volume_type defaults to gp3. Set ignore_instance_profile_changes = true for an instance whose IAM instance profile is swapped outside Terraform after boot, so later applies do not revert it (default false)."
 
   validation {
     condition     = length(distinct([for c in var.ec2_instance_configs : c.instance_name])) == length(var.ec2_instance_configs)
