@@ -38,12 +38,12 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | Key | Description | Required | Default |
 |-----|-------------|----------|---------|
 | `instance_name` | Unique name for the instance (combined with `pds_resource_prefix` if set). Also the key of the module outputs. | yes | — |
-| `instance_type` | EC2 instance type (e.g. `t3.medium`). Must match the AMI's CPU architecture (an x86_64 AMI needs an x86_64 type). See [Changing an existing instance](#changing-an-existing-instance). | yes | — |
+| `instance_type` | EC2 instance type (e.g. `t3.medium`). Must match the AMI's CPU architecture. See [Changing an existing instance](#changing-an-existing-instance). | yes | — |
 | `subnet_id` | Subnet ID to launch the instance in | yes | — |
 | `security_groups` | List of security group IDs. Prefer a dedicated SG scoped to this instance/component over reusing a broad, shared SG — see [Usage](#usage) below. | yes | — |
 | `key_pair_name` | SSH key pair name | no | `null` |
-| `user_data` | Instance user data, **already base64-encoded** (e.g. `base64encode(templatefile(...))`, or `base64gzip(templatefile(...))` for a script over the 16 KiB user-data limit). Passed to the instance as `user_data_base64`. | no | `null` |
-| `user_data_replace_on_change` | Set `true` when `user_data` is a first-boot bootstrap script: a change then **replaces the instance** so the new script runs. When `false`, a change stops and restarts the instance but cloud-init does not re-run the script. See [Changing an existing instance](#changing-an-existing-instance). | no | `false` |
+| `user_data` | Instance user data, **already base64-encoded** (e.g. `base64encode(templatefile(...))`; `base64gzip` for scripts over 16 KiB). Passed to the instance as `user_data_base64`. | no | `null` |
+| `user_data_replace_on_change` | `true` replaces the instance when `user_data` changes, so a first-boot script re-runs. See [Changing an existing instance](#changing-an-existing-instance). | no | `false` |
 | `az` | Availability zone override for the instance | no | `null` |
 | `root_volume_size` | Root EBS volume size in GB | no | `50` |
 | `root_volume_type` | Root EBS volume type | no | `"gp3"` |
@@ -70,7 +70,7 @@ Every setting is declared on `aws_instance`, so Terraform plans every change. Ho
 | `tags`, `required_tags`, `pds_resource_prefix` (Name tag), `disable_api_termination` | In place, no downtime |
 | `security_groups`, `bastion_target_sg_ssm_path`, `instance_profile` | In place, no downtime (`instance_profile` is not applied to instances with `ignore_instance_profile_changes = true`) |
 | `instance_type` | In place, but the provider **stops and restarts** the instance (brief outage). The instance ID is kept. A change to an instance type with a different CPU architecture forces replacement. |
-| `user_data` | With `user_data_replace_on_change = false` (default): in place, the provider **stops and restarts** the instance and updates the attribute, but cloud-init runs user data only on first boot, so the new script does not execute. With `user_data_replace_on_change = true`: **replaces the instance** and the new script runs at first boot. |
+| `user_data` | Default: in place, the instance **stops and restarts**, but cloud-init does not re-run the script. With `user_data_replace_on_change = true`: **replaces the instance**. |
 | `root_volume_size`, `root_volume_type` | In place when growing the volume or changing its type (not verified for shrinking; expect replacement) |
 | `ami_id`, `subnet_id`, `az`, `key_pair_name`, `associate_public_ip_address` | **Replaces the instance** |
 | `ignore_instance_profile_changes` (flipping it on an existing instance) | **Moves the instance to the other resource address** (`pds_ec2` <-> `pds_ec2_profile_unmanaged`). Add a `moved` block, or Terraform plans a replacement. See below. |
