@@ -4,7 +4,7 @@
 
 | Repository | Source Reference | Notes |
 |------------|-----------------|-------|
-| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=main` (`terraform/logstash`) | Logstash EC2. |
+| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=feature/ec2-instance-type-in-place-resize` (`terraform/logstash`) | Logstash EC2. Sets `user_data_replace_on_change = true` and `root_volume_delete_on_termination = true`; see [how a change applies](https://github.com/NASA-PDS/o11y-cloudfront-batch/blob/main/terraform/README.md#logstash). Update to a release ref once this branch merges. |
 | [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) | Local path `../../pds-tf-modules/terraform/modules/ec2` | Not a versioned git ref — developer workspace coupling |
 
 ---

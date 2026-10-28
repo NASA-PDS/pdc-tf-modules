@@ -6,7 +6,7 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetar
 
 | Module | Status | Known Consumers |
 |--------|--------|-----------------|
-| [`s3/bucket`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
+| [`s3/bucket`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra), [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) |
 | [`s3/object`](terraform/modules/s3) | ✅ Actively used | [data-upload-manager](https://github.com/NASA-PDS/data-upload-manager), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) |
 | [`ec2`](terraform/modules/ec2) | ✅ Actively used | [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) (Logstash EC2), [pdc-cds-infra](https://github.com/NASA-PDS/pdc-cds-infra) (local path ref — not consumed via git ref) |
 | [`ecs`](terraform/modules/ecs) | ❓ Untested | None |
