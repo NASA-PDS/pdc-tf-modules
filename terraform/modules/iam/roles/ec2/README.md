@@ -4,7 +4,7 @@
 
 | Repository | Source Reference | Notes |
 |------------|-----------------|-------|
-| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=feature/update-ec2-module-oracle-linux-pdc` (`terraform/iam/roles`) | Tested — creates the EC2 instance role/profile for the Logstash instance. Update to `?ref=main` once this branch merges. |
+| [o11y-cloudfront-batch](https://github.com/NASA-PDS/o11y-cloudfront-batch) | `?ref=develop` (`terraform/iam`) | Creates the EC2 instance role and profile for the Logstash instance; applied in the o11y-platform [deployment runbook](https://github.com/NASA-PDS/o11y-platform/blob/main/terraform/README.md#phase-2---iam), Phase 2a. |
 
 ---
 
