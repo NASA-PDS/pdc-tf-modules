@@ -82,6 +82,16 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   bucket        = aws_s3_bucket.bucket.id
   target_bucket = var.logging_target_bucket
   target_prefix = var.logging_target_prefix
+
+  # Optional date partitioning: <prefix><account>/<region>/<bucket>/YYYY/MM/DD/...
+  dynamic "target_object_key_format" {
+    for_each = var.logging_partition_date_source != "" ? [1] : []
+    content {
+      partitioned_prefix {
+        partition_date_source = var.logging_partition_date_source
+      }
+    }
+  }
 }
 
 locals {

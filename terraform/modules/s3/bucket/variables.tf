@@ -166,6 +166,25 @@ variable "logging_target_prefix" {
   default     = "s3-access-logs/"
 }
 
+variable "logging_partition_date_source" {
+  description = <<-EOT
+    Partition server access log object keys by date. Empty (default) keeps the
+    simple key format: <prefix><timestamp>-<id>. Set to "EventTime" or
+    "DeliveryTime" to use S3 partitioned prefixes:
+    <prefix><account-id>/<region>/<source-bucket>/YYYY/MM/DD/<timestamp>-<id>
+    EventTime partitions by the date of the request. DeliveryTime partitions
+    by the date S3 wrote the log object. Used only when logging_target_bucket
+    is set.
+  EOT
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = contains(["", "EventTime", "DeliveryTime"], var.logging_partition_date_source)
+    error_message = "logging_partition_date_source must be \"\", \"EventTime\" or \"DeliveryTime\"."
+  }
+}
+
 variable "storage_class" {
   description = <<-EOT
     Desired object storage class managed via lifecycle transition.
