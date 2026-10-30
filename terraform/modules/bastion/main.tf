@@ -96,6 +96,6 @@ resource "aws_eip" "bastion" {
 
 resource "aws_eip_association" "bastion" {
   count         = var.assign_eip ? 1 : 0
-  instance_id   = module.ec2.ec2_instance_id[0]
+  instance_id   = module.ec2.instance_ids[var.resource_name]
   allocation_id = aws_eip.bastion[0].id
 }

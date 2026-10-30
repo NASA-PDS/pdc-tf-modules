@@ -69,6 +69,9 @@ htmlcov
 .vscode
 *.sublime-*
 
+# Claude Code local settings
+.claude/
+
 # Shared objects (inc. Windows DLLs)
 *.dll
 *.so
@@ -86,6 +89,10 @@ lib64/
 *~
 .*.swp
 var/
+
+# Emacs autosave (#file#) and lock (.#file) files
+\#*\#
+.\#*
 
 # other stuff
 *.log

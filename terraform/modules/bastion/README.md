@@ -14,7 +14,7 @@ the instance profile and passes its name in via `instance_profile_name`.
 |----------|-------------|
 | `aws_security_group.bastion` | Inbound SSH from `allowed_ssh_cidrs`; egress SSH to `private_subnet_cidr`, HTTPS to `0.0.0.0/0` |
 | `aws_security_group.target` | Inbound SSH from the bastion SG only. Attach to private EC2s |
-| `module.ec2` | Launch template + instance (encrypted root volume, IMDSv2 required) |
+| `module.ec2` | Instance (encrypted root volume, IMDSv2 required) |
 | `aws_eip.bastion` + `aws_eip_association.bastion` | EIP allocation and instance association are separate resources — the EIP survives instance replacement without being destroyed |
 
 The HTTPS egress rule (`0.0.0.0/0:443`) is intentionally open-world: the SSM Agent and OS package updates need it and

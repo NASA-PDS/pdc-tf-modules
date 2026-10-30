@@ -1,7 +1,29 @@
 variable "ec2_instance_configs" {
-  type        = list(any)
+  type = list(object({
+    instance_name                   = string
+    instance_type                   = string
+    subnet_id                       = string
+    security_groups                 = list(string)
+    key_pair_name                   = optional(string)
+    user_data                       = optional(string)
+    user_data_replace_on_change     = optional(bool, false)
+    az                              = optional(string)
+    root_volume_size                = optional(number, 50)
+    root_volume_type                = optional(string, "gp3")
+    ignore_instance_profile_changes = optional(bool, false)
+  }))
   default     = []
-  description = "List of EC2 instances. Each entry supports optional root_volume_size (GB, default 50) and root_volume_type (default \"gp3\") to size the root EBS volume."
+  description = "List of EC2 instances to create. instance_name must be unique; it is the key of the module outputs and is combined with pds_resource_prefix for the Name tag. user_data must already be base64-encoded (base64encode or base64gzip). Set user_data_replace_on_change = true to replace the instance when user_data changes (default false: the instance restarts but cloud-init does not re-run the script). root_volume_size is in GB (default 50) and root_volume_type defaults to gp3. Set ignore_instance_profile_changes = true for an instance whose IAM instance profile is swapped outside Terraform after boot, so later applies do not revert it (default false)."
+
+  validation {
+    condition     = length(distinct([for c in var.ec2_instance_configs : c.instance_name])) == length(var.ec2_instance_configs)
+    error_message = "instance_name must be unique across ec2_instance_configs."
+  }
+
+  validation {
+    condition     = alltrue([for c in var.ec2_instance_configs : length(c.security_groups) > 0])
+    error_message = "Each ec2_instance_configs entry needs at least one security group."
+  }
 }
 
 variable "associate_public_ip_address" {
@@ -13,7 +35,7 @@ variable "associate_public_ip_address" {
 variable "instance_profile" {
   type        = string
   default     = ""
-  description = "EC2 instance profile name"
+  description = "Name of an existing EC2 instance profile to attach. Empty attaches none."
 }
 
 variable "ami_id" {

@@ -35,7 +35,7 @@ resource "aws_security_group" "test" {
 }
 
 module "ec2" {
-  source = "git::ssh://git@github.com/NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=feature/51-bastion-module"
+  source = "git::ssh://git@github.com/NASA-PDS/pdc-tf-modules.git//terraform/modules/ec2?ref=develop"
 
   ami_id                     = var.ami_id
   instance_profile           = data.aws_ssm_parameter.instance_profile_name.value
@@ -45,7 +45,7 @@ module "ec2" {
 
   ec2_instance_configs = [{
     instance_name   = "bastion-ssh-verify"
-    instance_type   = "t3.micro"
+    instance_type   = "t3.medium"
     subnet_id       = sort(data.aws_subnets.private.ids)[0]
     security_groups = [aws_security_group.test.id]
   }]
@@ -66,5 +66,5 @@ resource "aws_route53_record" "test" {
   name    = "bastion-ssh-verify"
   type    = "A"
   ttl     = 30
-  records = [module.ec2.ec2_private_ip[0]]
+  records = [module.ec2.private_ips["bastion-ssh-verify"]]
 }

@@ -265,6 +265,10 @@ After configuring your module, initialize and run Terraform:
    terraform apply -var-file=terraform.tfvars -lock=false
    ```
 
+## Optional bucket controls
+
+Versioning, Governance Object Lock, and server access logging are **off by default**; callers opt in. When versioning is on, old versions are capped by default (90 days, keep 2). See [`s3/bucket/README.md`](bucket/README.md). The PDS tenant seven-bucket standard (which buckets use which settings) is in `pdc-tenant-infra` `terraform/deployments/buckets/README.md`.
+
 ## Advanced Usage: Adding New Parameters to the Module
 If you need to introduce a new parameter to the module:
 
