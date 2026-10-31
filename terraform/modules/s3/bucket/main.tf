@@ -82,6 +82,16 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   bucket        = aws_s3_bucket.bucket.id
   target_bucket = var.logging_target_bucket
   target_prefix = var.logging_target_prefix
+
+  # Optional date partitioning: <prefix><account>/<region>/<bucket>/YYYY/MM/DD/...
+  dynamic "target_object_key_format" {
+    for_each = var.logging_partition_date_source != "" ? [1] : []
+    content {
+      partitioned_prefix {
+        partition_date_source = var.logging_partition_date_source
+      }
+    }
+  }
 }
 
 locals {
@@ -150,7 +160,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
     }
   }
 
-  # Current-object expiration. Used by the access-log bucket (60 days).
+  # Current-object expiration. Used by the access-log bucket (90 days).
   # Left off for data buckets so archive objects are not deleted.
   dynamic "rule" {
     for_each = local.enable_object_expiration ? [1] : []

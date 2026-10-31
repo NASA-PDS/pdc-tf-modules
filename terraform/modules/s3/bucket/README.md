@@ -17,6 +17,8 @@ PDS tenant accounts call it from `pdc-tenant-infra` `terraform/deployments/bucke
 | `newer_noncurrent_versions` | `2` | Noncurrent versions kept besides the current one. `0` means no count limit. |
 | `object_expiration_days` | `0` | `0` leaves current objects alone. |
 | `logging_target_bucket` | `""` | Empty means no server access logging. |
+| `logging_target_prefix` | `s3-access-logs/` | Prefix for log object keys in the target bucket. |
+| `logging_partition_date_source` | `"EventTime"` | Partitions log keys by the date of the request. Use the default. `DeliveryTime` is accepted if needed; `""` opts out and keeps the simple key format. |
 | `enable_blocks` | `true` | Block Public Access on. |
 
 ## Versioning
@@ -68,6 +70,22 @@ Changing `object_lock_days` does not need bypass, but it only affects objects wr
 ## Server access logging
 
 Set `logging_target_bucket` to the name of the bucket that receives the logs. Leave it empty to disable logging. The log bucket itself should leave it empty so it does not log to itself.
+
+By default, `logging_partition_date_source` is `EventTime`, so log objects use S3 partitioned prefixes:
+
+```text
+<logging_target_prefix><account-id>/<region>/<source-bucket>/YYYY/MM/DD/<timestamp>-<id>
+```
+
+Use this default unless there is a reason not to. `DeliveryTime` is also accepted if needed, and `""` opts out and writes the simple format `<logging_target_prefix><timestamp>-<id>`.
+
+`EventTime` uses the date of the request. `DeliveryTime` uses the date S3 wrote the log object. The key already contains the source bucket name, so the caller does not need to add one to `logging_target_prefix`. Changing this setting on an existing bucket updates the logging configuration in place. Logs already written keep their old keys.
+
+```hcl
+logging_target_bucket         = "my-log-bucket"
+logging_target_prefix         = "s3/access_logs/"
+logging_partition_date_source = "EventTime"
+```
 
 `object_expiration_days` deletes current objects after that many days. It is meant for a log bucket; do not set it on a bucket that holds data. A bucket with Object Lock cannot delete objects before their retention ends, so a log bucket that expires objects earlier than `object_lock_days` should leave Object Lock off.
 
