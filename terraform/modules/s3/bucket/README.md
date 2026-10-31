@@ -18,7 +18,7 @@ PDS tenant accounts call it from `pdc-tenant-infra` `terraform/deployments/bucke
 | `object_expiration_days` | `0` | `0` leaves current objects alone. |
 | `logging_target_bucket` | `""` | Empty means no server access logging. |
 | `logging_target_prefix` | `s3-access-logs/` | Prefix for log object keys in the target bucket. |
-| `logging_partition_date_source` | `""` | Empty keeps the simple key format. `EventTime` or `DeliveryTime` partitions log keys by date. |
+| `logging_partition_date_source` | `"EventTime"` | Partitions log keys by the date of the request. Use the default. `DeliveryTime` is accepted if needed; `""` opts out and keeps the simple key format. |
 | `enable_blocks` | `true` | Block Public Access on. |
 
 ## Versioning
@@ -71,11 +71,13 @@ Changing `object_lock_days` does not need bypass, but it only affects objects wr
 
 Set `logging_target_bucket` to the name of the bucket that receives the logs. Leave it empty to disable logging. The log bucket itself should leave it empty so it does not log to itself.
 
-By default, log objects are written as `<logging_target_prefix><timestamp>-<id>`. Set `logging_partition_date_source` to `EventTime` or `DeliveryTime` to use S3 partitioned prefixes instead:
+By default, `logging_partition_date_source` is `EventTime`, so log objects use S3 partitioned prefixes:
 
 ```text
 <logging_target_prefix><account-id>/<region>/<source-bucket>/YYYY/MM/DD/<timestamp>-<id>
 ```
+
+Use this default unless there is a reason not to. `DeliveryTime` is also accepted if needed, and `""` opts out and writes the simple format `<logging_target_prefix><timestamp>-<id>`.
 
 `EventTime` uses the date of the request. `DeliveryTime` uses the date S3 wrote the log object. The key already contains the source bucket name, so the caller does not need to add one to `logging_target_prefix`. Changing this setting on an existing bucket updates the logging configuration in place. Logs already written keep their old keys.
 

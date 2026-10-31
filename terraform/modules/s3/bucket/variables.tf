@@ -154,7 +154,7 @@ variable "logging_target_bucket" {
     S3 bucket that receives server access logs. When set, access logging is
     enabled. Leave empty to disable it, and document why at the call site.
     PDS tenant buckets set this to pds-<node>-logs-<venue>. The logs bucket
-    itself must leave this empty and set object_expiration_days = 60.
+    itself must leave this empty and set object_expiration_days = 90.
   EOT
   type        = string
   default     = ""
@@ -168,16 +168,17 @@ variable "logging_target_prefix" {
 
 variable "logging_partition_date_source" {
   description = <<-EOT
-    Partition server access log object keys by date. Empty (default) keeps the
-    simple key format: <prefix><timestamp>-<id>. Set to "EventTime" or
-    "DeliveryTime" to use S3 partitioned prefixes:
+    Partition server access log object keys by date using S3 partitioned
+    prefixes (default "EventTime", the PDS standard):
     <prefix><account-id>/<region>/<source-bucket>/YYYY/MM/DD/<timestamp>-<id>
-    EventTime partitions by the date of the request. DeliveryTime partitions
-    by the date S3 wrote the log object. Used only when logging_target_bucket
-    is set.
+    EventTime partitions by the date of the request. "DeliveryTime" (the date
+    S3 wrote the log object) is also accepted if needed, but use the EventTime
+    default unless there is a reason not to. Set to "" to opt out and keep the
+    simple key format: <prefix><timestamp>-<id>. Used only when
+    logging_target_bucket is set.
   EOT
   type        = string
-  default     = ""
+  default     = "EventTime"
 
   validation {
     condition     = contains(["", "EventTime", "DeliveryTime"], var.logging_partition_date_source)

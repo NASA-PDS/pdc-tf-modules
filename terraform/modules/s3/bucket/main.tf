@@ -160,7 +160,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
     }
   }
 
-  # Current-object expiration. Used by the access-log bucket (60 days).
+  # Current-object expiration. Used by the access-log bucket (90 days).
   # Left off for data buckets so archive objects are not deleted.
   dynamic "rule" {
     for_each = local.enable_object_expiration ? [1] : []
