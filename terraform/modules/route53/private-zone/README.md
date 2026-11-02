@@ -2,7 +2,7 @@
 
 Shared Route 53 private hosted zone module. It creates one private zone, associates it with one VPC, and publishes the zone ID and name to SSM so consumers never look the zone up by name.
 
-Names in a private zone resolve only from resolvers inside an associated VPC. From anywhere else the lookup returns NXDOMAIN. Use the zone for internal service hostnames (OpenSearch, Logstash) that must not appear in public DNS.
+Names in a private zone resolve only from resolvers inside an associated VPC. From anywhere else the lookup returns NXDOMAIN. Use the zone for internal service hostnames (for example an EC2 instance) that must not appear in public DNS.
 
 The module is reused wherever the zone is needed: the shared infra layer (`pdc-cds-infra`) and each tenant account and venue.
 
