@@ -25,7 +25,7 @@ Instances are **private by default** — `associate_public_ip_address` defaults 
 | `ami_id` | AMI ID for the EC2 instances. Must be the exact SA-provided AMI ID for the target venue. | `string` | — | yes |
 | `instance_profile` | Name of an existing EC2 instance profile (e.g. from the [`iam/roles/ec2`](../iam/roles/ec2) module's `instance_profile_name` output) | `string` | `""` | yes |
 | `associate_public_ip_address` | Whether to associate a public IP address for all EC2 instances created by this module. **Defaults to `false`** — instances are not internet-reachable unless explicitly opted in. | `bool` | `false` | no |
-| `bastion_target_sg_ssm_path` | SSM path for the bastion target SG ID (e.g. `/pds/<component>/bastion-core/target-security-group-id`). When set, that SG is appended to every instance's security groups, enabling SSH from the bastion. Empty (default) skips it — set empty on the bastion EC2 itself to avoid a self-referencing loop. | `string` | `""` | no |
+| `bastion_target_sg_ssm_path` | SSM path for the bastion target SG ID, published by the stack that deploys the bastion (e.g. `/pds/<node>/bastion/target-security-group-id`; see the [bastion module](../bastion/README.md)). When set, that SG is appended to every instance's security groups, enabling SSH from the bastion. Empty (default) skips it — set empty on the bastion EC2 itself to avoid a self-referencing loop. | `string` | `""` | no |
 | `disable_api_termination` | Enable EC2 termination protection. Prevents accidental deletion via the AWS console or API. Terraform handles disabling this automatically before a `destroy`. | `bool` | `true` | no |
 | `pds_resource_prefix` | Optional prefix for resource naming (e.g., `pds-<venue>-<component>`) | `string` | `""` | no |
 | `root_volume_delete_on_termination` | Delete the root EBS volume when the instance terminates. Defaults to `false`. | `bool` | `false` | no |
@@ -175,7 +175,7 @@ module "ec2" {
 
   ami_id                     = var.ami_id
   instance_profile           = module.ec2_instance_role.instance_profile_name
-  bastion_target_sg_ssm_path = "/pds/<component>/bastion-core/target-security-group-id"
+  bastion_target_sg_ssm_path = "/pds/<node>/bastion/target-security-group-id"
 
   ec2_instance_configs = [
     {
@@ -196,7 +196,7 @@ module "ec2" {
 }
 ```
 
-> **Bastion SSH access:** set `bastion_target_sg_ssm_path` to the SSM path published by the bastion stack (e.g. `/pds/cds-infra/bastion-core/target-security-group-id`). The module reads the SG ID and appends it automatically — no manual data source needed. Leave empty to skip.
+> **Bastion SSH access:** set `bastion_target_sg_ssm_path` to the SSM path published by the bastion stack (e.g. `/pds/<node>/bastion/target-security-group-id` in a tenant account, `/pds/cds-infra/bastion-core/target-security-group-id` in CDS). The module reads the SG ID and appends it automatically — no manual data source needed. Leave empty to skip. To SSH to the bastion from the JPL network, its public IP must be on the JPL-managed whitelist; see the [bastion module README](../bastion/README.md#jpl-network-whitelist).
 >
 > **Termination protection:** `disable_api_termination` defaults to `true` — instances are protected against accidental deletion via the console or API. Set `false` for ephemeral test instances.
 >

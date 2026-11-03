@@ -16,7 +16,7 @@ variable "ami_id" {
 
 variable "instance_profile_name_ssm_path" {
   type        = string
-  description = "SSM path to an existing EC2 instance profile name. The profile must allow dynamodb:GetItem/Query/Scan on the ec2-users table (SSH auth gate)."
+  description = "SSM path to an existing EC2 instance profile name. The profile must allow dynamodb:GetItem/Query/Scan on the ec2users table (SSH auth gate)."
 }
 
 variable "bastion_target_sg_ssm_path" {

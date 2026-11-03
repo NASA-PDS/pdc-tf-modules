@@ -36,7 +36,7 @@ variable "instance_type" {
 }
 
 variable "allowed_ssh_cidrs" {
-  description = "IPv4 CIDRs allowed to SSH to the bastion on port 22. 0.0.0.0/0 is rejected."
+  description = "IPv4 CIDRs allowed to SSH to the bastion on port 22. 0.0.0.0/0 is rejected. This is the AWS security group only: SSH from the JPL network also needs the bastion's public IP on the JPL-managed whitelist."
   type        = list(string)
 
   validation {
