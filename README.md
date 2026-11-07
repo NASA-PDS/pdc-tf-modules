@@ -16,6 +16,7 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetar
 | [`cognito`](terraform/modules/cognito) | ❓ Untested | None |
 | [`opensearch-serverless`](terraform/modules/opensearch-serverless) | ❓ Untested | None |
 | [`security-groups`](terraform/modules/security-groups) | ❓ Untested | None |
+| [`route53/private-zone`](terraform/modules/route53/private-zone) | ❓ Untested | None |
 | `cloudfront` | 🗃️ Archived | Moved to `terraform.archive/` |
 
 **Legend:**
