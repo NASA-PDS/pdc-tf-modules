@@ -14,14 +14,12 @@ variable "name" {
 }
 
 variable "vpc_id" {
-  description = "VPC the zone is associated with. Must have DNS support and DNS hostnames enabled."
+  description = <<-EOT
+    VPC the zone is associated with. Must be in the region of the AWS provider
+    passed to the module, and must have DNS support and DNS hostnames enabled.
+    Applies at creation only: changing it later does not move the association.
+  EOT
   type        = string
-}
-
-variable "vpc_region" {
-  description = "Region of the VPC. Defaults to the provider region."
-  type        = string
-  default     = null
 }
 
 variable "comment" {

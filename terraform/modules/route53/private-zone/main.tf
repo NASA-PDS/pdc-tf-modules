@@ -12,13 +12,14 @@ resource "aws_route53_zone" "this" {
   tags          = var.required_tags
 
   vpc {
-    vpc_id     = var.vpc_id
-    vpc_region = var.vpc_region
+    vpc_id = var.vpc_id
   }
 
   lifecycle {
     # Additional VPCs are attached with aws_route53_zone_association outside this
-    # module. Without this, the inline vpc block would try to remove them.
+    # module. Without this, the inline vpc block would try to remove them. The
+    # provider cannot ignore only those external associations, so vpc_id applies
+    # at creation only; see "Changing the VPC" in the README.
     ignore_changes = [vpc]
 
     precondition {
