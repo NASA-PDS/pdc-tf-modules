@@ -36,6 +36,9 @@ publishes. This README covers what applies to every bastion built from the modul
 | `module.ec2` | Instance (encrypted root volume, IMDSv2 required) |
 | `aws_eip.bastion` + `aws_eip_association.bastion` | EIP allocation and instance association are separate resources — the EIP survives instance replacement without being destroyed |
 
+`required_tags` are applied when a security group is created; later tag changes made outside Terraform, or to
+`required_tags`, do not update existing groups.
+
 The HTTPS egress rule (`0.0.0.0/0:443`) is intentionally open-world: the SSM Agent and OS package updates need it and
 the bastion has no VPC endpoints. SSH egress is scoped to `private_subnet_cidr`. DNS and NTP traffic to the VPC
 resolver / Amazon Time Sync address are link-local and are not filtered by security groups.
