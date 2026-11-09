@@ -51,8 +51,13 @@ variable "allowed_ssh_cidrs" {
 }
 
 variable "private_subnet_cidr" {
-  description = "CIDR of the private subnet containing target EC2s. Bastion egress is scoped to this CIDR on port 22."
+  description = "IPv4 CIDR of the private subnet containing target EC2s. Bastion egress is scoped to this CIDR on port 22."
   type        = string
+
+  validation {
+    condition     = can(cidrhost(var.private_subnet_cidr, 0)) && length(regexall(":", var.private_subnet_cidr)) == 0
+    error_message = "private_subnet_cidr must be a valid IPv4 CIDR block."
+  }
 }
 
 variable "instance_profile_name" {
