@@ -27,7 +27,7 @@ Reusable Terraform modules for NASA PDS infrastructure deployed to PDC (Planetar
 
 ## Prerequisites
 
-- [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.3.0
 - AWS credentials with appropriate PDC tenant permissions
 - SSH access to this repository (required by Terraform to fetch modules via `git@github.com:...`)
 
