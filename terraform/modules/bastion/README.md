@@ -217,7 +217,7 @@ algorithm is not accepted.
 | `ami_id` | AMI ID (SA-provided) | `string` | n/a | yes |
 | `instance_type` | EC2 instance type; must have at least 4 GiB of memory (`nano`, `micro`, and `small` sizes are rejected) | `string` | `"t3.medium"` | no |
 | `allowed_ssh_cidrs` | CIDRs allowed to SSH to the bastion on 22. This is the AWS security group only; the JPL whitelist is separate | `list(string)` | n/a | yes |
-| `private_subnet_cidr` | CIDR of the private target subnet(s); bastion SSH egress is scoped to this | `string` | n/a | yes |
+| `private_subnet_cidr` | IPv4 CIDR of the private target subnet(s); bastion SSH egress is scoped to this. IPv6 CIDRs are rejected | `string` | n/a | yes |
 | `instance_profile_name` | Existing IAM instance profile to attach (created by the caller) | `string` | n/a | yes |
 | `assign_eip` | Attach an Elastic IP so the address survives instance replacement. Keep `true` for any bastion reached from the JPL network | `bool` | `true` | no |
 | `required_tags` | Required tags (tenant, venue, component, cicd, managedby) | `map(string)` | `{}` | no |
