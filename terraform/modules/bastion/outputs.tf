@@ -9,7 +9,7 @@ output "bastion_eip" {
 }
 
 output "bastion_public_ip" {
-  description = "Public IP of the bastion: the Elastic IP when assign_eip = true, otherwise the instance's dynamic public IP (changes on stop/start)."
+  description = "Public IP of the bastion: the Elastic IP when assign_eip = true, otherwise the instance's dynamic public IP (changes on stop/start). This is the address to add to the JPL-managed whitelist for SSH from the JPL network."
   value       = var.assign_eip ? aws_eip.bastion[0].public_ip : module.ec2.public_ips[var.resource_name]
 }
 
