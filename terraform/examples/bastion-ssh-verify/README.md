@@ -1,22 +1,25 @@
 # Example: bastion-ssh-verify
 
 Deploys a minimal `t3.micro` EC2 in a private subnet to verify end-to-end
-SSH access through the CDS core bastion host. Run it, SSH in from the bastion,
-then destroy it.
+SSH access through a bastion host built from the [`bastion`](../../modules/bastion/README.md)
+module. Run it, SSH in from the bastion, then destroy it.
 
 ## What this tests
 
 | Acceptance criterion | How verified |
 |---|---|
 | Bastion target SG is attached and allows inbound SSH from the bastion | `ssh ${USER}@bastion-ssh-verify.${ZONE}` succeeds from the bastion |
-| DynamoDB SSH auth is working (ec2-users table lookup) | Login succeeds using your personal key — no key pair needed |
+| DynamoDB SSH auth is working (ec2users table lookup) | Login succeeds using your personal key — no key pair needed |
 | `sudo -iu pdsops` works on the target EC2 | Run it after logging in |
 | `bastion_target_sg_ssm_path` wires up correctly via the ec2 module | No manual SG ID lookup needed — the module reads it from SSM |
 
 ## Prerequisites
 
-- `pdc-cds-infra/bastion-core` deployed in the target venue
-- Your SSH key enrolled in the `ec2-users` DynamoDB table
+- A bastion deployed in the target venue (for CDS, `pdc-cds-infra/bastion-core`). See the
+  [bastion README](../../modules/bastion/README.md)
+- To SSH to the bastion from the JPL network, the bastion's public IP must be on the JPL-managed whitelist. See
+  [JPL network whitelist](../../modules/bastion/README.md#jpl-network-whitelist)
+- Your SSH key enrolled in the `ec2users` DynamoDB table
 
 ## Deploy
 
@@ -27,6 +30,8 @@ task apply VENUE=dev COMPONENT=tests/bastion-ssh-verify
 ```
 
 ## Verify
+
+The commands use the names of the CDS core bastion. For another bastion, use its DNS name.
 
 **Step 1 — get the DNS name and connect:**
 

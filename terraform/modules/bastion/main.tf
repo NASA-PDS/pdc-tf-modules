@@ -8,6 +8,11 @@ resource "aws_security_group" "bastion" {
   vpc_id      = var.vpc_id
 
   tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-sg" })
+
+  # Compliance tags applied outside Terraform would otherwise show as perpetual drift.
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "bastion_ssh" {
@@ -48,6 +53,11 @@ resource "aws_security_group" "target" {
   vpc_id      = var.vpc_id
 
   tags = merge(var.required_tags, { Name = "${var.name_prefix}-${var.resource_name}-target-sg" })
+
+  # Compliance tags applied outside Terraform would otherwise show as perpetual drift.
+  lifecycle {
+    ignore_changes = [tags]
+  }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "target_ssh_from_bastion" {
