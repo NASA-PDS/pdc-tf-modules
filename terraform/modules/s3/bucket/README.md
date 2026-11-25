@@ -1,6 +1,6 @@
 # s3/bucket
 
-Shared S3 bucket module. Versioning, Object Lock and access logging are **off by default**; the caller turns on what it needs.
+Shared S3 bucket module. Versioning, Object Lock, access logging and S3 Inventory are **off by default**; the caller turns on what it needs.
 
 If a caller turns versioning on, old versions are capped by default (90 days, keep 2), so a versioned bucket never keeps unlimited versions.
 
@@ -20,6 +20,13 @@ PDS tenant accounts call it from `pdc-tenant-infra` `terraform/deployments/bucke
 | `logging_target_bucket` | `""` | Empty means no server access logging. |
 | `logging_target_prefix` | `s3/access_logs/` | Prefix for log object keys in the target bucket. |
 | `logging_partition_date_source` | `"EventTime"` | Partitions log keys by the date of the request. Use the default. `DeliveryTime` is accepted if needed; `""` opts out and keeps the simple key format. |
+| `inventory_destination_bucket` | `""` | Empty means no S3 Inventory. |
+| `inventory_destination_prefix` | `s3/inventory/` | Prefix for inventory object keys in the destination bucket. |
+| `inventory_destination_account_id` | `""` | Account that owns the destination bucket. Omit when empty. |
+| `inventory_name` | `entire-bucket` | Inventory configuration name on the source bucket. |
+| `inventory_frequency` | `Weekly` | `Daily` or `Weekly`. |
+| `inventory_included_object_versions` | `All` | `All` or `Current`. |
+| `inventory_format` | `CSV` | `CSV`, `ORC`, or `Parquet`. |
 | `enable_blocks` | `true` | Block Public Access on. |
 
 ## Versioning
@@ -89,6 +96,20 @@ logging_partition_date_source = "EventTime"
 ```
 
 `object_expiration_days` deletes current objects after that many days. It is meant for a log bucket; do not set it on a bucket that holds data. A bucket with Object Lock cannot delete objects before their retention ends, so a log bucket that expires objects earlier than `object_lock_days` should leave Object Lock off.
+
+## S3 Inventory
+
+Set `inventory_destination_bucket` to the name of the bucket that receives inventory reports. Leave it empty to disable inventory.
+
+This module does not create the destination bucket policy. The caller must allow the `s3.amazonaws.com` service principal to `s3:PutObject` on the destination (with `aws:SourceArn`, `aws:SourceAccount`, and `s3:x-amz-acl = bucket-owner-full-control`), or reports will not be delivered.
+
+```hcl
+inventory_destination_bucket     = "my-log-bucket"
+inventory_destination_prefix     = "s3/inventory/"
+inventory_destination_account_id = "111122223333"
+inventory_frequency              = "Weekly"
+inventory_format                 = "CSV"
+```
 
 ## Prefix retention
 

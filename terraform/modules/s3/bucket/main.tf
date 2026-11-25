@@ -94,6 +94,31 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   }
 }
 
+# S3 Inventory. Off when inventory_destination_bucket is empty.
+# Caller must allow s3.amazonaws.com PutObject on the destination bucket.
+resource "aws_s3_bucket_inventory" "bucket_inventory" {
+  count = var.inventory_destination_bucket != "" ? 1 : 0
+
+  bucket                   = aws_s3_bucket.bucket.id
+  name                     = var.inventory_name
+  included_object_versions = var.inventory_included_object_versions
+
+  schedule {
+    frequency = var.inventory_frequency
+  }
+
+  destination {
+    bucket {
+      format     = var.inventory_format
+      bucket_arn = "arn:${var.partition}:s3:::${var.inventory_destination_bucket}"
+      prefix     = var.inventory_destination_prefix
+      account_id = var.inventory_destination_account_id != "" ? var.inventory_destination_account_id : null
+    }
+  }
+
+  optional_fields = length(var.inventory_optional_fields) > 0 ? var.inventory_optional_fields : null
+}
+
 locals {
   storage_class_normalized        = upper(var.storage_class)
   enable_storage_class_transition = !contains(["STANDARD"], local.storage_class_normalized)

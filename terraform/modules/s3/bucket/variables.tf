@@ -262,3 +262,95 @@ variable "storage_class_transition_days" {
   type        = number
   default     = 0
 }
+
+variable "inventory_destination_bucket" {
+  description = <<-EOT
+    S3 bucket that receives inventory reports. When set, an inventory
+    configuration is created on this bucket. Leave empty to disable it, and
+    document why at the call site. The destination bucket policy must allow
+    s3.amazonaws.com to PutObject (caller owns that policy). PDS tenant
+    buckets set this to pds-<node>-logs-<venue> for archive. The logs bucket
+    itself usually leaves this empty.
+  EOT
+  type    = string
+  default = ""
+}
+
+variable "inventory_destination_prefix" {
+  description = "Prefix for inventory object keys in the destination bucket."
+  type        = string
+  default     = "s3/inventory/"
+}
+
+variable "inventory_destination_account_id" {
+  description = <<-EOT
+    Account that owns the destination bucket. Recommended by AWS when
+    inventory is enabled. Leave empty to omit it from the config.
+  EOT
+  type    = string
+  default = ""
+}
+
+variable "inventory_name" {
+  description = "Unique inventory configuration name on the source bucket."
+  type        = string
+  default     = "entire-bucket"
+}
+
+variable "inventory_frequency" {
+  description = "How often inventory runs: Daily or Weekly."
+  type        = string
+  default     = "Weekly"
+
+  validation {
+    condition     = contains(["Daily", "Weekly"], var.inventory_frequency)
+    error_message = "inventory_frequency must be Daily or Weekly."
+  }
+}
+
+variable "inventory_included_object_versions" {
+  description = "Object versions in the inventory list: All or Current."
+  type        = string
+  default     = "All"
+
+  validation {
+    condition     = contains(["All", "Current"], var.inventory_included_object_versions)
+    error_message = "inventory_included_object_versions must be All or Current."
+  }
+}
+
+variable "inventory_format" {
+  description = "Inventory output format: CSV, ORC, or Parquet."
+  type        = string
+  default     = "CSV"
+
+  validation {
+    condition     = contains(["CSV", "ORC", "Parquet"], var.inventory_format)
+    error_message = "inventory_format must be CSV, ORC, or Parquet."
+  }
+}
+
+variable "inventory_optional_fields" {
+  description = <<-EOT
+    Optional inventory fields included in the report. Default is the full set
+    of 15 AWS optional fields. Empty list means AWS required fields only.
+  EOT
+  type = list(string)
+  default = [
+    "Size",
+    "LastModifiedDate",
+    "StorageClass",
+    "ETag",
+    "IsMultipartUploaded",
+    "ReplicationStatus",
+    "EncryptionStatus",
+    "ObjectLockRetainUntilDate",
+    "ObjectLockMode",
+    "ObjectLockLegalHoldStatus",
+    "IntelligentTieringAccessTier",
+    "BucketKeyStatus",
+    "ChecksumAlgorithm",
+    "ObjectAccessControlList",
+    "ObjectOwner",
+  ]
+}
