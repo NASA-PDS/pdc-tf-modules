@@ -94,16 +94,43 @@ resource "aws_s3_bucket_logging" "bucket_logging" {
   }
 }
 
+# S3 Inventory. Off when inventory_destination_bucket is empty.
+# Caller must allow s3.amazonaws.com PutObject on the destination bucket.
+resource "aws_s3_bucket_inventory" "bucket_inventory" {
+  count = var.inventory_destination_bucket != "" ? 1 : 0
+
+  bucket                   = aws_s3_bucket.bucket.id
+  name                     = var.inventory_name
+  included_object_versions = var.inventory_included_object_versions
+
+  schedule {
+    frequency = var.inventory_frequency
+  }
+
+  destination {
+    bucket {
+      format     = var.inventory_format
+      bucket_arn = "arn:${var.partition}:s3:::${var.inventory_destination_bucket}"
+      prefix     = var.inventory_destination_prefix
+      account_id = var.inventory_destination_account_id != "" ? var.inventory_destination_account_id : null
+    }
+  }
+
+  optional_fields = length(var.inventory_optional_fields) > 0 ? var.inventory_optional_fields : null
+}
+
 locals {
   storage_class_normalized        = upper(var.storage_class)
   enable_storage_class_transition = !contains(["STANDARD"], local.storage_class_normalized)
-  enable_noncurrent_expiration    = var.versioning == "Enabled" && var.noncurrent_version_expiration_days > 0
-  enable_object_expiration        = var.object_expiration_days > 0
+  use_prefix_rules                = length(var.expiration_rules) > 0
+  enable_noncurrent_expiration    = var.versioning == "Enabled" && var.noncurrent_version_expiration_days > 0 && !local.use_prefix_rules
+  enable_object_expiration        = var.object_expiration_days > 0 && !local.use_prefix_rules
   enable_lifecycle = (
     var.abort_incomplete_multipart_upload_days > 0 ||
     local.enable_storage_class_transition ||
     local.enable_noncurrent_expiration ||
-    local.enable_object_expiration
+    local.enable_object_expiration ||
+    local.use_prefix_rules
   )
 }
 
@@ -171,6 +198,33 @@ resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle" {
 
       expiration {
         days = var.object_expiration_days
+      }
+    }
+  }
+
+  # Prefix-scoped retention (var.expiration_rules). When any are set, the two
+  # bucket-wide expiration rules above are not created. A rule that omits
+  # noncurrent_expiration_days falls back to noncurrent_version_expiration_days.
+  dynamic "rule" {
+    for_each = { for r in var.expiration_rules : r.id => r }
+    content {
+      id     = rule.value.id
+      status = "Enabled"
+
+      filter {
+        prefix = rule.value.prefix
+      }
+
+      expiration {
+        days = rule.value.expiration_days
+      }
+
+      dynamic "noncurrent_version_expiration" {
+        for_each = var.versioning == "Enabled" && coalesce(rule.value.noncurrent_expiration_days, var.noncurrent_version_expiration_days) > 0 ? [1] : []
+        content {
+          noncurrent_days           = coalesce(rule.value.noncurrent_expiration_days, var.noncurrent_version_expiration_days)
+          newer_noncurrent_versions = var.newer_noncurrent_versions > 0 ? var.newer_noncurrent_versions : null
+        }
       }
     }
   }

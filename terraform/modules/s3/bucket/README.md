@@ -1,6 +1,6 @@
 # s3/bucket
 
-Shared S3 bucket module. Versioning, Object Lock and access logging are **off by default**; the caller turns on what it needs.
+Shared S3 bucket module. Versioning, Object Lock, access logging and S3 Inventory are **off by default**; the caller turns on what it needs.
 
 If a caller turns versioning on, old versions are capped by default (90 days, keep 2), so a versioned bucket never keeps unlimited versions.
 
@@ -16,9 +16,17 @@ PDS tenant accounts call it from `pdc-tenant-infra` `terraform/deployments/bucke
 | `noncurrent_version_expiration_days` | `90` | Only applies when versioning is `Enabled`. `0` means no rule. |
 | `newer_noncurrent_versions` | `2` | Noncurrent versions kept besides the current one. `0` means no count limit. |
 | `object_expiration_days` | `0` | `0` leaves current objects alone. |
+| `expiration_rules` | `[]` | Prefix-scoped retention. When set, the bucket-wide expiration rules are turned off. See [Prefix retention](#prefix-retention). |
 | `logging_target_bucket` | `""` | Empty means no server access logging. |
-| `logging_target_prefix` | `s3-access-logs/` | Prefix for log object keys in the target bucket. |
+| `logging_target_prefix` | `s3/access_logs/` | Prefix for log object keys in the target bucket. |
 | `logging_partition_date_source` | `"EventTime"` | Partitions log keys by the date of the request. Use the default. `DeliveryTime` is accepted if needed; `""` opts out and keeps the simple key format. |
+| `inventory_destination_bucket` | `""` | Empty means no S3 Inventory. |
+| `inventory_destination_prefix` | `s3/inventory/` | Prefix for inventory object keys in the destination bucket. |
+| `inventory_destination_account_id` | `""` | Account that owns the destination bucket. Omit when empty. |
+| `inventory_name` | `entire-bucket` | Inventory configuration name on the source bucket. |
+| `inventory_frequency` | `Weekly` | `Daily` or `Weekly`. |
+| `inventory_included_object_versions` | `All` | `All` or `Current`. |
+| `inventory_format` | `CSV` | `CSV`, `ORC`, or `Parquet`. |
 | `enable_blocks` | `true` | Block Public Access on. |
 
 ## Versioning
@@ -88,6 +96,43 @@ logging_partition_date_source = "EventTime"
 ```
 
 `object_expiration_days` deletes current objects after that many days. It is meant for a log bucket; do not set it on a bucket that holds data. A bucket with Object Lock cannot delete objects before their retention ends, so a log bucket that expires objects earlier than `object_lock_days` should leave Object Lock off.
+
+## S3 Inventory
+
+Set `inventory_destination_bucket` to the name of the bucket that receives inventory reports. Leave it empty to disable inventory.
+
+This module does not create the destination bucket policy. The caller must allow the `s3.amazonaws.com` service principal to `s3:PutObject` on the destination (with `aws:SourceArn`, `aws:SourceAccount`, and `s3:x-amz-acl = bucket-owner-full-control`), or reports will not be delivered.
+
+```hcl
+inventory_destination_bucket     = "my-log-bucket"
+inventory_destination_prefix     = "s3/inventory/"
+inventory_destination_account_id = "111122223333"
+inventory_frequency              = "Weekly"
+inventory_format                 = "CSV"
+```
+
+## Prefix retention
+
+`object_expiration_days` and `noncurrent_version_expiration_days` apply to the whole bucket. When different prefixes need different retention (for example a log bucket that keeps access logs 90 days and S3 Inventory reports 24 months), set `expiration_rules` instead.
+
+When `expiration_rules` is not empty:
+
+- The bucket-wide current-object and noncurrent-version rules are **not** created. S3 uses the earliest expiration when rules overlap, so a bucket-wide 90-day rule would delete objects under a prefix that asks for longer.
+- Only the listed prefixes expire. S3 cannot express "everything else", so objects under a prefix that is not listed are never expired. List every prefix that should expire.
+- Each entry sets `id` (unique), `prefix`, `expiration_days` and, optionally, `noncurrent_expiration_days`. Leave `noncurrent_expiration_days` out to use `noncurrent_version_expiration_days` (90 by default). Set it to `0` to keep noncurrent versions. Noncurrent expiration also uses `newer_noncurrent_versions`, and needs versioning `Enabled`.
+- Multipart-upload cleanup and storage class transitions stay bucket-wide.
+
+On a versioned bucket, total retention is `expiration_days` plus `noncurrent_expiration_days`.
+
+```hcl
+expiration_rules = [
+  { id = "s3-access-logs-90d", prefix = "s3/access_logs/", expiration_days = 90 },
+  { id = "s3-inventory-24mo",  prefix = "s3/inventory/",   expiration_days = 730 },
+]
+newer_noncurrent_versions = 0 # each key is written once
+```
+
+With the default `noncurrent_version_expiration_days = 90`, access logs are kept about 180 days and inventory reports about 820 days.
 
 ## Public access
 
