@@ -16,8 +16,9 @@ PDS tenant accounts call it from `pdc-tenant-infra` `terraform/deployments/bucke
 | `noncurrent_version_expiration_days` | `90` | Only applies when versioning is `Enabled`. `0` means no rule. |
 | `newer_noncurrent_versions` | `2` | Noncurrent versions kept besides the current one. `0` means no count limit. |
 | `object_expiration_days` | `0` | `0` leaves current objects alone. |
+| `expiration_rules` | `[]` | Prefix-scoped retention. When set, the bucket-wide expiration rules are turned off. See [Prefix retention](#prefix-retention). |
 | `logging_target_bucket` | `""` | Empty means no server access logging. |
-| `logging_target_prefix` | `s3-access-logs/` | Prefix for log object keys in the target bucket. |
+| `logging_target_prefix` | `s3/access_logs/` | Prefix for log object keys in the target bucket. |
 | `logging_partition_date_source` | `"EventTime"` | Partitions log keys by the date of the request. Use the default. `DeliveryTime` is accepted if needed; `""` opts out and keeps the simple key format. |
 | `enable_blocks` | `true` | Block Public Access on. |
 
@@ -88,6 +89,29 @@ logging_partition_date_source = "EventTime"
 ```
 
 `object_expiration_days` deletes current objects after that many days. It is meant for a log bucket; do not set it on a bucket that holds data. A bucket with Object Lock cannot delete objects before their retention ends, so a log bucket that expires objects earlier than `object_lock_days` should leave Object Lock off.
+
+## Prefix retention
+
+`object_expiration_days` and `noncurrent_version_expiration_days` apply to the whole bucket. When different prefixes need different retention (for example a log bucket that keeps access logs 90 days and S3 Inventory reports 24 months), set `expiration_rules` instead.
+
+When `expiration_rules` is not empty:
+
+- The bucket-wide current-object and noncurrent-version rules are **not** created. S3 uses the earliest expiration when rules overlap, so a bucket-wide 90-day rule would delete objects under a prefix that asks for longer.
+- Only the listed prefixes expire. S3 cannot express "everything else", so objects under a prefix that is not listed are never expired. List every prefix that should expire.
+- Each entry sets `id` (unique), `prefix`, `expiration_days` and, optionally, `noncurrent_expiration_days`. Leave `noncurrent_expiration_days` out to use `noncurrent_version_expiration_days` (90 by default). Set it to `0` to keep noncurrent versions. Noncurrent expiration also uses `newer_noncurrent_versions`, and needs versioning `Enabled`.
+- Multipart-upload cleanup and storage class transitions stay bucket-wide.
+
+On a versioned bucket, total retention is `expiration_days` plus `noncurrent_expiration_days`.
+
+```hcl
+expiration_rules = [
+  { id = "s3-access-logs-90d", prefix = "s3/access_logs/", expiration_days = 90 },
+  { id = "s3-inventory-24mo",  prefix = "s3/inventory/",   expiration_days = 730 },
+]
+newer_noncurrent_versions = 0 # each key is written once
+```
+
+With the default `noncurrent_version_expiration_days = 90`, access logs are kept about 180 days and inventory reports about 820 days.
 
 ## Public access
 
